@@ -10,6 +10,7 @@
     "celestium-p2p": "file:../celestium-p2p",
     "celestium-wasm": "file:../celestium-wasm/pkg",
     "react": "^17.0.1",
+    "react-dev-utils": "^11.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
     "socket.io-client": "^3.0.4",
