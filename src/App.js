@@ -17,8 +17,8 @@ function App() {
     import("celestium-wasm").then(x => {
       client.walletLib = x;
       console.log(client.initNewClient());
-      console.log(x.generateTestBlockchain());
-      // console.log(x.getBalance());
+      console.log(x.generateTestBlockchain(Math.round(Date.now() / 1000)));
+      console.log("Current balance: " + x.getBalance());
     });
   }, [])
   return (
