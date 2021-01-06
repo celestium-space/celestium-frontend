@@ -23,9 +23,9 @@ function App() {
       let serialized_sk = window.indexedDB["SK"];
       console.log(x.generateTestBlockchain(serialized_pk, serialized_sk, Math.round(Date.now() / 1000)));
       console.log("Current balance: ", x.getBalance());
-      let bw = x.walletToBinary();
+      let bw = x.walletToBinary()
       console.log('Serialized blockchain: "', bw.mf_leafs_bin(), '" - please save me!');
-      x.deleteWallet();
+      x.deleteWallet()
       x.walletFromBinary(bw)
       console.log('Loaded wallet from binary, balance:', x.getBalance());
       window.indexedDB["PK2"] = new Uint8Array([0x03, 0x53, 0x57, 0xCF, 0x0A, 0x29, 0x24, 0x3C, 0x45, 0x15, 0x86, 0x5D, 0x6B, 0xEF, 0x6A, 0x3B, 0x30, 0x9B, 0xA3, 0x33, 0x3B, 0xDC, 0x12, 0x0C, 0x02, 0x91, 0x95, 0xF1, 0xCF, 0x61, 0xD9, 0xB4, 0x9E]) // Since indexedDB is not persistant on localhost
@@ -35,8 +35,9 @@ function App() {
       let miner = x.minerFromOffChain(new Uint8Array(32))
       while (miner.doWork() == undefined) { }
       console.log('Mined!:', miner.doWork())
-      x.minerToBlockchain(miner)
+      x.addMinerToBlockchain(miner)
       console.log('Post miner balance:', x.getBalance())
+      console.log('Get n blocks', x.getNBlocks(2))
     });
   }, [])
   return (
