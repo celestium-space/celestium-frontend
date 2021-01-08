@@ -4,7 +4,6 @@ const { getCurrentPositionPromise } = require('geolocation-promise');
 import * as satellite from 'satellite.js'
 import { useCallback, useEffect, useState, useRef } from 'react';
 
-
 function radians_to_degrees(radians) {
     var pi = Math.PI;
     return radians * (180 / pi);
@@ -45,7 +44,7 @@ function calculate_relatives(my_latitude_rad, my_longitude_rad, beta, compassHea
     return [compassHeading - azimuth, beta - El];
 }
 
-function ISSFinder() {
+function ISSFinder(props) {
     let [state, _setState] = useState({
         satrec: null,
         ISS_orientation_h: 0,
@@ -68,7 +67,8 @@ function ISSFinder() {
             let my_longitude_rad = degrees_to_radians(position.coords.longitude);
             let my_latitude_rad = degrees_to_radians(position.coords.latitude);
 
-            let [ISS_orientation_h, ISS_orientation_a] = calculate_relatives(my_latitude_rad,
+            let [ISS_orientation_h, ISS_orientation_a] = calculate_relatives(
+                my_latitude_rad,
                 my_longitude_rad,
                 event.beta,
                 compassHeading,
@@ -88,7 +88,7 @@ function ISSFinder() {
         let response = await req.json();
 
         let satrec = satellite.twoline2satrec(response["line1"], response["line2"]);
-        setState({ satrec, ISS_orientation_h: 0 });
+        setState({ satrec });
 
         window.addEventListener("deviceorientation", handleOrientation);
         return () => {
