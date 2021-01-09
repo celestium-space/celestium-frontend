@@ -72,6 +72,7 @@ function Recv(props) {
       props.state.client.walletClientLib.initEmpty();
       let k = await props.state.client.receiveTransaction();
       console.log(k);
+      await props.state.client.mineOffChainTransactions();
     }
   }, [props.state.client])
   return <h1>recv</h1>;
@@ -80,18 +81,9 @@ function Recv(props) {
 function Send(props) {
   useEffect(async () => {
     if (props.state.client) {
-      // props.state.client.walletClientLib.generateInitBlockchain(props.state.pk, props.state.sk, 100);
-      // props.state.client.saveWallet();
-
-      props.state.client.walletClientLib.initEmpty();
-
-      let binary_wallet = props.state.client.walletClientLib.walletToBinary();
-      let pk = binary_wallet.get_pk_bin();
-      console.log("send to", pk);
-      props.state.client.walletClientLib.deleteWallet();
-      props.state.client.loadWallet();
+      props.state.client.walletClientLib.generateInitBlockchain();
       console.log("balance", props.state.client.walletClientLib.getBalance());
-
+      let pk = props.state.client.walletClientLib.getPK();
       console.log(props.state.client.sendTransaction(pk, 100, 20));
     }
   }, [props.state])
