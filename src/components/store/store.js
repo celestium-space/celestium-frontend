@@ -7,29 +7,38 @@ import { Image } from 'react-konva';
 
 function Store(props) {
 
-    let POVX = 1000;
-    let POVY = 1000;
+    let POVX = window.screen.width*1.5;
+    let POVY = window.screen.height*1.5;
 
     let stageRef = useRef();
 
-    const [image] = useImage(test);
+    let [state, setState] = useState({ objThing: { 'key1': [0, 0] } });
 
-    let [arr, setArr] = useState([<Image key="pik" x={10} y={10} image={image}></Image>]);
+    let im = useImage(test)[0];
+    let update = true;
 
     let loadNewImgs = (x, y) => {
-        let newImgs = [];
-        for (let i = x - POVX; i < x + POVX; i += 128) {
-            let xindex = Math.floor(i / 128);
-            let yindex = Math.floor(y);
-            let imgx = xindex * 128;
-            let imgy = yindex * 128;
-            newImgs.push(
-                <Image key={"x:" + xindex.toString() + "y:" + yindex.toString()} x={imgx} y={imgy} image={image}></Image>
-            )
-        }
+        x -= window.screen.width / 2;
+        y -= window.screen.height / 2;
+        if (update) {
+            let newImgs = state.objThing;
 
-        setArr([...arr, <Image key="pik" image={image}></Image>]);
-        console.log(arr);
+            for (let j = y - POVY; j < y + POVY; j += 128) {
+                for (let i = x - POVX; i < x + POVX; i += 128) {
+                    let xindex = Math.floor(-i / 128);
+                    let yindex = Math.floor(-j / 128);
+                    let imgx = xindex * 128;
+                    let imgy = yindex * 128;
+                    let url = test; //change this
+                    let key = "x:" + xindex.toString() + "y:" + yindex.toString();
+                    let newThing = [imgx, imgy];
+                    if (!newImgs[key]) {
+                        newImgs[key] = newThing;
+                    }
+                }
+            }
+            setState({ objThing: newImgs });
+        }
     }
 
     useEffect(() => {
@@ -40,17 +49,20 @@ function Store(props) {
             console.log("x:", x, "y:", y);
             loadNewImgs(x, y);
         });
+        loadNewImgs(0, 0);
     }, [])
 
-    console.log(arr);
     return (
         <div>
             <Stage ref={stageRef} draggable={true} width={window.innerWidth} height={window.innerHeight}>
                 <Layer >
-                    {arr.map((x) => {
-                        const [image] = useImage(test);
-                        return x;
-                    })}
+                    {
+                        Object.entries(state.objThing).map((xx) => {
+                            let [key, value] = xx;
+                            let [x, y] = value;
+                            return <Image image={im} x={x} y={y} key={key}></Image>;
+                        })
+                    }
                 </Layer>
             </Stage>
         </div>)
