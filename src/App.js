@@ -70,9 +70,12 @@ function Recv(props) {
   useEffect(async () => {
     if (props.state.client) {
       props.state.client.walletClientLib.initEmpty();
-      let k = await props.state.client.receiveTransaction();
-      console.log(k);
-      await props.state.client.mineOffChainTransactions();
+      console.log("Created empty wallet; Blockchain len:", props.state.client.walletClientLib.blockchainLength());
+      console.log("Asking for blockchain...");
+      await props.state.client.receiveBlockchain();
+      console.log("Got blockchain; Blockchain len:", props.state.client.walletClientLib.blockchainLength());
+      //console.log(await props.state.client.receiveTransaction());
+      //await props.state.client.mineOffChainTransactions();
     }
   }, [props.state.client])
   return <h1>recv</h1>;
@@ -82,9 +85,12 @@ function Send(props) {
   useEffect(async () => {
     if (props.state.client) {
       props.state.client.walletClientLib.generateInitBlockchain();
-      console.log("balance", props.state.client.walletClientLib.getBalance());
-      let pk = props.state.client.walletClientLib.getPK();
-      console.log(props.state.client.sendTransaction(pk, 100, 20));
+      console.log("Created init wallet; My balance:", props.state.client.walletClientLib.getBalance());
+      console.log("Trying to sending blockchain...");
+      await props.state.client.sendBlockchain();
+      console.log("Blockchain sent!")
+      //let pk = props.state.client.walletClientLib.getPK();
+      //console.log(props.state.client.sendTransaction(pk, 100, 20));
     }
   }, [props.state])
   return <h1>send</h1>;
