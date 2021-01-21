@@ -13,15 +13,11 @@ import {
 } from "react-router-dom";
 import Navbar from './components/navbar/navbar';
 import Store from './components/store/store';
-<<<<<<< HEAD
 import Buy from './components/store/buy';
 import { Container, Form, Header } from 'semantic-ui-react';
 import ISSFinder from './components/iss/iss';
-=======
-import { Container, Header } from 'semantic-ui-react';
 import * as msgpack from '@msgpack/msgpack';
 
->>>>>>> f6c1dda361392822403cdc0e3757dd54635581e5
 
 function App() {
   let [state, setState] = useState({
