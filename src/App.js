@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import ISSFinder from './components/iss/iss'
 import * as p2pClientLib from "celestium-p2p";
 import * as client from "celestium-client-logic";
 import { io } from "socket.io-client";
@@ -14,8 +13,9 @@ import {
 } from "react-router-dom";
 import Navbar from './components/navbar/navbar';
 import Store from './components/store/store';
-import { Container, Header } from 'semantic-ui-react';
-
+import Buy from './components/store/buy';
+import { Container, Form, Header } from 'semantic-ui-react';
+import ISSFinder from './components/iss/iss';
 
 function App() {
   let [state, setState] = useState({
@@ -52,14 +52,20 @@ function App() {
           <Send state={state}></Send>
         </Route>
         <Route path="/iss">
+          <ISSFinder></ISSFinder>
           <Navbar active="iss"></Navbar>
         </Route>
         <Route path="/store">
           <Store></Store>
           <Navbar active="store"></Navbar>
         </Route>
+        <Route path="/buy">
+          <Buy></Buy>
+          <Navbar active="store"></Navbar>
+        </Route>
         <Route path="/">
           <Recv state={state} />
+          <Navbar active="store"></Navbar>
         </Route>
       </Switch>
     </Router>

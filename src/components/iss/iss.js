@@ -1,8 +1,10 @@
-
 import * as React from 'react'
 const { getCurrentPositionPromise } = require('geolocation-promise');
 import * as satellite from 'satellite.js'
 import { useCallback, useEffect, useState, useRef } from 'react';
+import Webcam from "react-webcam";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { browserName, CustomView } from 'react-device-detect';
 
 function radians_to_degrees(radians) {
     var pi = Math.PI;
@@ -18,13 +20,15 @@ function calculate_relatives(my_latitude_rad, my_longitude_rad, beta, compassHea
     let phi1 = my_latitude_rad; // Phi1
     let lambda1 = my_longitude_rad; // Lambda1
 
-    let positionAndVelocity = satellite.propagate(satrec, new Date());
+    let dateThing = new Date();
+    let positionAndVelocity = satellite.propagate(satrec, dateThing);
     let gmst = satellite.gstime(new Date());
     let positionEci = positionAndVelocity.position;
     let positionGd = satellite.eciToGeodetic(positionEci, gmst);
     let iss_longitude_rad = positionGd.longitude;
     let iss_latitude_rad = positionGd.latitude;
     let iss_altitude_km = positionGd.height;
+
 
     let phi2 = iss_latitude_rad; // Phi2
     let lambda2 = iss_longitude_rad; // Lambda2
@@ -40,6 +44,8 @@ function calculate_relatives(my_latitude_rad, my_longitude_rad, beta, compassHea
 
     let azimuth = (psi < 0) ? 360 + psi : psi;
     let El = radians_to_degrees(Math.acos(Math.sin(y) / d) * ((d > 0.34) ? -1 : 1));
+
+    console.log("az", azimuth, "el", El, dateThing);
 
     return [compassHeading - azimuth, beta - El];
 }
@@ -74,7 +80,8 @@ function ISSFinder(props) {
                 compassHeading,
                 stateRef.current.satrec);
 
-            setState({ ISS_orientation_h, ISS_orientation_a })
+            // console.log("ISS_orientation_h", ISS_orientation_h, "ISS_orientation_a", ISS_orientation_a);
+            setState({ ISS_orientation_h, ISS_orientation_a });
         }
     };
 
@@ -86,29 +93,68 @@ function ISSFinder(props) {
             }
         );
         let response = await req.json();
+        console.log(response);
 
         let satrec = satellite.twoline2satrec(response["line1"], response["line2"]);
         setState({ satrec });
 
-        window.addEventListener("deviceorientation", handleOrientation);
+        window.addEventListener("deviceorientationabsolute", handleOrientation, true);
         return () => {
 
-            window.removeEventListener("deviceorientation", handleOrientation);
+            window.removeEventListener("deviceorientationabsolute", handleOrientation);
         };
     }, []);
 
+    const innerStyle = {
 
-        const items = [];
-        for (let key in state) {
-            if (key != 'satrec') {
-                items.push(<li key={key}>{key}: {state[key]}</li>)
-            }
-        }
-        return (
-            <ul>
-                {items}
-            </ul>
-        );
+    }
+
+    const videoConstraints = {
+        facingMode: { exact: "environment" }
+    };
+
+    const isSafari = browserName.includes('Safari');
+    // const items = [];
+    // for (let key in state) {
+    //     if (key != 'satrec') {
+    //         items.push(<li key={key}>{key}: {state[key]}</li>)
+    //     }
+    // }
+    // return (
+    //     <ul>
+    //         {items}
+    //     </ul>
+    // );
+
+
+
+    if (!isSafari) {
+            return (
+                <div>
+                    <div style={{ position: "static", height: "100vh" }}></div>
+                    <div style={{ bottom: 0, position: "fixed", height: "100vh", width: "100vh", overflow: "hidden", marginLeft: "50%", transform: "translateX(-50%)" }}>
+                        <Webcam audio={false} videoConstraints={videoConstraints} controls={false} style={{ position: "absolute", overflow: "hidden", height: "100%", width: "100vh" }} />
+                        <div style={{ marginLeft: "50%", transform: "translateX(-50%)", top: "30px", height: (Math.abs(state.ISS_orientation_a)/360*360).toString() + "px", width: (Math.abs(state.ISS_orientation_a)/360*360).toString() + "px", position: "absolute", backgroundColor: "red" }}></div>
+                        <div style={{ marginLeft: "50%", transform: "translateX(-50%)", bottom: "73px", height: "30px", width: "30px", position: "absolute", backgroundColor: "white" }}></div>
+                    </div>
+                    <div style={{ left: "30px", bottom: "calc(50vh + 15px)", height: (Math.abs(state.ISS_orientation_h)/360*360).toString() +"px", width: (Math.abs(state.ISS_orientation_h)/360*360).toString() + "px", position: "fixed", backgroundColor: "red" }}></div>
+                    <div style={{ right: "30px", bottom: "calc(50vh + 15px)", height: "30px", width: "30px", position: "fixed", backgroundColor: "white" }}></div>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <div style={{ bottom: 0, position: "fixed", height: "100vh", width: "100vh", overflow: "hidden", marginLeft: "50%", transform: "translateX(-50%)" }}>
+                        <Webcam audio={false} videoConstraints={videoConstraints} controls={false} style={{ position: "fixed", overflow: "hidden", height: "100%", width: "100%" }} />
+                    </div>
+                    <div style={{ top: "30px", left: "calc(50vw - 15px)", height: "30px", width: "30px", position: "fixed", backgroundColor: "white" }}></div>
+                    <div style={{ bottom: "73px", left: "calc(50vw - 15px)", height: "30px", width: "30px", position: "fixed", backgroundColor: "white" }}></div>
+                    <div style={{ left: "30px", bottom: "calc(50vh - 15px - 43px)", height: "30px", width: "30px", position: "fixed", backgroundColor: "white" }}></div>
+                    <div style={{ right: "30px", bottom: "calc(50vh - 15px - 43px)", height: "30px", width: "30px", position: "fixed", backgroundColor: "white" }}></div>
+                </div>
+            );
+
+    }
 }
 
 export default ISSFinder;

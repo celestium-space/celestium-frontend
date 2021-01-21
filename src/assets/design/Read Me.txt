@@ -1,0 +1,13 @@
+Font Type: Yeysk (might be subject to change, Sebastian Gothic is also possible)
+
+Icon List from React:
+	Market) giringedplanet
+	Asset) giplanetconquest
+	Help) bsquestioncirclefill
+	*ISS Icon) Custom Vector
+
+Main Colour:
+	CMYK) 97.65, 95.29, 33.73, 45
+	Hex) 04075d
+
+When ISS is out of range play loop video with clock counting down: "Loop Earth"

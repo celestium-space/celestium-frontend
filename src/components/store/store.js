@@ -2,8 +2,7 @@
 import React, { Component, useEffect, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Circle } from 'react-konva';
 import useImage from 'use-image';
-import test from '../../assets/test.jpg';
-import { Image } from 'react-konva';
+import UrlImage from './img';
 
 function Store(props) {
 
@@ -14,7 +13,6 @@ function Store(props) {
 
     let [state, setState] = useState({ objThing: { 'key1': [0, 0] } });
 
-    let im = useImage(test)[0];
     let update = true;
 
     let loadNewImgs = (x, y) => {
@@ -29,9 +27,10 @@ function Store(props) {
                     let yindex = Math.floor(-j / 128);
                     let imgx = xindex * 128;
                     let imgy = yindex * 128;
-                    let url = test; //change this
+                    let r = Math.random().toString(36).substring(7);
+                    let url = "/api/images?" + r; //change this
                     let key = "x:" + xindex.toString() + "y:" + yindex.toString();
-                    let newThing = [imgx, imgy];
+                    let newThing = [imgx, imgy, url];
                     if (!newImgs[key]) {
                         newImgs[key] = newThing;
                     }
@@ -59,8 +58,8 @@ function Store(props) {
                     {
                         Object.entries(state.objThing).map((xx) => {
                             let [key, value] = xx;
-                            let [x, y] = value;
-                            return <Image image={im} x={x} y={y} key={key}></Image>;
+                            let [x, y, url] = value;
+                            return <UrlImage key={xx} x={x} y={y} url={url} ></UrlImage>
                         })
                     }
                 </Layer>
