@@ -1,107 +1,145 @@
-import * as React from 'react'
-import { useState, useEffect } from 'react'
-import { io } from "socket.io-client";
+import * as React from 'react';
+import * as Secp256k1 from 'secp256k1';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link,
-  useRouteMatch,
-  useParams
+  Route
 } from "react-router-dom";
-import Navbar from './components/navbar/navbar';
-// import Store from './components/store/store';
-import Buy from './components/store/buy';
-import { Container, Form, FormButton, Header } from 'semantic-ui-react';
+import { sha3_256 } from './sha3.min.js';
+import { randomBytes } from 'crypto';
 
-var loadJS = function (url, implementationCode, location) {
-  //url is URL of external file, implementationCode is the code
-  //to be called from the file, location is the location to 
-  //insert the <script> element
+function i2hex(i) {
+  return ('0' + i.toString(16)).slice(-2);
+}
 
-  var scriptTag = document.createElement('script');
-  scriptTag.src = url;
+function uint8ArrToHexStr(arr) {
+  return arr.reduce(function (memo, i) { return memo + i2hex(i) }, '');
+}
 
-  scriptTag.onload = implementationCode;
-  scriptTag.onreadystatechange = implementationCode;
-  location.appendChild(scriptTag);
+function hexStrToUint8Arr(hex_str) {
+  return new Uint8Array(hex_str.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+}
 
-};
+function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
+  const transaction_version_len = 1;
+  const transaction_input_count_len = 1;
+  const transaction_input_block_hash_len = 32;
+  const transaction_input_message_len = 32;
+  const transaction_input_index_len = 1;
+  const transaction_output_count_len = 1;
+  const transaction_output_value_len = 32;
+  const transaction_output_pk_len = 33;
 
-function App() {
-  let [state, setState] = useState({
-    wallet: null,
-    pool: null
-  });
+  let transaction = new Uint8Array(
+    transaction_version_len +
+    transaction_input_count_len +
+    transaction_input_block_hash_len +
+    transaction_input_message_len +
+    transaction_input_index_len +
+    transaction_output_count_len +
+    transaction_output_value_len +
+    transaction_output_pk_len);
 
-  window.app_handle = this;
-
-  async function pik() {
-    console.log(state.wallet);
-    let k = state.wallet.create_and_mine_string_nft(new Uint8Array([0, 0, 0]));
-    console.log(k);
+  if (Object.prototype.toString.call(block_hash) != "[object Uint8Array]") {
+    console.error('Expected block hash of type "[object Uint8Array]" got "' + Object.prototype.toString.call(block_hash) + '"');
+    return;
+  } else if (block_hash.byteLength != 32) {
+    console.error('Expected block hash of lenght 32 got ' + block_hash.byteLength);
+    return;
   }
 
-    useEffect(() => {
-    function loadWasm() {
-      let msg = 'This demo requires a current version of Firefox (e.g., 79.0)';
-      if (typeof SharedArrayBuffer !== 'function') {
-        alert('this browser does not have SharedArrayBuffer support enabled' + '\n\n' + msg);
-        return
-      }
-      // Test for bulk memory operations with passive data segments
-      //  (module (memory 1) (data passive ""))
-      const buf = new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
-        0x05, 0x03, 0x01, 0x00, 0x01, 0x0b, 0x03, 0x01, 0x01, 0x00]);
-      if (!WebAssembly.validate(buf)) {
-        alert('this browser does not support passive wasm memory, demo does not work' + '\n\n' + msg);
-        return
-      }
+  if (Object.prototype.toString.call(pk) != "[object Uint8Array]") {
+    console.error('Expected public key of type "[object Uint8Array]" got "' + Object.prototype.toString.call(pk) + '"');
+    return;
+  } else if (pk.byteLength != 33) {
+    console.error('Expected public key of lenght 32 got ' + pk.byteLength);
+    return;
+  }
 
-      wasm_bindgen('./celestium_wasm_bg.wasm')
-        .then(run)
-        .catch(console.error);
+  transaction[0] = 0; // Transaction version
+  transaction[1] = 0; // Transaction input count (0 = base transaction)
+  transaction.set(block_hash, 2);
+  transaction.set(prev_pixel_hash, 34);
+  transaction[62] = (x >> 8) & 0xff;
+  transaction[63] = x & 0xff;
+  transaction[64] = (y >> 8) & 0xff;
+  transaction[65] = y & 0xff;
+  transaction[66] = c & 0xff;
+  transaction[67] = 1; // Transaction output count
+  let actual_nft = transaction.slice(34, 67);
+  let hash = sha3_256(uint8ArrToHexStr(actual_nft));
+  transaction.set(hexStrToUint8Arr(hash), 68);
+  transaction.set(pk, 100);
+  return transaction;
+}
+
+function App() {
+  window.app_handle = this;
+
+  const thread_work = 0x200000;
+  const desired_threads = 8; //navigator.hardwareConcurrency; <- This lies
+  let magic = undefined;
+  let pixel_nft = undefined;
+  let start = performance.now();
+  let i = 0;
+
+  function startMiningThreadIfNeeded(result) {
+    if (!magic) {
+      if (result) {
+        magic = result;
+        alert(`Found working magic in ${(performance.now() - start) / 1000}s! ${magic.toString(16)}`);
+      } else {
+        let from = i * thread_work;
+        let to = (i + 1) * thread_work;
+
+        console.log(`Starting new worker thread mining from 0x${from.toString(16)} to 0x${to.toString(16)}`);
+        let worker = new Worker('worker.js');
+
+        worker.addEventListener('message', function (e) {
+          startMiningThreadIfNeeded(e.data);
+        });
+        worker.postMessage([from, to, pixel_nft]);
+        i++;
+      }
+    }
+  }
+
+  function genKeyPair() {
+    while (true) {
+      const sk = randomBytes(32)
+      if (Secp256k1.privateKeyVerify(sk)) return [Secp256k1.publicKeyCreate(sk), sk]
+    }
+  }
+
+  async function pik() {
+    if (!localStorage.getItem("pk_bin") || !localStorage.getItem("sk_bin")) {
+      console.log("No keys in localstorage, generating new pair");
+      let [pk, sk] = genKeyPair();
+      localStorage.setItem("pk_bin", uint8ArrToHexStr(pk));
+      localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
     }
 
-    loadWasm();
+    let block_hash = new Uint8Array(32).map(function (_) { return 1; }); // Get from celestium-api
+    let prev_pixel_hash = new Uint8Array(28).map(function (_) { return 2; }); // Get from celestium-api
+    let pk = hexStrToUint8Arr(localStorage.getItem("pk_bin"));
+    //let pk = hexStrToUint8Arr("03ae555efe4544f5b468de12a59dccce934d049ded9d2990ec0a4e75e727ead306");
+    let x = 100;
+    let y = 200;
+    let color = 3;
+    pixel_nft = create_pixel_nft(block_hash, prev_pixel_hash, x, y, color, pk);
 
-    const { WASMWallet, WorkerPool } = wasm_bindgen;
-
-    function run() {
-      // The maximal concurrency of our web worker pool is `hardwareConcurrency`,
-      // so set that up here and this ideally is the only location we create web
-      // workers.
-      let pool = new WorkerPool(navigator.hardwareConcurrency);
-
-      // Configure various buttons and such.
-      function fuck() {
-        if (!localStorage.getItem("pk_bin") || !localStorage.getItem("sk_bin")) {
-          console.log("No keys!");
-          localStorage.setItem("pk_bin", "{\"0\":2,\"1\":159,\"2\":144,\"3\":13,\"4\":103,\"5\":147,\"6\":50,\"7\":58,\"8\":202,\"9\":16,\"10\":36,\"11\":110,\"12\":161,\"13\":51,\"14\":214,\"15\":167,\"16\":3,\"17\":1,\"18\":179,\"19\":103,\"20\":192,\"21\":221,\"22\":59,\"23\":249,\"24\":207,\"25\":7,\"26\":108,\"27\":132,\"28\":42,\"29\":246,\"30\":126,\"31\":67,\"32\":227}");
-          localStorage.setItem("sk_bin", "{\"0\":205,\"1\":37,\"2\":8,\"3\":20,\"4\":118,\"5\":209,\"6\":72,\"7\":27,\"8\":2,\"9\":128,\"10\":253,\"11\":42,\"12\":184,\"13\":79,\"14\":120,\"15\":133,\"16\":90,\"17\":63,\"18\":186,\"19\":230,\"20\":226,\"21\":192,\"22\":243,\"23\":245,\"24\":205,\"25\":236,\"26\":240,\"27\":248,\"28\":175,\"29\":73,\"30\":21,\"31\":168}")
-        }
-        let pk = new Uint8Array(Object.values(JSON.parse(localStorage.getItem("pk_bin"))));
-        let sk = new Uint8Array(Object.values(JSON.parse(localStorage.getItem("sk_bin"))));
-        let wasm_wallet = new WASMWallet(pk, sk, pool, parseInt(navigator.hardwareConcurrency));
-        let message = new Uint8Array([0x48, 0x0e, 0x6c, 0x6c, 0x6f]);
-        let transaction = wasm_wallet.create_and_mine_string_nft(message);
-        console.log(transaction);
-
-      }
-
-      fuck();
+    start = performance.now();
+    for (let i = 0; i < desired_threads; i++) {
+      startMiningThreadIfNeeded(undefined);
     }
-  }, []);
+  }
 
   return (
     <Router>
       <Switch>
         <Route path="/">
           <div>
-            <h1>{state.wallet ? state.wallet.name : ""}</h1>
-            <button onClick={async (x) => {
-              setTimeout(pik, 0);
-            }}>
+            <button onClick={pik}>
               Activate Lasers
             </button>
           </div>
