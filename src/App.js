@@ -23,22 +23,35 @@ function hexStrToUint8Arr(hex_str) {
 function App() {
   window.app_handle = this;
 
-  const thread_work = 0x200000;
+  const thread_work = 0x20000;
   const desired_threads = 8; //navigator.hardwareConcurrency; <- This lies
   let magic = undefined;
   let start = performance.now();
+  let work_times = []
   let i = 0;
+  let thread_nr = 0;
 
   function startMiningThreadIfNeeded(result, mining_data) {
     if (!magic) {
-      if (result) {
-        magic = result;
-        alert(`Found working magic in ${(performance.now() - start) / 1000}s! ${magic.toString(16)}`);
+      let [result_magic, work_time] = result;
+      if (result_magic) {
+        magic = result_magic;
+        alert(`Found working magic in ${(performance.now() - start) / 1000} seconds!`);
       } else {
+        let expected_time_left = "Calculating...";
+        if (work_time) {
+          work_times.push(work_time);
+          let expected_required_work = 0x10000000 / 2;
+          let expected_required_threads = expected_required_work / thread_work;
+          let average_work_time = (work_times.reduce((accumulator, currentValue) => accumulator + currentValue) / work_times.length) / 1000;
+          let expected_run_time = (expected_required_threads * average_work_time) / desired_threads;
+          let elapsed_seconds = (performance.now() - start) / 1000;
+          expected_time_left = expected_run_time - elapsed_seconds;
+        }
         let from = i * thread_work;
         let to = (i + 1) * thread_work;
 
-        console.log(`Starting new worker thread mining from 0x${from.toString(16)} to 0x${to.toString(16)}`);
+        console.log(`Starting worker thread ${thread_nr++} - mining from 0x${from.toString(16)} to 0x${to.toString(16)} - Expected seconds left: ${expected_time_left}`);
         let worker = new Worker('worker.js');
 
         worker.addEventListener('message', function (e) {
@@ -53,18 +66,20 @@ function App() {
   function getKeyPair() {
     let pk = localStorage.getItem("pk_bin");
     let sk = localStorage.getItem("sk_bin");
-    if (!pk || !sk) {
+    if (pk && sk) {
+      return [hexStrToUint8Arr(pk), hexStrToUint8Arr(sk)];
+    } else {
       console.log("No keys in localstorage, generating new pair");
       while (true) {
         sk = randomBytes(32);
         if (Secp256k1.privateKeyVerify(sk)) {
           pk = Secp256k1.publicKeyCreate(sk);
+          localStorage.setItem("pk_bin", uint8ArrToHexStr(pk));
+          localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
+          return [pk, sk]
         }
-        localStorage.setItem("pk_bin", uint8ArrToHexStr(pk));
-        localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
       }
     }
-    return [hexStrToUint8Arr(pk), hexStrToUint8Arr(sk)];
   }
 
   function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
@@ -132,7 +147,7 @@ function App() {
 
     start = performance.now();
     for (let i = 0; i < desired_threads; i++) {
-      startMiningThreadIfNeeded(undefined, pixel_nft);
+      startMiningThreadIfNeeded([undefined, undefined], pixel_nft);
     }
   }
 
@@ -142,19 +157,20 @@ function App() {
     const transaction_input_block_hash_len = 32;
     const transaction_input_id_len = 32;
     const transaction_input_index_len = 1;
-    const transaction_input_sig_len = 64;
-    const transaction_input_len = transaction_input_block_hash_len + transaction_input_id_len + transaction_input_index_len + transaction_input_sig_len;
+    const transaction_input_len = transaction_input_block_hash_len + transaction_input_id_len + transaction_input_index_len;
     const transaction_output_count_len = 1;
     const transaction_output_value_len = 32;
     const transaction_output_pk_len = 33;
     const transaction_output_len = transaction_output_count_len + transaction_output_value_len + transaction_output_pk_len;
+    const transaction_input_sig_len = 64;
 
     let transaction = new Uint8Array(
       transaction_version_len +
       transaction_input_count_len +
       transaction_input_len * 3 +
       transaction_output_count_len +
-      transaction_output_len * 3);
+      transaction_output_len * 3 +
+      transaction_input_sig_len * 3);
 
     let i = 0;
     transaction[i++] = 0; // Transaction version
@@ -172,15 +188,15 @@ function App() {
   }
 
   function buyBackendItem() {
-
-    let [pk, _] = getKeyPair();
-    //let pk = hexStrToUint8Arr("03ae555efe4544f5b468de12a59dccce934d049ded9d2990ec0a4e75e727ead306");
-
+    let [_, sk] = getKeyPair();
     let backend_item_transaction = getBackendItem();
-
+    let transaction_content_len = backend_item_transaction.byteLength - 64 * 3;
+    let transaction_content = backend_item_transaction.slice(0, transaction_content_len);
+    const signature = Secp256k1.ecdsaSign(hexStrToUint8Arr(sha3_256(uint8ArrToHexStr(transaction_content))), sk).signature;
+    backend_item_transaction.set(signature, transaction_content_len);
     start = performance.now();
     for (let i = 0; i < desired_threads; i++) {
-      startMiningThreadIfNeeded(undefined, backend_item_transaction);
+      startMiningThreadIfNeeded([undefined, undefined], backend_item_transaction);
     }
   }
 

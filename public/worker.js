@@ -19,18 +19,19 @@ function IntToMagicStr(input) {
 }
 
 self.addEventListener('message', function (e) {
+  let start = performance.now();
   let [magic, to, pixel_nft] = e.data;
   let hash = undefined;
   let pixel_nft_hex_str = pixel_nft.reduce(function (memo, i) { return memo + i2hex(i) }, '');
   while (magic < to) {
     hash = sha3_256(pixel_nft_hex_str + IntToMagicStr(magic));
     if (ContainsEnoughWork(hash)) {
-      self.postMessage(hash);
+      self.postMessage([hash, performance.now() - start]);
       self.close();
       return;
     }
     magic++;
   }
-  self.postMessage(undefined);
+  self.postMessage([undefined, performance.now() - start]);
   self.close();
 });
