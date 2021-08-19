@@ -37,6 +37,8 @@ function App() {
       if (result_magic) {
         magic = result_magic;
         alert(`Found working magic in ${(performance.now() - start) / 1000} seconds!`);
+        let transaction = hexStrToUint8Arr(uint8ArrToHexStr(mining_data) + magic);
+        // Done mining! 
       } else {
         let expected_time_left = "Calculating...";
         if (work_time) {
@@ -135,14 +137,11 @@ function App() {
     return transaction;
   }
 
-  function generateAndMinePixelNFT() {
+  function generateAndMinePixelNFT(x = 100, y = 200, color = 3) {
     let [pk, _] = getKeyPair();
     //let pk = hexStrToUint8Arr("03ae555efe4544f5b468de12a59dccce934d049ded9d2990ec0a4e75e727ead306");
     let block_hash = new Uint8Array(32).map(function (_) { return 1; }); // Get from celestium-api
     let prev_pixel_hash = new Uint8Array(28).map(function (_) { return 2; }); // Get from celestium-api
-    let x = 100;
-    let y = 200;
-    let color = 3;
     let pixel_nft = create_pixel_nft(block_hash, prev_pixel_hash, x, y, color, pk);
 
     start = performance.now();
@@ -189,7 +188,7 @@ function App() {
 
   function buyBackendItem() {
     let [_, sk] = getKeyPair();
-    let backend_item_transaction = getBackendItem();
+    let backend_item_transaction = getBackendItem(); // Get from celestium-api instead
     let transaction_content_len = backend_item_transaction.byteLength - 64 * 3;
     let transaction_content = backend_item_transaction.slice(0, transaction_content_len);
     const signature = Secp256k1.ecdsaSign(hexStrToUint8Arr(sha3_256(uint8ArrToHexStr(transaction_content))), sk).signature;
