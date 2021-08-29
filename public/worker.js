@@ -26,7 +26,7 @@ self.addEventListener('message', function (e) {
   while (magic < to) {
     hash = sha3_256(pixel_nft_hex_str + IntToMagicStr(magic));
     if (ContainsEnoughWork(hash)) {
-      self.postMessage([hash, performance.now() - start]);
+      self.postMessage([IntToMagicStr(magic), performance.now() - start]);
       self.close();
       return;
     }
