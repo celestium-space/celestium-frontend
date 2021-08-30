@@ -1,8 +1,4 @@
 import React, { Component, useEffect, useRef, useState, createRef } from 'react'
-import { Stage, Layer, Rect, Circle, Image } from 'react-konva';
-import useImage from 'use-image';
-import UrlImage from '../store/img';
-
 
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
@@ -22,7 +18,6 @@ class Grid extends Component {
             let canvas = this.canvasRef.current;
             let ctx = canvas.getContext('2d');
             let array = new Uint8ClampedArray(data);
-            console.log(array);
             let k = new ImageData(array, width, height);
             ctx.putImageData(k, x, y);
         }
@@ -38,10 +33,13 @@ class Grid extends Component {
             onClick={(event) => {
                 let canvas = this.canvasRef.current;
                 let [x, y] = getCursorPosition(canvas, event);
+                console.log("clicked x,y:", x, y);
                 let ctx = canvas.getContext('2d');
                 let data = ctx.getImageData(x, y, 1, 1).data;
                 let rgb = [data[0], data[1], data[2]];
-                this.onClick(Math.round(x), Math.round(y), rgb);
+                if (this.onClick) {
+                    this.onClick(Math.round(x), Math.round(y), rgb);
+                }
             }}
             style={{
                 // border: '2px solid #000',

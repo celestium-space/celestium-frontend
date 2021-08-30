@@ -1,3 +1,69 @@
+import * as Secp256k1 from 'secp256k1';
+import { sha3_256 } from './sha3.min.js';
+import { randomBytes } from 'crypto';
+
+const colorMap = [[0, 0, 0],
+[255, 0, 0],
+[0, 255, 0],
+[0, 0, 255],
+[255, 255, 0],
+[255, 0, 255],
+[0, 255, 255],
+[255, 255, 255]
+];
+
+function arraysEqual(a, b) {
+	if (a === b) return true;
+	if (a == null || b == null) return false;
+	if (a.length !== b.length) return false;
+
+	for (var i = 0; i < a.length; ++i) {
+		if (a[i] != b[i]) return false;
+	}
+	return true;
+}
+
+function findColorIndex(rgb) {
+	for (let i = 0; i < colorMap.length; i++) {
+		if (arraysEqual(colorMap[i], rgb))
+			return i;
+	}
+	return -1;
+}
+
+function intToColor(i) {
+	let [r, g, b] = colorMap[i];
+	return [r, g, b, 255];
+}
+
+function intToRgb(i) {
+	let [r, g, b] = colorMap[i];
+	return 'rgb(' + r.toString() + ', ' + g.toString() + ', ' + b.toString() + ')';
+}
+
+function range(start, stop, step) {
+	if (typeof stop == 'undefined') {
+		// one param defined
+		stop = start;
+		start = 0;
+	}
+
+	if (typeof step == 'undefined') {
+		step = 1;
+	}
+
+	if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+		return [];
+	}
+
+	var result = [];
+	for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+		result.push(i);
+	}
+
+	return result;
+};
+
 const thread_work = 0x20000;
 const desired_threads = 8; //navigator.hardwareConcurrency; <- This lies
 let magic = undefined;
@@ -6,14 +72,32 @@ let work_times = []
 let i = 0;
 let thread_nr = 0;
 
-function startMiningThreadIfNeeded(result, mining_data) {
+function i2hex(i) {
+	return ('0' + i.toString(16)).slice(-2);
+}
+
+function uint8ArrToHexStr(arr) {
+	return arr.reduce(function (memo, i) { return memo + i2hex(i) }, '');
+}
+
+function hexStrToUint8Arr(hex_str) {
+	return new Uint8Array(hex_str.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+}
+
+
+function startMiningThreadIfNeeded(result, mining_data, res) {
 	if (!magic) {
 		let [result_magic, work_time] = result;
 		if (result_magic) {
 			magic = result_magic;
-			alert(`Found working magic in ${(performance.now() - start) / 1000} seconds!`);
+			// alert(`Found working magic in ${(performance.now() - start) / 1000} seconds!`);
 			let transaction = hexStrToUint8Arr(uint8ArrToHexStr(mining_data) + magic);
-			// Done mining! 
+			magic = undefined;
+			start = performance.now();
+			work_times = []
+			i = 0;
+			thread_nr = 0;
+			res(transaction);
 		} else {
 			let expected_time_left = "Calculating...";
 			if (work_time) {
@@ -32,7 +116,7 @@ function startMiningThreadIfNeeded(result, mining_data) {
 			let worker = new Worker('worker.js');
 
 			worker.addEventListener('message', function (e) {
-				startMiningThreadIfNeeded(e.data, mining_data);
+				startMiningThreadIfNeeded(e.data, mining_data, res);
 			});
 			worker.postMessage([from, to, mining_data]);
 			i++;
@@ -113,16 +197,20 @@ function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
 }
 
 function generateAndMinePixelNFT(x = 100, y = 200, color = 3) {
-	let [pk, _] = getKeyPair();
-	//let pk = hexStrToUint8Arr("03ae555efe4544f5b468de12a59dccce934d049ded9d2990ec0a4e75e727ead306");
-	let block_hash = new Uint8Array(32).map(function (_) { return 1; }); // Get from celestium-api
-	let prev_pixel_hash = new Uint8Array(28).map(function (_) { return 2; }); // Get from celestium-api
-	let pixel_nft = create_pixel_nft(block_hash, prev_pixel_hash, x, y, color, pk);
+	let prom = new Promise((resolve, reject) => {
+		let [pk, _] = getKeyPair();
+		//let pk = hexStrToUint8Arr("03ae555efe4544f5b468de12a59dccce934d049ded9d2990ec0a4e75e727ead306");
+		let block_hash = new Uint8Array(32).map(function (_) { return 1; }); // Get from celestium-api
+		let prev_pixel_hash = new Uint8Array(28).map(function (_) { return 2; }); // Get from celestium-api
+		let pixel_nft = create_pixel_nft(block_hash, prev_pixel_hash, x, y, color, pk);
 
-	start = performance.now();
-	for (let i = 0; i < desired_threads; i++) {
-		startMiningThreadIfNeeded([undefined, undefined], pixel_nft);
-	}
+		start = performance.now();
+		for (let i = 0; i < desired_threads; i++) {
+			startMiningThreadIfNeeded([undefined, undefined], pixel_nft, resolve);
+
+		}
+	});
+	return prom;
 }
 
 function getBackendItem() { // Get from celestium-api instead
@@ -173,3 +261,5 @@ function buyBackendItem() {
 		startMiningThreadIfNeeded([undefined, undefined], backend_item_transaction);
 	}
 }
+
+export { generateAndMinePixelNFT, buyBackendItem, range, intToColor, findColorIndex, intToRgb };

@@ -1,7 +1,7 @@
 importScripts('sha3.min.js');
 
 function ContainsEnoughWork(hash) {
-  return hash.startsWith("0000000");
+  return hash.startsWith("00");
 }
 
 function i2hex(i) {
