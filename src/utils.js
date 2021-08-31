@@ -43,7 +43,6 @@ function intToRgb(i) {
 
 function range(start, stop, step) {
 	if (typeof stop == 'undefined') {
-		// one param defined
 		stop = start;
 		start = 0;
 	}

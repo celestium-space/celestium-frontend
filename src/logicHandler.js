@@ -1,27 +1,32 @@
-import {findColorIndex, generateAndMinePixelNFT} from './utils'
+import { findColorIndex, generateAndMinePixelNFT } from './utils'
 
 class LogicHandler {
 
     constructor(socket, grid, controlls) {
         this.grid = grid;
         this.socket = socket;
-        this.socket.addEventListener('open', this.openHandler);
-        this.socket.addEventListener('message', this.messageHandler);
-        this.grid.onClick = this.clickPixel;
+        this.socket.addEventListener('open', (x) => { this.openHandler(x) });
+        this.socket.addEventListener('message', (x) => { this.messageHandler(x) });
+        this.grid.onClick = (x, y, rgb) => {
+            this.clickPixel(x, y, rgb);
+        };
+        //don't remove the lambda!! it will change the meaning of this inside clickPixel
     }
 
-    clickPixel(x,y,rgb) {
+    async clickPixel(x, y, rgb) {
         let index = findColorIndex(rgb);
-        let transaction = generateAndMinePixelNFT(x,y,index);
-        console.log("trans:", transaction);
-        transaction.then(x => {
-            console.log("prom:", x);
-        })
+        let transaction = await generateAndMinePixelNFT(x, y, index);
+        let arr = new Uint8Array(137);
+        arr[0] = 3;
+        for (let i = 0; i < 136; i++) {
+            arr[i + 1] = transaction[i];
+        }
+        this.socket.send(arr.buffer);
     }
 
     openHandler(evnet) {
     }
-    
+
     messageHandler(evt) {
         const view = new DataView(evt.data);
         let gridData = null;
