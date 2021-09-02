@@ -2,14 +2,15 @@ import * as Secp256k1 from 'secp256k1';
 import { sha3_256 } from './sha3.min.js';
 import { randomBytes } from 'crypto';
 
-const colorMap = [[0, 0, 0],
-[255, 0, 0],
-[0, 255, 0],
-[0, 0, 255],
-[255, 255, 0],
-[255, 0, 255],
-[0, 255, 255],
-[255, 255, 255]
+const colorMap = [
+	[0, 0, 0],
+	[255, 0, 0],
+	[0, 255, 0],
+	[0, 0, 255],
+	[255, 255, 0],
+	[255, 0, 255],
+	[0, 255, 255],
+	[255, 255, 255]
 ];
 
 function arraysEqual(a, b) {
@@ -89,9 +90,15 @@ function startMiningThreadIfNeeded(result, mining_data, res) {
 		let [result_magic, work_time] = result;
 		if (result_magic) {
 			magic = result_magic;
-			// alert(`Found working magic in ${(performance.now() - start) / 1000} seconds!`);
-			let transaction = hexStrToUint8Arr(uint8ArrToHexStr(mining_data) + magic);
-			magic = undefined;
+			console.log(`Found working magic "${result_magic}" in ${(performance.now() - start) / 1000} seconds!`);
+			let transaction = new Uint8Array(mining_data.length + magic.length);
+			for (let i = 0; i < mining_data.length; i++) {
+				transaction[i] = mining_data[i];
+			}
+			for (let i = 0; i < magic.length; i++) {
+				transaction[i + mining_data.length] = magic[i];
+			}
+			//magic = undefined;
 			start = performance.now();
 			work_times = []
 			i = 0;
@@ -143,13 +150,16 @@ function getKeyPair() {
 }
 
 function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
+	console.log(`(${x}, ${y}) -> ${c}`)
+
 	const transaction_version_len = 1;
 	const transaction_input_count_len = 1;
 	const transaction_input_block_hash_len = 32;
 	const transaction_input_message_len = 32;
 	const transaction_input_index_len = 1;
 	const transaction_output_count_len = 1;
-	const transaction_output_value_len = 32;
+	const transaction_output_value_version_len = 1;
+	const transaction_output_value_id_len = 32;
 	const transaction_output_pk_len = 33;
 
 	let transaction = new Uint8Array(
@@ -159,7 +169,8 @@ function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
 		transaction_input_message_len +
 		transaction_input_index_len +
 		transaction_output_count_len +
-		transaction_output_value_len +
+		transaction_output_value_version_len +
+		transaction_output_value_id_len +
 		transaction_output_pk_len);
 
 	if (Object.prototype.toString.call(block_hash) != "[object Uint8Array]") {
@@ -188,25 +199,26 @@ function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
 	transaction[65] = y & 0xff;
 	transaction[66] = c & 0xff;
 	transaction[67] = 1; // Transaction output count
-	let actual_nft = transaction.slice(34, 67);
+	transaction[68] = 1; // Transaction output value version
+	let actual_nft = transaction.slice(35, 68);
 	let hash = sha3_256(uint8ArrToHexStr(actual_nft));
-	transaction.set(hexStrToUint8Arr(hash), 68);
-	transaction.set(pk, 100);
+	transaction.set(hexStrToUint8Arr(hash), 69);
+	transaction.set(pk, 101);
 	return transaction;
 }
 
 function generateAndMinePixelNFT(x = 100, y = 200, color = 3) {
 	let prom = new Promise((resolve, reject) => {
 		let [pk, _] = getKeyPair();
-		//let pk = hexStrToUint8Arr("03ae555efe4544f5b468de12a59dccce934d049ded9d2990ec0a4e75e727ead306");
+		console.log(`PK: ${uint8ArrToHexStr(pk)}`);
 		let block_hash = new Uint8Array(32).map(function (_) { return 1; }); // Get from celestium-api
 		let prev_pixel_hash = new Uint8Array(28).map(function (_) { return 2; }); // Get from celestium-api
 		let pixel_nft = create_pixel_nft(block_hash, prev_pixel_hash, x, y, color, pk);
 
+		magic = undefined;
 		start = performance.now();
 		for (let i = 0; i < desired_threads; i++) {
 			startMiningThreadIfNeeded([undefined, undefined], pixel_nft, resolve);
-
 		}
 	});
 	return prom;
@@ -261,4 +273,4 @@ function buyBackendItem() {
 	}
 }
 
-export { generateAndMinePixelNFT, buyBackendItem, range, intToColor, findColorIndex, intToRgb };
+export { generateAndMinePixelNFT, buyBackendItem, range, intToColor, findColorIndex, intToRgb, uint8ArrToHexStr };
