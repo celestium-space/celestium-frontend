@@ -26,11 +26,11 @@ function App() {
 
   useEffect(() => {
     if (grid.current) {
-      grid.current.updatePixels(0, 0, 1000, 1000, range(0, 1000000).map(_ => [255, 0, 0, 255]).flat());
+      let initialGrid = range(0, 1000000).map(_ => [0, 0, 255, 255]).flat();
+      grid.current.updatePixels(0, 0, 1000, 1000, initialGrid);
     }
 
-    let initialGrid = range(0, 1000000).map(_ => [0, 0, 255, 255]).flat();
-    grid.current.updatePixels(0, 0, 1000, 1000, initialGrid);
+    console.log(controllers.current)
     let logic = new LogicHandler(grid.current, controllers.current, store.current);
     logic.get_socket();
     setState({ logic: logic });

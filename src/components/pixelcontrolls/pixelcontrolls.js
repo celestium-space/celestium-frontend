@@ -10,7 +10,8 @@ class Controlls extends Component {
 
         let click = (i) => {
             this.setState({ active: i });
-            this.onChange(i);
+            if (this.onChange)
+                this.onChange(i);
         }
         this.click = click;
     }

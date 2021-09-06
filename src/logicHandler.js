@@ -11,8 +11,8 @@ class LogicHandler {
                 this.clickPixel(x, y, rgb);
             };
         }
-        if (this.controls) {
-            this.controls.onChange = (val) => {
+        if (this.controlls) {
+            this.controlls.onChange = (val) => {
                 this.activeColor = val;
             }
         }
