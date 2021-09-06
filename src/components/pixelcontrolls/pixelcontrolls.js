@@ -6,9 +6,11 @@ class Controlls extends Component {
     constructor(props) {
         super(props);
         this.state = { active: 0 };
+        this.onChange = props.onChange;
 
         let click = (i) => {
             this.setState({ active: i });
+            this.onChange(i);
         }
         this.click = click;
     }

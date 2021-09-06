@@ -9,17 +9,16 @@ import { Link } from 'react-router-dom'
 function Navbar(props) {
     return (
         <Menu fixed='bottom' size="large" widths={3}>
-            <Menu.Item as={Link} active={props.active == 'iss'} to="/iss">
+            <Menu.Item as={Link} active={props.active == 'grid'}  to="/grid">
                 <GiMissileMech />
             </Menu.Item>
-            <Menu.Item as={Link} active={props.active == 'store'} to="/store">
+            <Menu.Item as={Link} active={props.active == 'store'}  to="/">
                 <FaStoreAlt />
             </Menu.Item>
-            <Menu.Item as={Link} active={props.active == 'setting'} to="/setting">
+            <Menu.Item as={Link} active={props.active == 'setting'}  to="/setting">
                 <AiFillSetting />
             </Menu.Item>
         </Menu>
-
     )
 }
 
