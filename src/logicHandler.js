@@ -1,5 +1,5 @@
 import { FaThumbsUp } from 'react-icons/fa';
-import { findColorIndex, generateAndMinePixelNFT } from './utils'
+import { findColorIndex, generateAndMinePixelNFT, intToColor, uint8ArrToHexStr } from './utils'
 
 class LogicHandler {
 
@@ -31,27 +31,37 @@ class LogicHandler {
 
     async clickPixel(x, y, rgb) {
         let index = findColorIndex(rgb);
-        let transaction = await generateAndMinePixelNFT(x, y, index);
-        let arr = new Uint8Array(137);
-        arr[0] = 3;
-        for (let i = 0; i < 136; i++) {
-            arr[i + 1] = transaction[i];
+        if (index == -1) {
+            alert("Please select a color first");
+        } else {
+            let transaction = await generateAndMinePixelNFT(x, y, index);
+            let arr = new Uint8Array(transaction.byteLength + 1);
+            arr[0] = 3;
+            for (let i = 0; i < transaction.byteLength; i++) {
+                arr[i + 1] = transaction[i];
+            }
+            this.socket.send(arr.buffer);
         }
-        this.socket.send(arr.buffer);
     }
 
     openHandler(evnet) {
     }
 
-    messageHandler(evt) {
-        const view = new DataView(evt.data);
+
+    async messageHandler(evt) {
         let gridData = null;
-        switch (view.getInt8(0)) {
+        let arrayBuffer = new Uint8Array(await evt.data.arrayBuffer());
+        let array = [];
+        arrayBuffer.forEach(element => {
+            array.push(element);
+        });
+        let CMD_OPCODE = array[0];
+        switch (CMD_OPCODE) {
             case 0x0:
                 if (this.grid) {
-                    gridData = view.buffer.slice(1);
-                    this.grid.updatePixels(0, 0, 1000, 1000, gridData);
-                }
+			gridData = array.slice(1).map(c => intToColor(c)).flat();
+			this.grid.updatePixels(0, 0, 1000, 1000, gridData);
+		}
                 break;
             case 0x1:
                 if (this.gird) {

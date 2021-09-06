@@ -1,7 +1,7 @@
 importScripts('sha3.min.js');
 
 function ContainsEnoughWork(hash) {
-  return hash.startsWith("00");
+  return hash.startsWith("0000");
 }
 
 function i2hex(i) {
@@ -9,10 +9,10 @@ function i2hex(i) {
 }
 
 function IntToMagicStr(input) {
-  let result = i2hex(input & 0xff);
+  let result = [input & 0xff];
   input >>= 7;
   while (input > 0) {
-    result = i2hex(0x80 + (input & 0x7f)) + result;
+    result.unshift(0x80 + (input & 0x7f));
     input >>= 7;
   }
   return result;
@@ -22,9 +22,14 @@ self.addEventListener('message', function (e) {
   let start = performance.now();
   let [magic, to, pixel_nft] = e.data;
   let hash = undefined;
-  let pixel_nft_hex_str = pixel_nft.reduce(function (memo, i) { return memo + i2hex(i) }, '');
+  //let pixel_nft_hex_str = pixel_nft.reduce(function (memo, i) { return memo + i2hex(i) }, '');
+  //console.log(`Pixel nft hex str: ${pixel_nft_hex_str}`);
+  let pixel_nft_array = [];
+  for (let i = 0; i < pixel_nft.length; i++) {
+    pixel_nft_array.push(pixel_nft[i]);
+  }
   while (magic < to) {
-    hash = sha3_256(pixel_nft_hex_str + IntToMagicStr(magic));
+    hash = sha3_256(pixel_nft_array.concat(IntToMagicStr(magic)));
     if (ContainsEnoughWork(hash)) {
       self.postMessage([IntToMagicStr(magic), performance.now() - start]);
       self.close();
