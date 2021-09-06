@@ -2,31 +2,46 @@ import { FaThumbsUp } from 'react-icons/fa';
 import { findColorIndex, generateAndMinePixelNFT, intToColor, uint8ArrToHexStr } from './utils'
 
 class LogicHandler {
-
-    constructor(socket, grid, controlls, store) {
+    constructor(grid, controls, store) {
         this.grid = grid;
-        this.socket = socket;
-        this.controlls = controlls;
+        this.controlls = controls;
         this.balance = 0; //how do??
-        this.socket.addEventListener('open', (x) => { this.openHandler(x) });
-        this.socket.addEventListener('message', (x) => { this.messageHandler(x) });
         if (this.grid) {
             this.grid.onClick = (x, y, rgb) => {
                 this.clickPixel(x, y, rgb);
             };
         }
-        if (this.controlls) {
-            this.controlls.onChange = (val) => {
+        if (this.controls) {
+            this.controls.onChange = (val) => {
                 this.activeColor = val;
             }
         }
-        //don't remove the lambda!! it will change the meaning of this inside clickPixel
         this.store = store;
         if (this.store)
             this.store.onClick = (x) => { this.storeBuy(x) };
     }
 
     storeBuy(x) {
+    }
+
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async get_socket() {
+        if (!this.socket || this.socket.readyState == WebSocket.CLOSING || this.socket.readyState == WebSocket.CLOSED) {
+            let socket_addr = 'wss://api.celestium.hutli.org';
+            console.log(`Connecting to "${socket_addr}"...`);
+            this.socket = new WebSocket(socket_addr);
+            this.socket.addEventListener('open', (x) => { this.openHandler(x) });
+            this.socket.addEventListener('message', (x) => { this.messageHandler(x) });
+            while (this.socket.readyState == WebSocket.CONNECTING) {
+                console.log("Connecting...");
+                await this.sleep(1000);
+            }
+            console.log("Connected!");
+        }
+        return this.socket;
     }
 
     async clickPixel(x, y, rgb) {
@@ -40,7 +55,9 @@ class LogicHandler {
             for (let i = 0; i < transaction.byteLength; i++) {
                 arr[i + 1] = transaction[i];
             }
-            this.socket.send(arr.buffer);
+            console.log(`Sending transaction: ${uint8ArrToHexStr(arr)}`);
+            let socket = await this.get_socket();
+            socket.send(arr.buffer);
         }
     }
 
@@ -59,9 +76,9 @@ class LogicHandler {
         switch (CMD_OPCODE) {
             case 0x0:
                 if (this.grid) {
-			gridData = array.slice(1).map(c => intToColor(c)).flat();
-			this.grid.updatePixels(0, 0, 1000, 1000, gridData);
-		}
+                    gridData = array.slice(1).map(c => intToColor(c)).flat();
+                    this.grid.updatePixels(0, 0, 1000, 1000, gridData);
+                }
                 break;
             case 0x1:
                 if (this.gird) {

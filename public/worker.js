@@ -9,7 +9,7 @@ function i2hex(i) {
 }
 
 function IntToMagicStr(input) {
-  let result = [input & 0xff];
+  let result = [input & 0x7f];
   input >>= 7;
   while (input > 0) {
     result.unshift(0x80 + (input & 0x7f));
