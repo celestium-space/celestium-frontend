@@ -90,7 +90,6 @@ function startMiningThreadIfNeeded(result, mining_data, res) {
 		let [result_magic, work_time] = result;
 		if (result_magic) {
 			magic = result_magic;
-			console.log(`Found working magic "${result_magic}" in ${(performance.now() - start) / 1000} seconds!`);
 			let transaction = new Uint8Array(mining_data.length + magic.length);
 			for (let i = 0; i < mining_data.length; i++) {
 				transaction[i] = mining_data[i];
@@ -118,7 +117,6 @@ function startMiningThreadIfNeeded(result, mining_data, res) {
 			let from = i * thread_work;
 			let to = (i + 1) * thread_work;
 
-			console.log(`Starting worker thread ${thread_nr++} - mining from 0x${from.toString(16)} to 0x${to.toString(16)} - Expected seconds left: ${expected_time_left}`);
 			let worker = new Worker('worker.js');
 
 			worker.addEventListener('message', function (e) {
@@ -150,8 +148,6 @@ function getKeyPair() {
 }
 
 function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
-	console.log(`(${x}, ${y}) -> ${c}`)
-
 	const transaction_version_len = 1;
 	const transaction_input_count_len = 1;
 	const transaction_input_block_hash_len = 32;
@@ -207,13 +203,10 @@ function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
 	return transaction;
 }
 
-function generateAndMinePixelNFT(x = 100, y = 200, color = 3) {
+function generateAndMinePixelNFT(x = 100, y = 200, color = 3, block_hash, prev_pixel_hash) {
 	let prom = new Promise((resolve, reject) => {
 		let [pk, _] = getKeyPair();
-		console.log(`PK: ${uint8ArrToHexStr(pk)}`);
-		let block_hash = new Uint8Array(32).map(function (_) { return 1; }); // Get from celestium-api
-		let prev_pixel_hash = new Uint8Array(28).map(function (_) { return 2; }); // Get from celestium-api
-		let pixel_nft = create_pixel_nft(block_hash, prev_pixel_hash, x, y, color, pk);
+		let pixel_nft = create_pixel_nft(Uint8Array.from(block_hash), Uint8Array.from(prev_pixel_hash), x, y, color, pk);
 
 		magic = undefined;
 		start = performance.now();

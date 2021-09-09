@@ -18,7 +18,6 @@ class Grid extends Component {
             let canvas = this.canvasRef.current;
             let ctx = canvas.getContext('2d');
             let array = new Uint8ClampedArray(data);
-            console.log(`W: ${width} | H: ${height} | A: ${array.byteLength}`);
             let k = new ImageData(array, width, height);
             ctx.putImageData(k, x, y);
         }
