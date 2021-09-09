@@ -1,7 +1,7 @@
 import React, { Component, useEffect, useRef, useState, createRef } from 'react';
 import { range, intToRgb } from '../../utils';
 
-class Controlls extends Component {
+class PixelControls extends Component {
 
     constructor(props) {
         super(props);
@@ -26,4 +26,4 @@ class Controlls extends Component {
     }
 }
 
-export default Controlls;
+export default PixelControls;

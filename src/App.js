@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import { generateAndMinePixelNFT, buyBackendItem, range } from './utils'
 import Grid from './components/grid/grid'
-import Controlls from './components/pixelcontrolls/pixelcontrolls';
+import PixelControls from './components/pixelcontrols/pixelcontrols';
 import LogicHandler from './logicHandler'
 import Store from './components/store/store'
 import Navbar from './components/navbar/navbar';
@@ -19,7 +19,7 @@ function App() {
 
   let [state, setState] = useState({ logic: null });
   let grid = useRef();
-  let controllers = useRef();
+  let pixelControls = useRef();
   let location = useLocation();
   let store = useRef();
   let logic = null;
@@ -30,9 +30,9 @@ function App() {
       grid.current.updatePixels(0, 0, 1000, 1000, initialGrid);
     }
 
-    console.log(controllers.current)
-    let logic = new LogicHandler(grid.current, controllers.current, store.current);
-    logic.get_socket();
+    console.log(pixelControls.current);
+    let logic = new LogicHandler(grid.current, pixelControls.current, store.current);
+    logic.getSocket();
     setState({ logic: logic });
   }, [location]);
 
@@ -41,7 +41,7 @@ function App() {
       <Route path="/grid">
         <Navbar active="grid"></Navbar>
         <Grid ref={grid}></Grid>
-        <Controlls ref={controllers}></Controlls>
+        <PixelControls ref={pixelControls}></PixelControls>
       </Route>
       <Route path="/">
         <Navbar active="store"></Navbar>
