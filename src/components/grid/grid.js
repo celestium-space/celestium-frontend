@@ -33,7 +33,6 @@ class Grid extends Component {
             onClick={(event) => {
                 let canvas = this.canvasRef.current;
                 let [x, y] = getCursorPosition(canvas, event);
-                console.log("clicked x,y:", x, y);
                 let ctx = canvas.getContext('2d');
                 let data = ctx.getImageData(x, y, 1, 1).data;
                 let rgb = [data[0], data[1], data[2]];

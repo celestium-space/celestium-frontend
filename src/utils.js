@@ -266,4 +266,4 @@ function buyBackendItem() {
 	}
 }
 
-export { generateAndMinePixelNFT, buyBackendItem, range, intToColor, findColorIndex, intToRgb, uint8ArrToHexStr };
+export { generateAndMinePixelNFT, buyBackendItem, range, intToColor, findColorIndex, intToRgb, uint8ArrToHexStr, getKeyPair };

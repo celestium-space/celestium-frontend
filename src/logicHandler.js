@@ -1,5 +1,5 @@
-import { FaThumbsUp } from 'react-icons/fa';
-import { findColorIndex, generateAndMinePixelNFT, intToColor, uint8ArrToHexStr } from './utils'
+import { GiConsoleController } from 'react-icons/gi';
+import { findColorIndex, generateAndMinePixelNFT, intToColor, getKeyPair } from './utils'
 
 const CMDOpcodes = {
     ERROR: 0x00,
@@ -41,11 +41,17 @@ class LogicHandler {
     }
 
     async storeBuy(item_hash) {
+        item_hash = [0x78, 0x38, 0x5a, 0x69, 0xab, 0x4e, 0x52, 0x5a, 0xd4, 0x65, 0x6e, 0xe3, 0x5d, 0xe0, 0x02, 0x93, 0x3e, 0xfc, 0xd2, 0x54, 0x3c, 0x1c, 0x5d, 0xf3, 0x3c, 0x9c, 0x42, 0x31, 0x78, 0xc7, 0x41, 0xe9];
         let socket = await this.getSocket();
-        let arr = new Uint8Array(33);
+        let arr = new Uint8Array(66);
         arr[0] = CMDOpcodes.BUY_STORE_ITEM;
         for (let i = 0; i < 32; i++) {
             arr[i + 1] = item_hash[i];
+        }
+
+        let [pk, _] = getKeyPair();
+        for (let i = 0; i < 33; i++) {
+            arr[i + 33] = pk[i];
         }
         socket.send(arr);
     }
@@ -56,7 +62,7 @@ class LogicHandler {
 
     async getSocket() {
         if (!this.socket || this.socket.readyState == WebSocket.CLOSING || this.socket.readyState == WebSocket.CLOSED) {
-            let socket_addr = 'wss://api.celestium.hutli.org';
+            let socket_addr = 'wss://api.cryptocanvas.space';
             console.log(`Connecting to "${socket_addr}"...`);
             this.socket = new WebSocket(socket_addr);
             this.socket.addEventListener('open', (x) => { this.openHandler(x) });
@@ -72,9 +78,9 @@ class LogicHandler {
     async clickPixel(x, y, rgb) {
         let index = findColorIndex(rgb);
         if (index == -1) {
-            index = 1;
+            index = 7;
         } else {
-            index = 1;
+            index = 7;
         }
         this.getSocket().then(socket => {
             this.mining_data = [x, y, index];
