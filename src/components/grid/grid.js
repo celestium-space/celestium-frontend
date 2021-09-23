@@ -1,4 +1,6 @@
 import React, { Component, useEffect, useRef, useState, createRef } from 'react'
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
@@ -25,27 +27,32 @@ class Grid extends Component {
 
 
     render() {
-        return <canvas
-            id="canvas"
-            ref={this.canvasRef}
-            width={1000}
-            height={1000}
-            onClick={(event) => {
-                let canvas = this.canvasRef.current;
-                let [x, y] = getCursorPosition(canvas, event);
-                let ctx = canvas.getContext('2d');
-                let data = ctx.getImageData(x, y, 1, 1).data;
-                let rgb = [data[0], data[1], data[2]];
-                if (this.onClick) {
-                    this.onClick(Math.round(x), Math.round(y), rgb);
-                }
-            }}
-            style={{
-                // border: '2px solid #000',
-                marginTop: 10,
-                marginLeft: 10,
-            }}
-        ></canvas >;
+        return
+        <div>
+            <Popup trigger={<button> Trigger</button>} position="right center">
+                <div>Popup content here !!</div>
+            </Popup><canvas
+                id="canvas"
+                ref={this.canvasRef}
+                width={1000}
+                height={1000}
+                onClick={(event) => {
+                    let canvas = this.canvasRef.current;
+                    let [x, y] = getCursorPosition(canvas, event);
+                    let ctx = canvas.getContext('2d');
+                    let data = ctx.getImageData(x, y, 1, 1).data;
+                    let rgb = [data[0], data[1], data[2]];
+                    if (this.onClick) {
+                        this.onClick(Math.round(x), Math.round(y), rgb);
+                    }
+                }}
+                style={{
+                    // border: '2px solid #000',
+                    marginTop: 10,
+                    marginLeft: 10,
+                }}
+            ></canvas>
+        </div>;
     }
 }
 
