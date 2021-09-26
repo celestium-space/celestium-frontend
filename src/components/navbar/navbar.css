@@ -1,0 +1,19 @@
+.navbar {
+  background-color: #333333;
+  width: 100%;
+  position: fixed;
+  bottom: 0px;
+}
+
+.menuContainer {
+  width: 172.02px;
+  margin: 0 auto;
+}
+
+.menuIcon {
+  font-size: 30px;
+}
+
+#semanticNavbar {
+  background-color: #333333;
+}
