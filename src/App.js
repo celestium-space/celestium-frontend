@@ -13,6 +13,7 @@ import PixelControls from './components/pixelcontrols/pixelcontrols';
 import LogicHandler from './logicHandler'
 import Store from './components/store/store'
 import Navbar from './components/navbar/navbar';
+import './App.css';
 
 function App() {
   window.app_handle = this;
@@ -39,13 +40,17 @@ function App() {
   return (
     <Switch>
       <Route path="/grid">
+        <div className="content">
+          <Grid ref={grid}></Grid>
+          <PixelControls ref={pixelControls}></PixelControls>
+        </div>
         <Navbar active="grid"></Navbar>
-        <Grid ref={grid}></Grid>
-        <PixelControls ref={pixelControls}></PixelControls>
       </Route>
       <Route path="/">
-        <Navbar active="store"></Navbar>
-        <Store ref={store} logic={logic}></Store>
+        <div className="content">
+          <Navbar active="store"></Navbar>
+          <Store ref={store} logic={logic}></Store>
+        </div>
       </Route>
     </Switch>
   );

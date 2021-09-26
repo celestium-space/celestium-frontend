@@ -1,0 +1,9 @@
+body,
+html {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: black;
+}
+
+.content {
+  height: calc(100% - 100px);
+}
