@@ -1,13 +1,6 @@
-import React, {
-  Component,
-  useEffect,
-  useRef,
-  useState,
-  createRef,
-} from "react";
-import { range, intToRgb } from "../../utils";
-import { List, Grid, Segment } from "semantic-ui-react";
-import StoreItem from "./storeitem";
+import React, { Component } from "react";
+import { Grid } from "semantic-ui-react";
+import StoreItem from "./StoreItem";
 import _ from "lodash";
 
 class Store extends Component {

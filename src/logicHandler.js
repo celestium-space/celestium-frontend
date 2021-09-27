@@ -96,13 +96,8 @@ class LogicHandler {
     return this.socket;
   }
 
-  async clickPixel(x, y, rgb) {
-    let index = findColorIndex(rgb);
-    if (index == -1) {
-      index = 7;
-    } else {
-      index = 7;
-    }
+  async clickPixel(x, y, current_rgb) {
+    let index = this.pixelControls.state.active;
     this.getSocket().then((socket) => {
       this.mining_data = [x, y, index];
       let to_send = Uint8Array.from([

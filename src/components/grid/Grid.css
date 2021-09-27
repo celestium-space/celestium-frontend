@@ -1,0 +1,17 @@
+.gridContainer {
+  display: flex; /* IMPORTANT! For some reason... */
+  right: 0;
+  margin-left: calc(100vw / 2 - (100vh - 42.7px) / 2 - 50px);
+  margin-right: calc(100vw / 2 - (100vh - 42.7px) / 2);
+  height: calc(100vh - 57.85px);
+}
+
+.controls {
+  padding-right: 5px;
+  width: 50px;
+  height: calc(100vh - 57.85px);
+}
+
+.cryptoCanvas {
+  image-rendering: pixelated;
+}

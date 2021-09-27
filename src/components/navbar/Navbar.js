@@ -3,7 +3,7 @@ import { Menu } from "semantic-ui-react";
 import { GiRingedPlanet } from "react-icons/gi";
 import { IoColorPalette, IoWallet } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import "./navbar.css";
+import "./Navbar.css";
 
 function Navbar(props) {
   return (

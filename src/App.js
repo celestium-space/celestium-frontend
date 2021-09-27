@@ -1,18 +1,12 @@
 import * as React from "react";
-import { useState, useEffect, useRef, createRef } from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  withRouter,
-  useLocation,
-} from "react-router-dom";
-import { generateAndMinePixelNFT, buyBackendItem, range } from "./utils";
-import Grid from "./components/grid/grid";
-import PixelControls from "./components/pixelcontrols/pixelcontrols";
+import { useState, useEffect, useRef } from "react";
+import { Switch, Route, useLocation } from "react-router-dom";
+import { range } from "./utils";
+import Grid from "./components/grid/Grid";
+import PixelControls from "./components/pixelcontrols/PixelControls";
 import LogicHandler from "./logicHandler";
-import Store from "./components/store/store";
-import Navbar from "./components/navbar/navbar";
+import Store from "./components/store/Store";
+import Navbar from "./components/navbar/Navbar";
 import "./App.css";
 
 function App() {
@@ -33,7 +27,6 @@ function App() {
       grid.current.updatePixels(0, 0, 1000, 1000, initialGrid);
     }
 
-    console.log(pixelControls.current);
     let logic = new LogicHandler(
       grid.current,
       pixelControls.current,
@@ -45,16 +38,16 @@ function App() {
 
   return (
     <Switch>
-      <Route path="/">
-        <Grid ref={grid}></Grid>
-        <PixelControls ref={pixelControls}></PixelControls>
-        <Navbar active="grid"></Navbar>
-      </Route>
       <Route path="/store">
         <div className="content">
           <Store ref={store} logic={logic}></Store>
         </div>
         <Navbar active="store"></Navbar>
+      </Route>
+      <Route path="/">
+        <Grid ref={grid}></Grid>
+        <PixelControls ref={pixelControls}></PixelControls>
+        <Navbar active="grid"></Navbar>
       </Route>
     </Switch>
   );

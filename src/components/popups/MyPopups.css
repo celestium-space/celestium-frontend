@@ -71,27 +71,3 @@ html[data-theme="dark"] .popup-arrow > svg {
   background: #ffffff;
   border-radius: 18px;
 }
-
-.gridContainer {
-  display: flex;
-  right: 0;
-  margin-left: calc(100vw / 2 - (100vh - 42.7px) / 2 - 50px);
-  margin-right: calc(100vw / 2 - (100vh - 42.7px) / 2);
-  height: calc(100vh - 57.85px);
-}
-
-.controls {
-  width: 50px;
-  height: calc(100vh - 57.85px);
-}
-
-.canvasContainer {
-  flex: 1;
-  width: calc(100vh - 57.85px);
-  height: calc(100vh - 57.85px);
-  overflow: hidden;
-}
-
-.cryptoCanvas {
-  image-rendering: pixelated;
-}
