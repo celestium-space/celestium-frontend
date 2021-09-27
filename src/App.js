@@ -8,6 +8,7 @@ import LogicHandler from "./logicHandler";
 import Store from "./components/store/Store";
 import Navbar from "./components/navbar/Navbar";
 import "./App.css";
+import Wallet from "./components/wallet/Wallet";
 
 function App() {
   window.app_handle = this;
@@ -43,6 +44,12 @@ function App() {
           <Store ref={store} logic={logic}></Store>
         </div>
         <Navbar active="store"></Navbar>
+      </Route>
+      <Route path="/wallet">
+        <div className="content">
+          <Wallet></Wallet>
+        </div>
+        <Navbar active="wallet"></Navbar>
       </Route>
       <Route path="/">
         <Grid ref={grid}></Grid>
