@@ -1,11 +1,11 @@
-importScripts('sha3.min.js');
+importScripts("sha3.min.js");
 
 function ContainsEnoughWork(hash) {
   return hash.startsWith("0000");
 }
 
 function i2hex(i) {
-  return ('0' + i.toString(16)).slice(-2);
+  return ("0" + i.toString(16)).slice(-2);
 }
 
 function IntToMagicStr(input) {
@@ -18,7 +18,7 @@ function IntToMagicStr(input) {
   return result;
 }
 
-self.addEventListener('message', function (e) {
+self.addEventListener("message", function (e) {
   let start = performance.now();
   let [magic, to, pixel_nft] = e.data;
   let hash = undefined;
