@@ -9,20 +9,13 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./grid.css";
 
-function getCursorPosition(canvas, event) {
-  const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  return [x, y];
-}
-
 class Grid extends Component {
   constructor(props) {
     super(props);
     this.canvasRef = createRef();
     this.onClick = props.onClick;
 
-    this.scale = 100;
+    this.scale = 1;
     this.scaleMultiplier = 0.8;
     this.startDragOffset = {};
     this.mouseDown = false;
@@ -36,8 +29,11 @@ class Grid extends Component {
     };
   }
 
-  componentDidMount() {
-    this.canvasRef.current.getContext("2d").imageSmoothingEnabled = false;
+  getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (event.clientX - rect.left) * (1 / this.scale);
+    const y = (event.clientY - rect.top) * (1 / this.scale);
+    return [x, y];
   }
 
   helpMenu() {
@@ -46,77 +42,47 @@ class Grid extends Component {
     }
   }
 
-  draw(scale, translatePos) {
-    let canvas = this.canvasRef.current;
-    let context = canvas.getContext("2d");
-
-    context.translate(translatePos.x, translatePos.y);
-    context.scale(scale, scale);
-    context.save();
-  }
-
-  onMouseDown(evt) {
-    this.mouseDown = true;
-    startDragOffset.x = evt.clientX - translatePos.x;
-    startDragOffset.y = evt.clientY - translatePos.y;
-  }
-
-  onMouseUp(evt) {
-    this.mouseDown = false;
-  }
-
-  onMouseover(evt) {
-    this.mouseDown = false;
-  }
-
-  onMouseOut(evt) {
-    this.mouseDown = false;
-  }
-
-  onMouseMove(evt) {
-    if (this.mouseDown) {
-      this.translatePos.x = evt.clientX - this.startDragOffset.x;
-      this.translatePos.y = evt.clientY - this.startDragOffset.y;
-      draw(this.scale, this.translatePos);
-    }
-  }
-
-  // add button event listeners
   zoomIn() {
     let crypto_canvas = document.getElementsByClassName("cryptoCanvas")[0];
     this.scale *= 1.25;
-    crypto_canvas.style.height = `${this.scale}%`;
-    crypto_canvas.style.width = `${this.scale}%`;
+    crypto_canvas.style.height = `${this.scale * 100}%`;
+    crypto_canvas.style.width = `${this.scale * 100}%`;
   }
 
   zoomOut() {
     let crypto_canvas = document.getElementsByClassName("cryptoCanvas")[0];
     this.scale *= 0.8;
-    crypto_canvas.style.height = `${this.scale}%`;
-    crypto_canvas.style.width = `${this.scale}%`;
+    crypto_canvas.style.height = `${this.scael * 100}%`;
+    crypto_canvas.style.width = `${this.scale * 100}%`;
   }
 
   render() {
     return (
-      <div>
-        <input
-          type="button"
-          value="+"
-          onClick={(event) => {
-            this.zoomIn();
-          }}
-        ></input>
-        <input
-          type="button"
-          value="-"
-          onClick={(event) => {
-            this.zoomOut();
-          }}
-        ></input>
+      <div className="gridContainer">
+        <div className="ui vertical controls">
+          <button
+            className="inverted circular ui icon button topButton"
+            onClick={(event) => {
+              this.zoomIn();
+            }}
+          >
+            <i className="icon plus"></i>
+          </button>
+          <button
+            className="inverted circular ui icon button"
+            onClick={(event) => {
+              this.zoomOut();
+            }}
+          >
+            <i className="icon minus"></i>
+          </button>
+        </div>
         <div className="canvasContainer">
           <canvas
             className="cryptoCanvas"
             id="canvas"
+            width="1000px"
+            height="1000px"
             style={{
               width: "100%",
               height: "100%",
@@ -124,7 +90,7 @@ class Grid extends Component {
             ref={this.canvasRef}
             onClick={(event) => {
               let canvas = this.canvasRef.current;
-              let [x, y] = getCursorPosition(canvas, event);
+              let [x, y] = this.getCursorPosition(canvas, event);
               let ctx = canvas.getContext("2d");
               let data = ctx.getImageData(x, y, 1, 1).data;
               let rgb = [data[0], data[1], data[2]];
