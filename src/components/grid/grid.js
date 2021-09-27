@@ -137,11 +137,6 @@ class Grid extends Component {
               this.onClick(Math.round(x), Math.round(y), rgb);
             }
           }}
-          style={{
-            // border: '2px solid #000',
-            marginTop: 10,
-            marginLeft: 10,
-          }}
         ></canvas>
         <Popup open={this.helpMenu()} modal nested>
           {(close) => (

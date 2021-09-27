@@ -73,5 +73,7 @@ html[data-theme="dark"] .popup-arrow > svg {
 }
 
 .cryptoCanvas {
-  height: 80vh;
+  margin-left: calc(100vw / 2 - (100vh - 57.85px));
+  margin-right: auto;
+  height: calc(100vh - 57.85px);
 }
