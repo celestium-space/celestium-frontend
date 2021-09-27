@@ -52,7 +52,7 @@ class Grid extends Component {
   zoomOut() {
     let crypto_canvas = document.getElementsByClassName("cryptoCanvas")[0];
     this.scale *= 0.8;
-    crypto_canvas.style.height = `${this.scael * 100}%`;
+    crypto_canvas.style.height = `${this.scale * 100}%`;
     crypto_canvas.style.width = `${this.scale * 100}%`;
   }
 
