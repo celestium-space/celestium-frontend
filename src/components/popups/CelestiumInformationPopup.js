@@ -18,7 +18,7 @@ function MyPopup(props) {
           </div>
           <div className="header2">16:42.00 EST</div>
           <div className="header3">September 30, 2021</div>
-          <div className="content">
+          <div className="content" style={{ width: "280px" }}>
             Click anywhere on the canvas to contribute, by placing your pixel
             and mining a Celestium Token (C)
           </div>

@@ -3,13 +3,15 @@ import "reactjs-popup/dist/index.css";
 import "./Grid.css";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import CelestiumInformationPopup from "../popups/CelestiumInformationPopup";
-import MiningConfirmPopup from "../popups/MiningConfirmPopup";
+import PixelMiningPopup from "../popups/PixelMiningPopup";
 
 class Grid extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      confirmMiningPopupState: false,
+      startMiningPopup: false,
+      confirmMiningPopup: false,
+      doneMiningPopup: false,
       clickedX: 0,
       clickedY: 0,
     };
@@ -25,6 +27,18 @@ class Grid extends Component {
       let k = new ImageData(array, width, height);
       ctx.putImageData(k, x, y);
     };
+  }
+
+  doneMining() {
+    this.setState({
+      confirmMiningPopup: false,
+      startMiningPopup: false,
+      doneMiningPopup: true,
+    });
+  }
+
+  startMining() {
+    this.setState({ confirmMiningPopup: true });
   }
 
   mine() {
@@ -98,7 +112,7 @@ class Grid extends Component {
                   onMouseUp={(event) => {
                     if (!this.moved) {
                       this.setState({
-                        confirmMiningPopupState: true,
+                        startMiningPopup: true,
                         clickedX: event.clientX,
                         clickedY: event.clientY,
                       });
@@ -109,17 +123,25 @@ class Grid extends Component {
             </React.Fragment>
           )}
         </TransformWrapper>
-        <MiningConfirmPopup
+        <PixelMiningPopup
+          clickedX={this.state.clickedX}
+          clickedY={this.state.clickedY}
           onConfirm={() => {
-            this.setState({ confirmOpen: true });
             this.mine();
           }}
-          confirmOpen={this.state.confirmOpen}
-          open={this.state.confirmMiningPopupState}
-          onClose={() => {
-            this.setState({ confirmMiningPopupState: false });
+          startMiningPopup={this.state.startMiningPopup}
+          confirmMiningPopup={this.state.confirmMiningPopup}
+          doneMiningPopup={this.state.doneMiningPopup}
+          onStartMiningPopupClose={() => {
+            this.setState({ startMiningPopup: false });
           }}
-        ></MiningConfirmPopup>
+          onConfirmMiningPopupClose={() => {
+            this.setState({ confirmMiningPopup: false });
+          }}
+          onDoneMiningPopupClose={() => {
+            this.setState({ doneMiningPopup: false });
+          }}
+        ></PixelMiningPopup>
         <CelestiumInformationPopup open={true}></CelestiumInformationPopup>
       </div>
     );

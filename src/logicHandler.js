@@ -155,6 +155,9 @@ class LogicHandler {
       case CMDOpcodes.PIXEL_DATA:
         if (this.mining_data) {
           console.log("Got pixel data, continuing NFT creation");
+
+          this.grid.startMining();
+
           let [x, y, index] = this.mining_data;
           let pixel_hash = array.slice(1, 29);
           let block_hash = array.slice(29);
@@ -176,6 +179,8 @@ class LogicHandler {
           socket.send(arr.buffer);
 
           this.mining_data = undefined;
+
+          this.grid.doneMining();
         } else {
           console.warn("Got unexpected pixel data, ignoring");
         }

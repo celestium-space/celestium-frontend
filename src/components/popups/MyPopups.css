@@ -32,19 +32,25 @@ html[data-theme="dark"] .popup-arrow > svg {
   text-align: center;
   padding-top: 20px;
 }
+
+.modal > .content > b,
 .modal > .header2 {
   width: 100%;
   font-weight: bold;
   font-size: 22px;
   text-align: center;
   padding-top: 2px;
+  font-weight: normal;
 }
+
+.modal > .content > i,
 .modal > .header3 {
   width: 100%;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
   padding-bottom: 2px;
+  font-style: normal;
 }
 .modal > .content {
   margin: auto;
