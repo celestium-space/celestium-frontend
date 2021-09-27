@@ -7,7 +7,6 @@ import {
 } from "./utils";
 
 const CMDOpcodes = {
-  ERROR: 0x00,
   GET_ENTIRE_IMAGE: 0x01,
   ENTIRE_IMAGE: 0x02,
   UPDATE_PIXEL: 0x03,
@@ -67,6 +66,21 @@ class LogicHandler {
       arr[i + 33] = pk[i];
     }
     socket.send(arr);
+  }
+
+  async getStoreItems(from, to) {
+      // build payload bytes
+      let arr = new Uint8Array(17);
+      arr[0] = CMDOpcodes.GET_STORE_ITEMS;
+      arr[1] = (0xff000000 & from) >> 24
+      arr[2] = (0x00ff0000 & from) >> 16
+      arr[3] = (0x0000ff00 & from) >> 8
+      arr[4] = (0x000000ff & from)
+      arr[5] = (0xff000000 & to) >> 24
+      arr[6] = (0x00ff0000 & to) >> 16
+      arr[7] = (0x0000ff00 & to) >> 8
+      arr[8] = (0x000000ff & to)
+      socket.send(arr);
   }
 
   sleep(ms) {
