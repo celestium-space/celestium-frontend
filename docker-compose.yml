@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  api:
+    image: registry.gitlab.com/artificialmind/mind-future/celestium/celestium-api:dev
+    volumes:
+      - celestium-api-data:/data:rw
+    environment:
+      MONGODB_CONNECTION_STRING: "mongodb://mongo/"
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - celestium-mongo-data:/data/db:rw
+    environment:
+      MONGO_INITDB_DATABASE: celestium
+    command: --quiet --logpath /dev/null
+
+  frontend:
+    build: .
+    volumes:
+      - ./:/app:rw
+    ports:
+      - 8080:3000
+    depends_on:
+      - api
+    command: npm run start
+
+
+volumes:
+  celestium-api-data:
+  celestium-mongo-data:
