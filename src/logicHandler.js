@@ -5,6 +5,15 @@ import {
   intToColor,
   getKeyPair,
 } from "./utils";
+import env from "@beam-australia/react-env";
+
+const default_address = (
+  window.location.protocol.replace(/^http/, 'ws')
+  + 'api.'
+  + window.location.hostname
+  + (window.location.port ? ":" + window.location.port : "")
+);
+const socket_address = env("SOCKET_ADDRESS") || default_address;
 
 const CMDOpcodes = {
   GET_ENTIRE_IMAGE: 0x01,
@@ -93,9 +102,8 @@ class LogicHandler {
       this.socket.readyState == WebSocket.CLOSING ||
       this.socket.readyState == WebSocket.CLOSED
     ) {
-      let socket_addr = "wss://api.cryptocanvas.space";
-      console.log(`Connecting to "${socket_addr}"...`);
-      this.socket = new WebSocket(socket_addr);
+      console.log(`Connecting to "${socket_address}"...`);
+      this.socket = new WebSocket(socket_address);
       this.socket.addEventListener("open", (x) => {
         this.openHandler(x);
       });

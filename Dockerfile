@@ -13,7 +13,9 @@ RUN npm install --global http-server
 # the application
 COPY src ./src
 COPY public ./public
+
+# fail build if app does not build
 RUN npm run build
 
-# run it
-CMD http-server /app/build
+# build again, to inject runtime env vars
+CMD npm run build && http-server /app/build
