@@ -27,8 +27,8 @@ services:
       - ./:/app:rw
     ports:
       - 3000:3000
-        # environment:
-      # REACT_APP_SOCKET_ADDRESS: "ws://localhost:8081"
+    environment:
+      REACT_APP_SOCKET_ADDRESS: "ws://localhost:8081"
     depends_on:
       - api
     command: npm run start
