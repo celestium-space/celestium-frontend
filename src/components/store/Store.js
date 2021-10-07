@@ -1,30 +1,38 @@
 import React, { Component } from "react";
-import { Grid } from "semantic-ui-react";
-import StoreItem from "./StoreItem";
 import _ from "lodash";
+import BuyPopup from "../popups/BuyPopup";
+import "./Store.css";
 
 class Store extends Component {
   constructor(props) {
     super(props);
-    this.columns = 7;
-    console.log(props.logic);
-    this.onClick = props.onClick;
+    this.state = {
+      imageUrl: "/images/loading.png",
+    };
+  }
+
+  gotStoreItemData(image_url) {
+    this.setState({ imageUrl: image_url });
   }
 
   render() {
     return (
-      <Grid doubling columns={this.columns}>
-        {_.range(1, this.columns + 1).map((x) =>
-          _.range(1, this.columns + 1).map((y) => (
-            <Grid.Column key={(x * this.columns + y).toString()}>
-              <StoreItem
-                id={x * this.columns + y}
-                onClick={(x) => this.onClick(x)}
-              ></StoreItem>
-            </Grid.Column>
-          ))
-        )}
-      </Grid>
+      <div>
+        <BuyPopup
+          onClick={(name) => {
+            this.onClick(name);
+          }}
+          imageUrl={this.state.imageUrl}
+          resetImageUrl={() => {
+            this.setState({ imageUrl: "/images/loading.png" });
+          }}
+        ></BuyPopup>
+        <iframe
+          id="asterankIframe"
+          style={{ height: "calc(100vh - 10px)", width: "100%" }}
+          src="https://cryptocanvas.space/asterank"
+        ></iframe>
+      </div>
     );
   }
 }

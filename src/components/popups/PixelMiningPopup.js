@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import { GiRingedPlanet } from "react-icons/gi";
-import { IoColorPalette, IoWallet } from "react-icons/io5";
+import { IoWallet } from "react-icons/io5";
 
 function PixelMiningPopup(props) {
+  let [rememberConfirm, setRememberConfirm] = useState(false);
+  let [confirmMiningPopup, setConfirmMiningPopup] = useState(false);
+
   return (
     <div>
       <Popup
-        open={props.startMiningPopup}
-        onClose={() => {
-          props.onStartMiningPopupClose();
-        }}
+        open={props.startMiningPopup && !rememberConfirm}
         closeOnDocumentClick
         modal
         nested
@@ -35,27 +35,42 @@ function PixelMiningPopup(props) {
               selected color.
             </div>
             <div className="content">
-              <i>This will take some time</i> and you may experience slowdowns
-              during this process.
+              <i>This will take some time</i> and your device may experience
+              slowdowns during this process.
             </div>
 
             <div className="actions">
               <button
                 className="ui button"
                 onClick={() => {
-                  props.onConfirm();
+                  if (document.getElementById("rememberConfirm").checked) {
+                    setRememberConfirm(true);
+                  }
+                  setConfirmMiningPopup(true);
                 }}
               >
                 Confirm
               </button>
+              <div className="ui checkbox">
+                <input
+                  id="rememberConfirm"
+                  type="checkbox"
+                  className="example"
+                />
+                <label style={{ color: "white" }}> Do not ask again</label>
+              </div>
             </div>
           </div>
         )}
       </Popup>
       <Popup
-        open={props.confirmMiningPopup}
+        open={props.startMiningPopup && (confirmMiningPopup || rememberConfirm)}
+        onOpen={() => {
+          props.onConfirm();
+        }}
         onClose={() => {
-          props.onConfirmMiningPopupClose();
+          props.onStartMiningPopupClose();
+          setConfirmMiningPopup(false);
         }}
         closeOnDocumentClick
         modal

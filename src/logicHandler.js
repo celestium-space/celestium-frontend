@@ -4,6 +4,7 @@ import {
   generateAndMinePixelNFT,
   intToColor,
   getKeyPair,
+  uint8ArrToHexStr,
 } from "./utils";
 
 const CMDOpcodes = {
@@ -15,8 +16,8 @@ const CMDOpcodes = {
   MINED_TRANSACTION: 0x05,
   GET_PIXEL_DATA: 0x06,
   PIXEL_DATA: 0x07,
-  GET_STORE_ITEMS: 0x08,
-  STORE_ITEMS: 0x9,
+  GET_STORE_ITEM: 0x08,
+  STORE_ITEM: 0x9,
   BUY_STORE_ITEM: 0x0a,
   GET_USER_DATA: 0x0b,
   USER_DATA: 0x0c,
@@ -26,6 +27,8 @@ class LogicHandler {
   constructor(grid, pixelControls, store) {
     this.grid = grid;
     this.pixelControls = pixelControls;
+    this.store = store;
+
     this.balance = 0; //how do??
     if (this.grid) {
       this.grid.onClick = (x, y, rgb) => {
@@ -37,16 +40,30 @@ class LogicHandler {
         this.activeColor = val;
       };
     }
-    this.store = store;
     if (this.store) {
-      this.store.onClick = (x) => {
-        this.storeBuy(x);
+      this.store.onClick = (name) => {
+        this.getStoreItem(name);
       };
     }
 
     this.getSocket().then((socket) =>
       socket.send(Uint8Array.from([CMDOpcodes.GET_ENTIRE_IMAGE]))
     );
+  }
+
+  async getStoreItem(item_name) {
+    let enc = new TextEncoder();
+    let item_name_enc = enc.encode(item_name);
+
+    let arr = new Uint8Array(1 + item_name_enc.byteLength);
+    arr[0] = CMDOpcodes.GET_STORE_ITEM;
+    for (let i = 0; i < item_name_enc.byteLength; i++) {
+      arr[i + 1] = item_name_enc[i];
+    }
+
+    let socket = await this.getSocket();
+    console.log(arr);
+    socket.send(arr);
   }
 
   async storeBuy(item_hash) {
@@ -156,8 +173,6 @@ class LogicHandler {
         if (this.mining_data) {
           console.log("Got pixel data, continuing NFT creation");
 
-          this.grid.startMining();
-
           let [x, y, index] = this.mining_data;
           let pixel_hash = array.slice(1, 29);
           let block_hash = array.slice(29);
@@ -185,6 +200,10 @@ class LogicHandler {
           console.warn("Got unexpected pixel data, ignoring");
         }
         break;
+      case CMDOpcodes.STORE_ITEM:
+        let image_url = new TextDecoder().decode(new Uint8Array(array));
+        console.log(image_url);
+        this.store.gotStoreItemData(image_url);
       default:
         console.warn(
           `WS Server sent unknown or unexpected command "${cmdOpcode}", ignoring`
