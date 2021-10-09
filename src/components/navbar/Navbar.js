@@ -16,7 +16,7 @@ function Navbar(props) {
           <Menu.Item as={Link} active={props.active == "store"} to="/store">
             <GiRingedPlanet className="menuIcon" />
           </Menu.Item>
-          <Menu.Item as={Link} active={props.active == "setting"} to="/setting">
+          <Menu.Item as={Link} active={props.active == "setting"} to="/wallet">
             <IoWallet className="menuIcon" />
           </Menu.Item>
         </Menu>

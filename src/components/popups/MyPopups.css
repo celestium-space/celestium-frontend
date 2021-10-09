@@ -1,3 +1,9 @@
+.on-top {
+  position: fixed;
+  bottom: 57.85px;
+  right: 10vw;
+}
+
 .popup-content {
   border-radius: 5px;
   padding: 0.5rem;
@@ -32,8 +38,19 @@ html[data-theme="dark"] .popup-arrow > svg {
   text-align: center;
   padding-top: 20px;
 }
+.modal > .header-dark {
+  width: 100%;
+  /*border-bottom: 1px solid gray;*/
+  font-weight: bold;
+  font-size: 18px;
+  text-align: left;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  background-color: #1a1a1a;
+}
 
-.modal > .content > b,
+.modal > .content b,
 .modal > .header2 {
   width: 100%;
   font-weight: bold;
@@ -43,7 +60,7 @@ html[data-theme="dark"] .popup-arrow > svg {
   font-weight: normal;
 }
 
-.modal > .content > i,
+.modal > .content i,
 .modal > .header3 {
   width: 100%;
   font-weight: bold;
@@ -59,6 +76,17 @@ html[data-theme="dark"] .popup-arrow > svg {
   width: 100%;
   padding: 10px 5px;
 }
+
+.column > svg {
+  margin-left: 80px;
+  margin-top: 60px;
+}
+
+.full {
+  width: "100%";
+  margin: "0";
+}
+
 .modal > .actions {
   width: 100%;
   padding: 10px 5px;
@@ -76,4 +104,17 @@ html[data-theme="dark"] .popup-arrow > svg {
   font-size: 24px;
   background: #ffffff;
   border-radius: 18px;
+}
+
+.buy-page-listing {
+  font-size: 8px;
+  padding-left: 12px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  line-height: 110%;
+}
+
+.buy-page-listing > li span {
+  position: relative;
+  left: -5px;
 }
