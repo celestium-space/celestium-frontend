@@ -7,14 +7,18 @@ import React, {
 } from "react";
 import { range, intToRgb } from "../../utils";
 import { Divider, Grid, Image, Segment, Card, Icon } from "semantic-ui-react";
+import "./Wallet.css";
+
+function randInt(min, max) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
 class WalletItem extends Component {
   constructor(props) {
     super(props);
-    let placeHolder =
-      "https://react.semantic-ui.com/images/avatar/large/matthew.png";
     this.state = {
-      url: placeHolder,
+      url: `/images/${randInt(0, 2)}.gif`,
       description: "lorem somthing here",
       id: props.id,
       price: 10,
@@ -38,23 +42,36 @@ class WalletItem extends Component {
   render() {
     return (
       <Card
+        style={{ backgroundColor: "#1a1a1a", boxShadow: "none" }}
         onClick={(x) => {
           if (this.onClick) this.onClick(this.state.id);
         }}
       >
-        <Image src={this.state.url} wrapped ui={false} />
+        <Image src={this.state.url} wrapped ui />
         <Card.Content>
-          <Card.Header>Cool name</Card.Header>
-          <Card.Meta>
-            <span>Meteor/Super cool space object</span>
-          </Card.Meta>
-          <Card.Description>{this.state.description}</Card.Description>
-        </Card.Content>
-        <Card.Content extra>
-          <a>
-            <Icon name="bitcoin" />
-            {this.state.price} Celestium
-          </a>
+          <Card.Header style={{ color: "white" }}>
+            1943 Anteros (1973 EC)
+          </Card.Header>
+          <Card.Description style={{ color: "white" }}>
+            <Grid columns={2}>
+              <Grid.Row
+                style={{
+                  fontSize: "10px",
+                }}
+              >
+                <Grid.Column>
+                  Est. Profit ($)
+                  <br />
+                  Price (CEL)
+                </Grid.Column>
+                <Grid.Column>
+                  1.25 trillion
+                  <br />
+                  1.092348
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Card.Description>
         </Card.Content>
       </Card>
     );
