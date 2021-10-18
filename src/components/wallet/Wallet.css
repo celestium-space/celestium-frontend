@@ -2,3 +2,20 @@
   margin-top: "auto";
   margin-bottom: "auto";
 }
+
+.table-container {
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+/* .white-scrollbar {
+  scrollbar-color: white #333333;
+}
+
+.white-scrollbar::-webkit-scrollbar-track {
+  background: #333333;
+}
+
+.white-scrollbar::-webkit-scrollbar-thumb {
+  background-color: white;
+} */
