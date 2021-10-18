@@ -40,7 +40,7 @@ function BuyPopup(props) {
   return (
     <div>
       <button
-        className="on-top ui button"
+        className="ui button"
         onClick={() => {
           GetSelection(
             setAsterankObjectName,
@@ -89,17 +89,25 @@ function BuyPopup(props) {
                 ></div>
                 <div
                   className="ui two column full grid"
-                  style={{ paddingRight: "0px" }}
+                  style={{ paddingRight: "0px", paddingLeft: "24px" }}
                 >
                   <div className="row" style={{ paddingBottom: "0" }}>
                     <img
                       className="column"
                       src={props.imageUrl}
-                      style={{ padding: "0" }}
+                      style={{
+                        width: 156,
+                        paddingLeft: "0",
+                        paddingRight: "14px",
+                      }}
                     />
                     <div
                       className="column content"
-                      style={{ paddingLeft: "5px", paddingRight: "5px" }}
+                      style={{
+                        paddingLeft: "5px",
+                        paddingRight: "0",
+                        width: "127px",
+                      }}
                     >
                       <ul className="buy-page-listing">
                         <li>
@@ -150,7 +158,10 @@ function BuyPopup(props) {
                       </ul>
                     </div>
                   </div>
-                  <div className="row" style={{ paddingBottom: "0" }}>
+                  <div
+                    className="row"
+                    style={{ paddingBottom: "0", paddingLeft: "24.5px" }}
+                  >
                     <div
                       className="column content"
                       style={{ textAlign: "right" }}
@@ -161,7 +172,10 @@ function BuyPopup(props) {
                       <br />
                       <b>Price (CEL)</b>
                     </div>
-                    <div className="column content">
+                    <div
+                      className="column content"
+                      style={{ paddingLeft: "5px" }}
+                    >
                       <div>
                         5.57 trillion <br />
                         <b>1.25 trillion</b> <br />
@@ -173,11 +187,9 @@ function BuyPopup(props) {
                     <div className="ui button">Confirm</div>
                     <div
                       className="column content"
-                      style={{ width: "190px", paddingRight: "0px" }}
+                      style={{ width: "180px", paddingRight: "0px" }}
                     >
-                      Mining this space object will take
-                      <br />
-                      <i>1-3 min</i>
+                      Mining this space object will take <i>1-3 min</i>
                     </div>
                   </div>
                 </div>
@@ -202,7 +214,7 @@ function BuyPopup(props) {
               &times;
             </button>
             <div className="header">Error</div>
-            <div className="content">
+            <div className="content" style={{ maxWidth: "400px" }}>
               Please select a space object before trying to buy it.
             </div>
           </div>
