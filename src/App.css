@@ -2,8 +2,26 @@ body,
 html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-color: black;
+  scrollbar-color: white #333333;
 }
 
-.content {
-  height: calc(100% - 100px);
+.website-margin {
+  height: 100px;
+  background-color: #1a1a1a;
+}
+
+.rotate90 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+::-webkit-scrollbar-track {
+  background: #333333;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: white;
 }
