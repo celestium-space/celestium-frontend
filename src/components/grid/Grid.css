@@ -1,17 +1,46 @@
 .gridContainer {
   display: flex; /* IMPORTANT! For some reason... */
   right: 0;
-  margin-left: calc(100vw / 2 - (100vh - 42.7px) / 2 - 50px);
-  margin-right: calc(100vw / 2 - (100vh - 42.7px) / 2);
-  height: calc(100vh - 57.85px);
-}
-
-.controls {
-  padding-right: 5px;
-  width: 50px;
+  margin-left: calc(100vw / 2 - (100vh - 57.85px) / 2 - 50px);
+  margin-right: calc(100vw / 2 - (100vh - 57.85px) / 2 - 50px);
   height: calc(100vh - 57.85px);
 }
 
 .cryptoCanvas {
   image-rendering: pixelated;
+  height: calc(100vh - 57.85px);
+}
+
+.question-btn {
+  padding: "0";
+  font-size: "30px";
+  background-color: "#333333";
+  color: "white";
+  top: "10px";
+  right: "10px";
+  position: "absolute";
+}
+
+.controls {
+  padding-right: 5px;
+  width: 50px;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .gridContainer {
+    display: inline;
+    width: 100vw;
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
+  .cryptoCanvas {
+    width: 100vw;
+    height: 100vw;
+  }
+
+  .controls {
+    display: flex;
+  }
 }

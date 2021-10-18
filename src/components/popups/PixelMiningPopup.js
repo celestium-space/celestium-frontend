@@ -4,6 +4,7 @@ import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import { GiRingedPlanet } from "react-icons/gi";
 import { IoWallet } from "react-icons/io5";
+import CelestiumLogo from "../images/CelestiumLogo";
 
 function PixelMiningPopup(props) {
   let [rememberConfirm, setRememberConfirm] = useState(false);
@@ -16,6 +17,12 @@ function PixelMiningPopup(props) {
         closeOnDocumentClick
         modal
         nested
+        onClose={() => {
+          if (!confirmMiningPopup) {
+            props.onStartMiningPopupClose();
+            props.onDoneMiningPopupClose();
+          }
+        }}
       >
         {(close) => (
           <div className="modal">
@@ -31,7 +38,7 @@ function PixelMiningPopup(props) {
               to mine.
             </div>
             <div className="content" style={{ maxWidth: "500px" }}>
-              Your browser will now try to mine the pixel and set it to your
+              Your browser will try to mine the pixel and set it to your
               selected color.
             </div>
             <div className="content">
@@ -103,12 +110,15 @@ function PixelMiningPopup(props) {
               &times;
             </button>
             <div className="header">You have successfully mined a Pixel</div>
-            <div className="content">
-              Reward: <b>1</b> <i>Celestium Token (C)</i>
+            <div className="content" style={{ maxWidth: "400px" }}>
+              Reward: <b>1</b>{" "}
+              <i>
+                Celestium Token (<CelestiumLogo lineHeight="20pt" />)
+              </i>
             </div>
             <div className="content" style={{ maxWidth: "400px" }}>
               You can spend you Celestium tokens at the{" "}
-              <a href="/store">Asteranks Database</a>{" "}
+              <a href="/store">Asteroid Database</a>{" "}
               <a href="/store" style={{ color: "white" }}>
                 <GiRingedPlanet size={15} />
               </a>

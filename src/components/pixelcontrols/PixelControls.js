@@ -6,6 +6,7 @@ import React, {
   createRef,
 } from "react";
 import { range, intToRgb } from "../../utils";
+import "./PixelControls.css";
 
 class PixelControls extends Component {
   constructor(props) {
@@ -23,23 +24,30 @@ class PixelControls extends Component {
   render() {
     let click = this.click;
     return (
-      <div
-        style={{
-          display: "flex",
-        }}
-      >
+      <div className="my-grid">
         {range(8).map((i) => (
           <div
             key={i.toString()}
-            onClick={(_) => click(i)}
             style={{
-              border: this.state.active == i ? "5px solid gray" : "",
-              width: "100px",
-              height: "100px",
-              backgroundColor: intToRgb(i),
-              margin: "10px",
+              top: "0",
+              margin: "0",
+              padding: "0",
+              height: "50px",
+              width: "50px",
             }}
-          ></div>
+          >
+            <div
+              onClick={(_) => click(i)}
+              style={{
+                border: this.state.active == i ? "2px solid gray" : "",
+                width: "36px",
+                height: "36px",
+                backgroundColor: intToRgb(i),
+                margin: "5px",
+                top: 0,
+              }}
+            ></div>
+          </div>
         ))}
         ;
       </div>
