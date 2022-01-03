@@ -1,6 +1,10 @@
 import React from "react";
 
 export default function CelestiumLogo(props) {
+  let color = "white";
+  if (props.color) {
+    color = props.color;
+  }
   return (
     <svg
       version="1.1"
@@ -17,8 +21,8 @@ export default function CelestiumLogo(props) {
     >
       <polygon
         style={{
-          stroke: "white",
-          fill: "white",
+          stroke: color,
+          fill: color,
           strokeMiterlimit: "10",
         }}
         points="410.81,257.59 380.72,267.49 370.82,297.58 360.92,267.49 330.83,257.59 360.92,247.69 370.82,217.61 
@@ -26,8 +30,8 @@ export default function CelestiumLogo(props) {
       />
       <path
         style={{
-          stroke: "white",
-          fill: "white",
+          stroke: color,
+          fill: color,
           strokeMiterlimit: "10",
         }}
         d="M250.39,372.76c-5.71,0-11.32-0.43-16.8-1.25V153.42c5.48-0.82,11.09-1.25,16.8-1.25

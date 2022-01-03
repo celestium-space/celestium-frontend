@@ -3,6 +3,7 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import "../../utils.js";
+import CelestiumLogo from "../images/CelestiumLogo";
 
 function GetSelection(
   setAsterankObjectName,
@@ -51,7 +52,7 @@ function BuyPopup(props) {
           );
         }}
       >
-        Purchase
+        Exchange for <CelestiumLogo color="#5a5a5a" lineHeight="14pt" />
       </button>
       <Popup
         open={isBuying}

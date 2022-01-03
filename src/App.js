@@ -4,7 +4,7 @@ import { Switch, Route, useLocation } from "react-router-dom";
 import { range } from "./utils";
 import Grid from "./components/grid/Grid";
 import LogicHandler from "./logicHandler";
-import Store from "./components/store/Store";
+import Asteroids from "./components/asteroids/Asteroids";
 import Navbar from "./components/navbar/Navbar";
 import "./App.css";
 import Wallet from "./components/wallet/Wallet";
@@ -18,8 +18,8 @@ function App() {
   let grid = useRef();
   let pixelControls = useRef();
   let location = useLocation();
-  let store = useRef();
-  let logic = null;
+  let asteroidsPage = useRef();
+  let walletPage = useRef();
 
   useEffect(() => {
     if (grid.current) {
@@ -32,7 +32,8 @@ function App() {
     let logic = new LogicHandler(
       grid.current,
       pixelControls.current,
-      store.current
+      asteroidsPage.current,
+      walletPage.current
     );
     logic.getSocket();
     setState({ logic: logic });
@@ -55,14 +56,14 @@ function App() {
     <div>
       <div style={style}>
         <Switch>
-          <Route path="/store">
+          <Route path="/asteroids">
             <div className="content">
-              <Store ref={store} logic={logic}></Store>
+              <Asteroids ref={asteroidsPage}></Asteroids>
             </div>
-            <Navbar active="store"></Navbar>
+            <Navbar active="asteroids"></Navbar>
           </Route>
           <Route path="/wallet">
-            <Wallet></Wallet>
+            <Wallet ref={walletPage}></Wallet>
             <Navbar active="wallet"></Navbar>
           </Route>
           <Route path="/">

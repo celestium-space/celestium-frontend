@@ -77,11 +77,6 @@ html[data-theme="dark"] .popup-arrow > svg {
   margin-top: 60px;
 }
 
-.full {
-  width: "100%";
-  margin: "0";
-}
-
 .modal > .actions {
   width: 100%;
   padding: 10px 5px;
@@ -112,4 +107,10 @@ html[data-theme="dark"] .popup-arrow > svg {
 .buy-page-listing > li span {
   position: relative;
   left: -5px;
+}
+
+@media (max-width: 768px) {
+  .popup-content {
+    width: 90vw;
+  }
 }

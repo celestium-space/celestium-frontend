@@ -11,10 +11,26 @@ class Wallet extends Component {
   constructor(props) {
     super(props);
     this.columns = 3;
-    this.state = { exportSK: false, importSK: false, walletInfo: false };
+
+    console.log(props);
+
+    this.state = {
+      exportSK: false,
+      importSK: false,
+      walletInfo: false,
+      balance: null,
+    };
   }
 
   render() {
+    let balance =
+      this.state.balance != null
+        ? `${(this.state.balance / 1000000n).toString()}.${(
+            this.state.balance % 1000000n
+          )
+            .toString()
+            .padStart(6, "0")} CEL`
+        : "Getting balance...";
     return (
       <div
         style={{
@@ -43,7 +59,7 @@ class Wallet extends Component {
               Wallet Balance
             </Grid.Column>
             <Grid.Column style={{ marginTop: "auto", marginBottom: "auto" }}>
-              3.28411039 CEL
+              {balance}
             </Grid.Column>
             <Grid.Column
               style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}
@@ -53,7 +69,7 @@ class Wallet extends Component {
                   this.setState({ importSK: true });
                 }}
               >
-                Import Private Key
+                Import Secret Key
               </Button>
             </Grid.Column>
             <Grid.Column
@@ -64,7 +80,7 @@ class Wallet extends Component {
                   this.setState({ exportSK: true });
                 }}
               >
-                Export Private Key
+                Export Secret Key
               </Button>
             </Grid.Column>
             <Grid.Column
@@ -78,7 +94,7 @@ class Wallet extends Component {
             >
               WARNING: Do not share
               <br />
-              your private key with others
+              your secret key with others
             </Grid.Column>
             <Grid.Column
               style={{

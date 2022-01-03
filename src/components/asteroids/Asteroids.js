@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import _ from "lodash";
 import BuyPopup from "../popups/BuyPopup";
-import "./Store.css";
+import "./Asteroids.css";
 
-class Store extends Component {
+class Asteroids extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,7 +11,7 @@ class Store extends Component {
     };
   }
 
-  gotStoreItemData(image_url) {
+  gotAsteroidsItemData(image_url) {
     this.setState({ imageUrl: image_url });
   }
 
@@ -62,4 +62,4 @@ class Store extends Component {
   }
 }
 
-export default Store;
+export default Asteroids;

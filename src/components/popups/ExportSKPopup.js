@@ -27,11 +27,12 @@ export default function ExportSKPopup(props) {
             &times;
           </button>
           <div className="header">Please Confirm</div>
-          <div className="content" style={{ maxWidth: "440px" }}>
-            WARNING: You are about to export your Private Key.
-            <br />
-            For security purposes, ensure that you do not share you Private Key
-            with others.
+          <div className="content" style={{ maxWidth: "500px" }}>
+            <i>WARNING:</i> You are about to export your Secret Key.
+          </div>
+          <div className="content" style={{ maxWidth: "500px" }}>
+            Anybody with this secret key will be able to spend the celestium in
+            your wallet. Please, <i>do not share you Secret Key with others</i>.
           </div>
           <div className="actions">
             <Button

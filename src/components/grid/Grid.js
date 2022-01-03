@@ -16,6 +16,8 @@ class Grid extends Component {
       doneMiningPopup: false,
       clickedX: 0,
       clickedY: 0,
+      eta: "Calculating...",
+      currentTransaction: 1,
     };
     this.canvasRef = createRef();
     this.moved = false;
@@ -39,6 +41,14 @@ class Grid extends Component {
       startMiningPopup: false,
       doneMiningPopup: true,
     });
+  }
+
+  set_eta(eta) {
+    this.setState({ eta: eta });
+  }
+
+  set_current_transaction(nr) {
+    this.setState({ currentTransaction: nr });
   }
 
   mine() {
@@ -144,6 +154,8 @@ class Grid extends Component {
             onDoneMiningPopupClose={() => {
               this.setState({ doneMiningPopup: false });
             }}
+            eta={this.state.eta}
+            currentTransaction={this.state.currentTransaction}
           ></PixelMiningPopup>
           <CelestiumInformationPopup open={true}></CelestiumInformationPopup>
         </div>

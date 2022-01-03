@@ -2,6 +2,8 @@ import * as Secp256k1 from "secp256k1";
 import { sha3_256 } from "./sha3.min.js";
 import { randomBytes } from "crypto";
 
+const TRANSACTION_WORK = 0x1000000;
+
 const colorMap = [
   [0, 0, 0],
   [255, 0, 0],
@@ -89,7 +91,13 @@ function hexStrToUint8Arr(hex_str) {
   );
 }
 
-function startMiningThreadIfNeeded(result, mining_data, res) {
+function startMiningThreadIfNeeded(
+  result,
+  mining_data,
+  res,
+  set_eta,
+  extra_work
+) {
   if (!magic) {
     let [result_magic, work_time] = result;
     if (result_magic) {
@@ -105,13 +113,13 @@ function startMiningThreadIfNeeded(result, mining_data, res) {
       start = performance.now();
       work_times = [];
       i = 0;
-      thread_nr = 0;
       res(transaction);
+      console.log("Thread dead...");
     } else {
       let expected_time_left = "Calculating...";
       if (work_time) {
         work_times.push(work_time);
-        let expected_required_work = 0x10000000 / 2;
+        let expected_required_work = TRANSACTION_WORK + extra_work;
         let expected_required_threads = expected_required_work / thread_work;
         let average_work_time =
           work_times.reduce(
@@ -123,6 +131,8 @@ function startMiningThreadIfNeeded(result, mining_data, res) {
           (expected_required_threads * average_work_time) / desired_threads;
         let elapsed_seconds = (performance.now() - start) / 1000;
         expected_time_left = expected_run_time - elapsed_seconds;
+        let eta = new Date(Date.now() + expected_time_left * 1000);
+        set_eta(eta);
       }
       let from = i * thread_work;
       let to = (i + 1) * thread_work;
@@ -130,11 +140,19 @@ function startMiningThreadIfNeeded(result, mining_data, res) {
       let worker = new Worker("worker.js");
 
       worker.addEventListener("message", function (e) {
-        startMiningThreadIfNeeded(e.data, mining_data, res);
+        startMiningThreadIfNeeded(
+          e.data,
+          mining_data,
+          res,
+          set_eta,
+          extra_work
+        );
       });
       worker.postMessage([from, to, mining_data]);
       i++;
     }
+  } else {
+    console.log("Thread dead...");
   }
 }
 
@@ -229,7 +247,8 @@ function generateAndMinePixelNFT(
   y = 200,
   color = 3,
   block_hash,
-  prev_pixel_hash
+  prev_pixel_hash,
+  set_eta
 ) {
   let prom = new Promise((resolve, reject) => {
     let [pk, _] = getKeyPair();
@@ -245,10 +264,32 @@ function generateAndMinePixelNFT(
     magic = undefined;
     start = performance.now();
     for (let i = 0; i < desired_threads; i++) {
-      startMiningThreadIfNeeded([undefined, undefined], pixel_nft, resolve);
+      startMiningThreadIfNeeded(
+        [undefined, undefined],
+        pixel_nft,
+        resolve,
+        set_eta,
+        TRANSACTION_WORK
+      );
     }
   });
   return prom;
+}
+
+function mineTransaction(transaction, set_eta) {
+  return new Promise((resolve, reject) => {
+    magic = undefined;
+    start = performance.now();
+    for (let i = 0; i < desired_threads; i++) {
+      startMiningThreadIfNeeded(
+        [undefined, undefined],
+        transaction,
+        resolve,
+        set_eta,
+        0
+      );
+    }
+  });
 }
 
 function getBackendItem() {
@@ -305,7 +346,7 @@ function getBackendItem() {
   return transaction;
 }
 
-function buyBackendItem() {
+function buyBackendItem(set_eta) {
   let [_, sk] = getKeyPair();
   let backend_item_transaction = getBackendItem(); // Get from celestium-api instead
   let transaction_content_len = backend_item_transaction.byteLength - 64 * 3;
@@ -320,12 +361,18 @@ function buyBackendItem() {
   backend_item_transaction.set(signature, transaction_content_len);
   start = performance.now();
   for (let i = 0; i < desired_threads; i++) {
-    startMiningThreadIfNeeded([undefined, undefined], backend_item_transaction);
+    startMiningThreadIfNeeded(
+      [undefined, undefined],
+      backend_item_transaction,
+      set_eta,
+      0
+    );
   }
 }
 
 export {
   generateAndMinePixelNFT,
+  mineTransaction,
   buyBackendItem,
   range,
   intToColor,

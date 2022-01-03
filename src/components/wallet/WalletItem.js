@@ -1,12 +1,5 @@
-import React, {
-  Component,
-  useEffect,
-  useRef,
-  useState,
-  createRef,
-} from "react";
-import { range, intToRgb } from "../../utils";
-import { Divider, Grid, Image, Segment, Card, Icon } from "semantic-ui-react";
+import React, { Component } from "react";
+import { Grid, Image, Card } from "semantic-ui-react";
 import "./Wallet.css";
 
 function randInt(min, max) {

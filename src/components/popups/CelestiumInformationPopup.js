@@ -1,9 +1,23 @@
 import React from "react";
 import Popup from "reactjs-popup";
+import { Popup as SemanticPopup } from "semantic-ui-react";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import Countdown from "react-countdown";
 import CelestiumLogo from "../images/CelestiumLogo";
+
+const launch = new Date("2022-01-11T12:00:00+02:00");
+
+const options = {
+  timeZoneName: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  weekday: "long",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+};
 
 export default function CelestiumInformationPopup(props) {
   return (
@@ -14,22 +28,43 @@ export default function CelestiumInformationPopup(props) {
             &times;
           </button>
           <div className="header">Welcome to the Celestium Canvas</div>
-          <div className="content">
-            The image created here will be sent to the ISS at:
+          <div className="content" style={{ maxWidth: "500px" }}>
+            The image created here will be sent to the ISS in:
           </div>
-          <Countdown
-            daysInHours={true}
-            zeroPadTime={2}
-            date="2021-10-17T12:00:00+02:00"
-            renderer={({ hours, minutes, seconds, completed }) => {
-              return (
-                <div className="header2">
-                  {hours}:{minutes}:{seconds}
+          <SemanticPopup
+            style={{ height: "100%", textAlign: "center" }}
+            position="top center"
+            content="This time is subject to change if deemed nessesary by NASA"
+            trigger={
+              <div className="modal">
+                <Countdown
+                  daysInHours={true}
+                  date={launch}
+                  renderer={({
+                    total,
+                    days,
+                    hours,
+                    minutes,
+                    seconds,
+                    milliseconds,
+                    completed,
+                  }) => {
+                    return (
+                      <div className="header2">
+                        {days ? `${days} Days - ` : ""}
+                        {hours.toString().padStart(2, "0")}:
+                        {minutes.toString().padStart(2, "0")}:
+                        {seconds.toString().padStart(2, "0")}*
+                      </div>
+                    );
+                  }}
+                />
+                <div className="header3">
+                  {launch.toLocaleString(undefined, options)}
                 </div>
-              );
-            }}
+              </div>
+            }
           />
-          <div className="header3">12:00 EST, October 17, 2021</div>
           <div className="content" style={{ width: "280px" }}>
             Click anywhere on the canvas to contribute, by placing your pixel
             and mine a Celestium Token (

@@ -5,6 +5,8 @@ import "./MyPopups.css";
 import { GiRingedPlanet } from "react-icons/gi";
 import { IoWallet } from "react-icons/io5";
 import CelestiumLogo from "../images/CelestiumLogo";
+import Countdown from "react-countdown";
+import { Popup as SemanticPopup } from "semantic-ui-react";
 
 function PixelMiningPopup(props) {
   let [rememberConfirm, setRememberConfirm] = useState(false);
@@ -27,10 +29,10 @@ function PixelMiningPopup(props) {
         {(close) => (
           <div className="modal">
             <button className="close" onClick={close}>
-              &times;
+              ×
             </button>
             <div className="header">Confirm selection</div>
-            <div className="content">
+            <div className="content" style={{ maxWidth: "500px" }}>
               You have selected pixel{" "}
               <i>
                 ({props.clickedX}, {props.clickedY})
@@ -86,12 +88,74 @@ function PixelMiningPopup(props) {
         {(close) => (
           <div className="modal">
             <button className="close" onClick={close}>
-              &times;
+              ×
             </button>
             <div className="header">Mining in progress...</div>
-            <div className="content">
-              Do not close this window or the mining process will be aborted
+            <div className="content" style={{ maxWidth: "500px" }}>
+              Do not close this window or the mining process will be aborted.
             </div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              Mining is an inheritly random process. It is theoritically
+              possible to mine for hours or only a couple of seconds. However
+              the extremes are very unlikely.
+            </div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              Based on how fast your device is currently mining we have
+              estimated the time most transactions should statistically fall
+              within. However, <i>it is very possible to go over time</i>. As
+              mining is completely random, aborting and &quot;retrying&quot;
+              will unfortunately not help.
+            </div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              You may see the countdown move irregularly. This is because the
+              amount of resources that are available on your device can
+              fluctuate.
+            </div>
+            <Countdown
+              overtime={true}
+              daysInHours={true}
+              date={props.eta}
+              renderer={({
+                total,
+                days,
+                hours,
+                minutes,
+                seconds,
+                milliseconds,
+                completed,
+              }) => {
+                let calculating =
+                  isNaN(hours) || isNaN(minutes) || isNaN(seconds);
+                return (
+                  <SemanticPopup
+                    style={{ height: "100%", textAlign: "center" }}
+                    position="top center"
+                    trigger={
+                      <div className="content" style={{ maxWidth: "500px" }}>
+                        {(!completed ? "Expected time left " : "Over time ") +
+                          "(" +
+                          props.currentTransaction +
+                          "/2*): "}
+                        <i hidden={calculating}>
+                          {completed ? "+" : ""}
+                          {hours.toString().padStart(2, "0")}:
+                          {minutes.toString().padStart(2, "0")}:
+                          {seconds.toString().padStart(2, "0")}
+                        </i>
+                        <i hidden={!calculating}>Calculating...</i>
+                      </div>
+                    }
+                  >
+                    Mining two transactions:
+                    <br />
+                    1. Transaction changing the pixel
+                    <br />
+                    2. Transaction transferring{" "}
+                    <CelestiumLogo color="#5a5a5a" lineHeight="14pt" /> to you
+                  </SemanticPopup>
+                );
+              }}
+            />
           </div>
         )}
       </Popup>
@@ -107,7 +171,7 @@ function PixelMiningPopup(props) {
         {(close) => (
           <div className="modal">
             <button className="close" onClick={close}>
-              &times;
+              ×
             </button>
             <div className="header">You have successfully mined a Pixel</div>
             <div className="content" style={{ maxWidth: "400px" }}>
@@ -116,14 +180,14 @@ function PixelMiningPopup(props) {
                 Celestium Token (<CelestiumLogo lineHeight="20pt" />)
               </i>
             </div>
-            <div className="content" style={{ maxWidth: "400px" }}>
+            <div className="content" style={{ maxWidth: "500px" }}>
               You can spend you Celestium tokens at the{" "}
-              <a href="/store">Asteroid Database</a>{" "}
-              <a href="/store" style={{ color: "white" }}>
+              <a href="/asteroids">Asteroid Database</a>{" "}
+              <a href="/asteroids" style={{ color: "white" }}>
                 <GiRingedPlanet size={15} />
               </a>
             </div>
-            <div className="content">
+            <div className="content" style={{ maxWidth: "500px" }}>
               Or see your current balance in your <a href="/wallet">Wallet</a>{" "}
               <a href="/wallet" style={{ color: "white" }}>
                 <IoWallet size={15} />

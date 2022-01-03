@@ -8,7 +8,7 @@ import React, {
 import { range, intToRgb } from "../../utils";
 import { Divider, Grid, Image, Segment, Card, Icon } from "semantic-ui-react";
 
-class StoreItem extends Component {
+class AsteroidsItem extends Component {
   constructor(props) {
     super(props);
     let placeHolder =
@@ -61,4 +61,4 @@ class StoreItem extends Component {
   }
 }
 
-export default StoreItem;
+export default AsteroidsItem;

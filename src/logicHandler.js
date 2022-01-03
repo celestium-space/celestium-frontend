@@ -1,19 +1,17 @@
-import { GiConsoleController } from "react-icons/gi";
 import {
-  findColorIndex,
   generateAndMinePixelNFT,
+  mineTransaction,
   intToColor,
   getKeyPair,
   uint8ArrToHexStr,
 } from "./utils";
 import env from "@beam-australia/react-env";
 
-const default_address = (
-  window.location.protocol.replace(/^http/, 'ws')
-  + 'api.'
-  + window.location.hostname
-  + (window.location.port ? ":" + window.location.port : "")
-);
+const default_address =
+  window.location.protocol.replace(/^http/, "ws") +
+  "api." +
+  window.location.hostname +
+  (window.location.port ? ":" + window.location.port : "");
 const socket_address = env("SOCKET_ADDRESS") || default_address;
 
 const CMDOpcodes = {
@@ -24,20 +22,21 @@ const CMDOpcodes = {
   MINED_TRANSACTION: 0x05,
   GET_PIXEL_DATA: 0x06,
   PIXEL_DATA: 0x07,
-  GET_STORE_ITEM: 0x08,
-  STORE_ITEM: 0x9,
-  BUY_STORE_ITEM: 0x0a,
+  GET_ASTEROID: 0x08,
+  ASTEROID: 0x9,
+  BUY_ASTEROID: 0x0a,
   GET_USER_DATA: 0x0b,
   USER_DATA: 0x0c,
 };
 
 class LogicHandler {
-  constructor(grid, pixelControls, store) {
+  constructor(grid, pixelControls, asteroidPage, walletPage) {
     this.grid = grid;
     this.pixelControls = pixelControls;
-    this.store = store;
+    this.asteroidPage = asteroidPage;
+    this.walletPage = walletPage;
 
-    this.balance = 0; //how do??
+    this.balance = 0n;
     if (this.grid) {
       this.grid.onClick = (x, y, rgb) => {
         this.clickPixel(x, y, rgb);
@@ -48,33 +47,38 @@ class LogicHandler {
         this.activeColor = val;
       };
     }
-    if (this.store) {
-      this.store.onClick = (name) => {
-        this.getStoreItem(name);
+    if (this.asteroidPage) {
+      this.asteroidPage.onClick = (name) => {
+        this.getAsteroid(name);
       };
     }
 
     this.getSocket().then((socket) =>
       socket.send(Uint8Array.from([CMDOpcodes.GET_ENTIRE_IMAGE]))
     );
+
+    this.getSocket().then((socket) =>
+      socket.send(
+        Uint8Array.from([CMDOpcodes.GET_USER_DATA, ...getKeyPair()[0]])
+      )
+    );
   }
 
-  async getStoreItem(item_name) {
+  async getAsteroid(item_name) {
     let enc = new TextEncoder();
     let item_name_enc = enc.encode(item_name);
 
     let arr = new Uint8Array(1 + item_name_enc.byteLength);
-    arr[0] = CMDOpcodes.GET_STORE_ITEM;
+    arr[0] = CMDOpcodes.GET_ASTEROID;
     for (let i = 0; i < item_name_enc.byteLength; i++) {
       arr[i + 1] = item_name_enc[i];
     }
 
     let socket = await this.getSocket();
-    console.log(arr);
     socket.send(arr);
   }
 
-  async storeBuy(item_hash) {
+  async asteroidExchange(item_hash) {
     item_hash = [
       0x78, 0x38, 0x5a, 0x69, 0xab, 0x4e, 0x52, 0x5a, 0xd4, 0x65, 0x6e, 0xe3,
       0x5d, 0xe0, 0x02, 0x93, 0x3e, 0xfc, 0xd2, 0x54, 0x3c, 0x1c, 0x5d, 0xf3,
@@ -82,7 +86,7 @@ class LogicHandler {
     ];
     let socket = await this.getSocket();
     let arr = new Uint8Array(66);
-    arr[0] = CMDOpcodes.BUY_STORE_ITEM;
+    arr[0] = CMDOpcodes.BUY_ASTEROID;
     for (let i = 0; i < 32; i++) {
       arr[i + 1] = item_hash[i];
     }
@@ -94,19 +98,19 @@ class LogicHandler {
     socket.send(arr);
   }
 
-  async getStoreItems(from, to) {
-      // build payload bytes
-      let arr = new Uint8Array(17);
-      arr[0] = CMDOpcodes.GET_STORE_ITEMS;
-      arr[1] = (0xff000000 & from) >> 24
-      arr[2] = (0x00ff0000 & from) >> 16
-      arr[3] = (0x0000ff00 & from) >> 8
-      arr[4] = (0x000000ff & from)
-      arr[5] = (0xff000000 & to) >> 24
-      arr[6] = (0x00ff0000 & to) >> 16
-      arr[7] = (0x0000ff00 & to) >> 8
-      arr[8] = (0x000000ff & to)
-      socket.send(arr);
+  async getAsteroids(from, to) {
+    // build payload bytes
+    let arr = new Uint8Array(17);
+    arr[0] = CMDOpcodes.GET_ASTEROIDS;
+    arr[1] = (0xff000000 & from) >> 24;
+    arr[2] = (0x00ff0000 & from) >> 16;
+    arr[3] = (0x0000ff00 & from) >> 8;
+    arr[4] = 0x000000ff & from;
+    arr[5] = (0xff000000 & to) >> 24;
+    arr[6] = (0x00ff0000 & to) >> 16;
+    arr[7] = (0x0000ff00 & to) >> 8;
+    arr[8] = 0x000000ff & to;
+    socket.send(arr);
   }
 
   sleep(ms) {
@@ -127,16 +131,18 @@ class LogicHandler {
       this.socket.addEventListener("message", (x) => {
         this.messageHandler(x);
       });
-      while (this.socket.readyState == WebSocket.CONNECTING) {
-        await this.sleep(1000);
-      }
-      console.log("Connected!");
+    }
+
+    while (this.socket.readyState == WebSocket.CONNECTING) {
+      console.log(`Still connecting to "${socket_address}"...`);
+      await this.sleep(1000);
     }
     return this.socket;
   }
 
   async clickPixel(x, y, current_rgb) {
     let index = this.pixelControls.state.active;
+    let [pk, _] = getKeyPair();
     this.getSocket().then((socket) => {
       this.mining_data = [x, y, index];
       let to_send = Uint8Array.from([
@@ -145,6 +151,7 @@ class LogicHandler {
         x & 0xff,
         y >> 8,
         y & 0xff,
+        ...pk,
       ]);
       console.log("Requesting up-to-date pixel data from server");
       socket.send(to_send);
@@ -197,21 +204,46 @@ class LogicHandler {
 
           let [x, y, index] = this.mining_data;
           let pixel_hash = array.slice(1, 29);
-          let block_hash = array.slice(29);
+          let block_hash = array.slice(29, 61);
+          let katjing_transaction = array.slice(61);
 
-          let transaction = await generateAndMinePixelNFT(
+          console.log("Mining pixel NFT transaction");
+          this.grid.set_current_transaction(1);
+          let pixel_nft_transaction = await generateAndMinePixelNFT(
             x,
             y,
             index,
             block_hash,
-            pixel_hash
+            pixel_hash,
+            (eta) => {
+              this.grid.set_eta(eta);
+            }
           );
-          let arr = new Uint8Array(transaction.byteLength + 1);
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          console.log("Mining katjing transaction");
+          this.grid.set_current_transaction(2);
+          katjing_transaction = await mineTransaction(
+            new Uint8Array(
+              katjing_transaction.slice(0, katjing_transaction.length - 1)
+            ),
+            (eta) => {
+              this.grid.set_eta(eta);
+            }
+          );
+          let arr = new Uint8Array(
+            1 +
+              pixel_nft_transaction.byteLength +
+              katjing_transaction.byteLength
+          );
           arr[0] = CMDOpcodes.MINED_TRANSACTION;
-          for (let i = 0; i < transaction.byteLength; i++) {
-            arr[i + 1] = transaction[i];
+          for (let i = 0; i < pixel_nft_transaction.byteLength; i++) {
+            arr[i + 1] = pixel_nft_transaction[i];
           }
-          console.log(`Sending mined transaction.`);
+          for (let i = 0; i < katjing_transaction.byteLength; i++) {
+            arr[i + 1 + pixel_nft_transaction.byteLength] =
+              katjing_transaction[i];
+          }
+          console.log(`Sending mined transactions.`);
           let socket = await this.getSocket();
           socket.send(arr.buffer);
 
@@ -222,10 +254,20 @@ class LogicHandler {
           console.warn("Got unexpected pixel data, ignoring");
         }
         break;
-      case CMDOpcodes.STORE_ITEM:
+      case CMDOpcodes.ASTEROID:
         let image_url = new TextDecoder().decode(new Uint8Array(array));
         console.log(image_url);
-        this.store.gotStoreItemData(image_url);
+        this.asteroidPage.gotAsteroidData(image_url);
+      case CMDOpcodes.USER_DATA:
+        console.log("Got user data, updating...");
+        let balance = BigInt(
+          `0x${uint8ArrToHexStr(Uint8Array.from(array.slice(1)))}`
+        );
+        if (this.walletPage) {
+          this.walletPage.setState({ balance: balance });
+        }
+        console.log(`New balance: ${balance}`);
+        break;
       default:
         console.warn(
           `WS Server sent unknown or unexpected command "${cmdOpcode}", ignoring`

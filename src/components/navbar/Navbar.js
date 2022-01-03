@@ -13,7 +13,11 @@ function Navbar(props) {
           <Menu.Item as={Link} active={props.active == "grid"} to="/">
             <IoColorPalette className="menuIcon" />
           </Menu.Item>
-          <Menu.Item as={Link} active={props.active == "store"} to="/store">
+          <Menu.Item
+            as={Link}
+            active={props.active == "asteroids"}
+            to="/asteroids"
+          >
             <GiRingedPlanet className="menuIcon" />
           </Menu.Item>
           <Menu.Item as={Link} active={props.active == "wallet"} to="/wallet">

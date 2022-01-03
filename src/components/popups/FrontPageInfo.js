@@ -72,14 +72,14 @@ export default function FrontPageInfo(props) {
               id="rememberCelestiumInfoConfirm"
               type="checkbox"
               className="example"
-              checked={props.showCelestiumInfoOnStart}
+              checked={props.doNotShowCelestiumInfoOnStart}
               onChange={() => {
-                props.setShowCelestiumInfoOnStart(
-                  !props.showCelestiumInfoOnStart
+                props.setdoNotShowCelestiumInfoOnStart(
+                  !props.doNotShowCelestiumInfoOnStart
                 );
               }}
             />
-            <label style={{ color: "white" }}>Show on start</label>
+            <label style={{ color: "white" }}>Do not show me this again</label>
           </div>
           <Button
             onClick={() => {
