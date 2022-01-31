@@ -74,7 +74,7 @@ html[data-theme="dark"] .popup-arrow > svg {
 
 .column > svg {
   margin-left: 80px;
-  margin-top: 60px;
+  margin-top: 74px;
 }
 
 .modal > .actions {
@@ -98,7 +98,7 @@ html[data-theme="dark"] .popup-arrow > svg {
 
 .buy-page-listing {
   font-size: 8pt;
-  padding-left: 12px;
+  padding-left: 20px;
   margin-top: 3px;
   margin-bottom: 3px;
   line-height: 110%;

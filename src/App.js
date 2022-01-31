@@ -14,7 +14,11 @@ import { Button } from "semantic-ui-react";
 function App() {
   window.app_handle = this;
 
-  let [state, setState] = useState({ logic: null });
+  let [state, setState] = useState({
+    logic: null,
+    showInfo: null,
+    showCelestiumInfoOnStart: null,
+  });
   let grid = useRef();
   let pixelControls = useRef();
   let location = useLocation();
@@ -28,6 +32,11 @@ function App() {
         .flat();
       grid.current.updatePixels(0, 0, 1000, 1000, initialGrid);
     }
+  }, [location]);
+
+  useEffect(() => {
+    let showCelestiumInfoOnStart =
+      localStorage.getItem("showCelestiumInfoOnStart") != "false";
 
     let logic = new LogicHandler(
       grid.current,
@@ -35,16 +44,12 @@ function App() {
       asteroidsPage.current,
       walletPage.current
     );
-    logic.getSocket();
-    setState({ logic: logic });
-
-    let showCelestiumInfoOnStart =
-      localStorage.getItem("showCelestiumInfoOnStart") != "false";
     setState({
       showInfo: showCelestiumInfoOnStart,
       showCelestiumInfoOnStart: showCelestiumInfoOnStart,
+      logic: logic,
     });
-  }, [location]);
+  }, [grid, pixelControls, asteroidsPage, walletPage]);
 
   let style = {
     display: "none",
@@ -52,6 +57,7 @@ function App() {
   if (!state.showInfo) {
     style = {};
   }
+
   return (
     <div>
       <div style={style}>
@@ -63,11 +69,15 @@ function App() {
             <Navbar active="asteroids"></Navbar>
           </Route>
           <Route path="/wallet">
-            <Wallet ref={walletPage}></Wallet>
+            <Wallet ref={walletPage} logic={state.logic}></Wallet>
             <Navbar active="wallet"></Navbar>
           </Route>
           <Route path="/">
-            <Grid ref={grid} pixelControls={pixelControls}></Grid>
+            <Grid
+              ref={grid}
+              pixelControls={pixelControls}
+              logic={state.logic}
+            ></Grid>
             <Navbar active="grid"></Navbar>
           </Route>
         </Switch>

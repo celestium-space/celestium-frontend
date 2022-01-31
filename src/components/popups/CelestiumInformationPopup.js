@@ -6,7 +6,7 @@ import "./MyPopups.css";
 import Countdown from "react-countdown";
 import CelestiumLogo from "../images/CelestiumLogo";
 
-const launch = new Date("2022-01-11T12:00:00+02:00");
+const launch = new Date("2022-01-18T12:00:00+02:00");
 
 const options = {
   timeZoneName: "short",

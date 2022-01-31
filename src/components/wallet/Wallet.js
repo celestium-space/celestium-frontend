@@ -6,13 +6,16 @@ import _ from "lodash";
 import "./Wallet.css";
 import ExportSKPopup from "../popups/ExportSKPopup";
 import WalletInfoPopup from "../popups/WalletInfoPopup";
+import CelestiumLogo from "../images/CelestiumLogo";
+import { Popup as SemanticPopup } from "semantic-ui-react";
+
+const DUST_PER_CEL_POWER = 31;
+const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
 
 class Wallet extends Component {
   constructor(props) {
     super(props);
     this.columns = 3;
-
-    console.log(props);
 
     this.state = {
       exportSK: false,
@@ -22,14 +25,22 @@ class Wallet extends Component {
     };
   }
 
+  componentDidUpdate() {
+    console.log("TEST1");
+    if (this.state.balance == null && this.props.logic) {
+      console.log("TEST2");
+      this.props.logic.getUserData();
+    }
+  }
+
   render() {
-    let balance =
+    let actual_balance =
       this.state.balance != null
-        ? `${(this.state.balance / 1000000n).toString()}.${(
-            this.state.balance % 1000000n
+        ? `${(this.state.balance / DUST_PER_CEL).toString()}.${(
+            this.state.balance % DUST_PER_CEL
           )
             .toString()
-            .padStart(6, "0")} CEL`
+            .padStart(DUST_PER_CEL_POWER, "0")}`
         : "Getting balance...";
     return (
       <div
@@ -37,89 +48,84 @@ class Wallet extends Component {
           color: "white",
         }}
       >
-        <Grid
-          columns={6}
-          divided
-          style={{
-            marginTop: "0px",
-            marginBottom: "10px",
-            marginLeft: "20px",
-            maxWidth: "880px",
-          }}
-        >
-          <Grid.Row>
-            <Grid.Column
-              style={{
-                width: "200px",
-                fontSize: "20px",
-                marginTop: "auto",
-                marginBottom: "auto",
+        <div className="wallet-header">
+          <div
+            style={{
+              width: "200px",
+              fontSize: "26px",
+              marginTop: "auto",
+              marginBottom: "auto",
+            }}
+          >
+            Wallet
+          </div>
+          <SemanticPopup
+            style={{ height: "100%", textAlign: "center" }}
+            position="top center"
+            content={actual_balance}
+            trigger={<div className="wallet-balance">{actual_balance}</div>}
+          />
+          <CelestiumLogo
+            hidden={this.state.balance == null}
+            label={actual_balance}
+            margin="auto 20px auto 5px"
+            lineHeight="14pt"
+          />
+          <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
+            <Button
+              onClick={() => {
+                this.setState({ importSK: true });
               }}
             >
-              Wallet Balance
-            </Grid.Column>
-            <Grid.Column style={{ marginTop: "auto", marginBottom: "auto" }}>
-              {balance}
-            </Grid.Column>
-            <Grid.Column
-              style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}
-            >
-              <Button
-                onClick={() => {
-                  this.setState({ importSK: true });
-                }}
-              >
-                Import Secret Key
-              </Button>
-            </Grid.Column>
-            <Grid.Column
-              style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}
-            >
-              <Button
-                onClick={() => {
-                  this.setState({ exportSK: true });
-                }}
-              >
-                Export Secret Key
-              </Button>
-            </Grid.Column>
-            <Grid.Column
-              style={{
-                marginTop: "auto",
-                marginBottom: "auto",
-                paddingLeft: "0",
-                fontSize: "10px",
-                lineHeight: "110%",
+              Import Secret Key
+            </Button>
+          </div>
+          <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
+            <Button
+              onClick={() => {
+                this.setState({ exportSK: true });
               }}
             >
-              WARNING: Do not share
-              <br />
-              your secret key with others
-            </Grid.Column>
-            <Grid.Column
+              Export Secret Key
+            </Button>
+          </div>
+          <div
+            style={{
+              marginTop: "auto",
+              marginBottom: "auto",
+              paddingLeft: "0",
+              fontSize: "10px",
+              lineHeight: "110%",
+              width: "160px",
+            }}
+          >
+            WARNING: Do not share
+            <br />
+            your secret key with others
+          </div>
+          <div
+            style={{
+              width: "30px",
+              padding: "0",
+              marginTop: "auto",
+              marginBottom: "auto",
+            }}
+          >
+            <Button
+              circular
+              icon="question circle outline"
               style={{
-                width: "30px",
                 padding: "0",
-                marginTop: "auto",
-                marginBottom: "auto",
+                fontSize: "30px",
+                backgroundColor: "#333333",
+                color: "white",
               }}
-            >
-              <Button
-                circular
-                icon="question circle outline"
-                style={{
-                  padding: "0",
-                  fontSize: "30px",
-                  backgroundColor: "#333333",
-                  color: "white",
-                }}
-                onClick={() => {
-                  this.setState({ walletInfo: true });
-                }}
-              />
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+              onClick={() => {
+                this.setState({ walletInfo: true });
+              }}
+            />
+          </div>
+        </div>
         <div
           style={{
             marginLeft: "34px",

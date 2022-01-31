@@ -19,21 +19,20 @@ class Grid extends Component {
       eta: "Calculating...",
       currentTransaction: 1,
     };
-    this.canvasRef = createRef();
     this.moved = false;
     this.onClick = props.onClick;
+  }
 
-    this.updatePixels = (x, y, width, height, data) => {
-      try {
-        let canvas = this.canvasRef.current;
-        let ctx = canvas.getContext("2d");
-        let array = new Uint8ClampedArray(data);
-        let k = new ImageData(array, width, height);
-        ctx.putImageData(k, x, y);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  componentDidMount() {
+    if (this.props.logic) {
+      this.props.logic.getEntireImage();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.logic == null && this.props.logic) {
+      this.props.logic.getEntireImage();
+    }
   }
 
   doneMining() {
@@ -41,6 +40,18 @@ class Grid extends Component {
       startMiningPopup: false,
       doneMiningPopup: true,
     });
+  }
+
+  updatePixels(x, y, width, height, data) {
+    try {
+      let canvas = document.getElementById("canvas");
+      let ctx = canvas.getContext("2d");
+      let array = new Uint8ClampedArray(data);
+      let k = new ImageData(array, width, height);
+      ctx.putImageData(k, x, y);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   set_eta(eta) {
@@ -53,7 +64,7 @@ class Grid extends Component {
 
   mine() {
     try {
-      let canvas = this.canvasRef.current;
+      let canvas = document.getElementById("canvas");
       let ctx = canvas.getContext("2d");
       let data = ctx.getImageData(
         this.state.clickedX,
@@ -109,7 +120,6 @@ class Grid extends Component {
                     id="canvas"
                     width="1000"
                     height="1000"
-                    ref={this.canvasRef}
                     onMouseDown={() => {
                       this.moved = false;
                     }}

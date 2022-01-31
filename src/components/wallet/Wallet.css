@@ -8,6 +8,23 @@
   overflow-y: scroll;
 }
 
+.wallet-header {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  margin: 10px 10px 10px 34px;
+}
+
+.wallet-balance {
+  margin-top: auto;
+  margin-bottom: auto;
+  line-height: 14pt;
+  width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 /* .white-scrollbar {
   scrollbar-color: white #333333;
 }

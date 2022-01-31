@@ -2,7 +2,7 @@ import * as Secp256k1 from "secp256k1";
 import { sha3_256 } from "./sha3.min.js";
 import { randomBytes } from "crypto";
 
-const TRANSACTION_WORK = 0x1000000;
+const TRANSACTION_WORK = 0x10000000;
 
 const colorMap = [
   [0, 0, 0],
@@ -346,38 +346,34 @@ function getBackendItem() {
   return transaction;
 }
 
-function buyBackendItem(set_eta) {
-  let [_, sk] = getKeyPair();
-  let backend_item_transaction = getBackendItem(); // Get from celestium-api instead
-  let transaction_content_len = backend_item_transaction.byteLength - 64 * 3;
-  let transaction_content = backend_item_transaction.slice(
-    0,
-    transaction_content_len
-  );
-  const signature = Secp256k1.ecdsaSign(
-    hexStrToUint8Arr(sha3_256(uint8ArrToHexStr(transaction_content))),
-    sk
-  ).signature;
-  backend_item_transaction.set(signature, transaction_content_len);
-  start = performance.now();
-  for (let i = 0; i < desired_threads; i++) {
-    startMiningThreadIfNeeded(
-      [undefined, undefined],
-      backend_item_transaction,
-      set_eta,
-      0
-    );
+function serializeTransaction(transaction, include_signature) {
+  let serialized_transacion = [transaction.version, transaction.input_count];
+  for (let input of transaction.inputs) {
+    serialized_transacion.push(...input.block_hash);
+    serialized_transacion.push(...input.transaction_hash);
+    serialized_transacion.push(...input.index);
+    if (include_signature) {
+      serialized_transacion.push(...input.signature);
+    }
   }
+  serialized_transacion.push(transaction.output_count);
+  for (let input of transaction.outputs) {
+    serialized_transacion.push(input.value.version);
+    serialized_transacion.push(...input.value.value);
+    serialized_transacion.push(...input.pk);
+  }
+  return serialized_transacion;
 }
 
 export {
   generateAndMinePixelNFT,
   mineTransaction,
-  buyBackendItem,
   range,
   intToColor,
   findColorIndex,
   intToRgb,
   uint8ArrToHexStr,
+  hexStrToUint8Arr,
   getKeyPair,
+  serializeTransaction,
 };

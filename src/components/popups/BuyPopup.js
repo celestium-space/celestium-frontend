@@ -4,26 +4,32 @@ import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import "../../utils.js";
 import CelestiumLogo from "../images/CelestiumLogo";
+import Countdown from "react-countdown";
 
-function GetSelection(
-  setAsterankObjectName,
-  setAsterankObjectSVG,
-  setIsBuying,
-  setIsError,
-  onClick
-) {
+function getAsteroidName() {
   let iframe = document.getElementById("asterankIframe");
 
   let innerDoc = iframe.contentDocument
     ? iframe.contentDocument
     : iframe.contentWindow.document;
 
-  let name = innerDoc.getElementById("selection-details").children[0].innerHTML;
+  return [
+    innerDoc.getElementById("selection-details").children[0].innerHTML,
+    innerDoc.getElementById("orbit-2d-diagram").children[0],
+  ];
+}
 
-  onClick(name);
-  if (name) {
-    setAsterankObjectName(name);
-    let svg = innerDoc.getElementById("orbit-2d-diagram").children[0];
+function getSelection(
+  setAsterankObjectName,
+  setAsterankObjectSVG,
+  setIsBuying,
+  setIsError,
+  onClick
+) {
+  let [asteroid_name, svg] = getAsteroidName();
+  if (asteroid_name) {
+    onClick(asteroid_name);
+    setAsterankObjectName(asteroid_name);
     setAsterankObjectSVG(svg);
     setIsBuying(true);
   } else {
@@ -32,18 +38,30 @@ function GetSelection(
 }
 
 function BuyPopup(props) {
-  let [asterankObjectName, setAsterankObjectName] = useState("");
+  let [asterankObjectName, setAsterankObjectName] = useState("loading");
   let [asterankObjectSVG, setAsterankObjectSVG] = useState("");
   const svgRef = useRef(null);
   let [isBuying, setIsBuying] = useState(false);
   let [isError, setIsError] = useState(false);
+  let [confirmMiningPopup, setConfirmMiningPopup] = useState(false);
+
+  let store_value_in_cel = isNaN(props.store_value_in_dust)
+    ? props.store_value_in_dust
+    : `${
+        BigInt(props.store_value_in_dust) / 10000000000000000000000000000000n
+      }.${(
+        BigInt(props.store_value_in_dust) % 10000000000000000000000000000000n
+      )
+        .toString()
+        .padStart(31, "0")
+        .substring(0, 20)}...`;
 
   return (
     <div>
       <button
         className="ui button"
         onClick={() => {
-          GetSelection(
+          getSelection(
             setAsterankObjectName,
             setAsterankObjectSVG,
             setIsBuying,
@@ -58,16 +76,17 @@ function BuyPopup(props) {
         open={isBuying}
         position="right center"
         closeOnDocumentClick
-        contentStyle={{ width: "600px" }}
+        contentStyle={{ width: "770px" }}
         modal
         nested
         onClose={() => {
-          props.resetImageUrl();
           setIsBuying(false);
+          setConfirmMiningPopup(false);
         }}
         onOpen={() => {
           let svg = asterankObjectSVG.cloneNode(true);
           svg.setAttribute("width", 170);
+          svg.setAttribute("height", 244);
           svg.setAttribute("viewBox", "70 0 170 170");
           svg.setAttribute("transform", "scale(1.6)");
           svgRef.current.appendChild(svg);
@@ -85,19 +104,28 @@ function BuyPopup(props) {
                   className="column"
                   style={{
                     padding: "0px",
+                    width: "300px",
                   }}
                   ref={svgRef}
                 ></div>
                 <div
                   className="ui two column full grid"
-                  style={{ paddingRight: "0px", paddingLeft: "24px" }}
+                  style={{
+                    paddingRight: "0px",
+                    paddingLeft: "24px",
+                    width: "500px",
+                  }}
                 >
                   <div className="row" style={{ paddingBottom: "0" }}>
-                    <img
+                    <video
+                      autoPlay={true}
+                      muted="muted"
+                      playsInline
+                      loop
                       className="column"
-                      src={props.imageUrl}
+                      src={`videos-256/${asterankObjectName}.mp4`}
                       style={{
-                        width: 156,
+                        width: 256,
                         paddingLeft: "0",
                         paddingRight: "14px",
                       }}
@@ -107,7 +135,7 @@ function BuyPopup(props) {
                       style={{
                         paddingLeft: "5px",
                         paddingRight: "0",
-                        width: "127px",
+                        width: "200px",
                       }}
                     >
                       <ul className="buy-page-listing">
@@ -171,7 +199,10 @@ function BuyPopup(props) {
                       <br />
                       <b>Est. Profit ($)</b>
                       <br />
-                      <b>Price (CEL)</b>
+                      <b>
+                        Price (
+                        <CelestiumLogo lineHeight="14pt" />)
+                      </b>
                     </div>
                     <div
                       className="column content"
@@ -180,22 +211,102 @@ function BuyPopup(props) {
                       <div>
                         5.57 trillion <br />
                         <b>1.25 trillion</b> <br />
-                        <b>1.0001020123</b>
+                        <b>{store_value_in_cel}</b>
                       </div>
                     </div>
                   </div>
-                  <div className="row" style={{ paddingBottom: "0" }}>
-                    <div className="ui button">Confirm</div>
+                  <div
+                    className="row"
+                    style={{ paddingBottom: "0", paddingLeft: "24.5px" }}
+                  >
                     <div
                       className="column content"
-                      style={{ width: "180px", paddingRight: "0px" }}
+                      style={{ textAlign: "right" }}
                     >
                       Mining this space object will take <i>1-3 min</i>
+                    </div>
+                    <div
+                      className="ui button"
+                      onClick={() => {
+                        setConfirmMiningPopup(true);
+                      }}
+                    >
+                      Confirm
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        )}
+      </Popup>
+      <Popup
+        open={isBuying && confirmMiningPopup}
+        onOpen={() => {
+          props.onConfirm(asterankObjectName);
+        }}
+        onClose={() => {
+          setConfirmMiningPopup(false);
+        }}
+        closeOnDocumentClick
+        modal
+        nested
+      >
+        {(close) => (
+          <div className="modal">
+            <button className="close" onClick={close}>
+              ×
+            </button>
+            <div className="header">Mining in progress...</div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              Do not close this window or the mining process will be aborted.
+            </div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              Mining is an inheritly random process. It is theoritically
+              possible to mine for hours or only a couple of seconds. However
+              the extremes are very unlikely.
+            </div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              Based on how fast your device is currently mining we have
+              estimated the time most transactions should statistically fall
+              within. However, <i>it is very possible to go over time</i>. As
+              mining is completely random, aborting and &quot;retrying&quot;
+              will unfortunately not help.
+            </div>
+            <div className="content" style={{ maxWidth: "500px" }}>
+              You may see the countdown move irregularly. This is because the
+              amount of resources that are available on your device can
+              fluctuate.
+            </div>
+            <Countdown
+              overtime={true}
+              daysInHours={true}
+              date={props.eta}
+              renderer={({
+                total,
+                days,
+                hours,
+                minutes,
+                seconds,
+                milliseconds,
+                completed,
+              }) => {
+                let calculating =
+                  isNaN(hours) || isNaN(minutes) || isNaN(seconds);
+                return (
+                  <div className="content" style={{ maxWidth: "500px" }}>
+                    {!completed ? "Expected time left: " : "Over time: "}
+                    <i hidden={calculating}>
+                      {completed ? "+" : ""}
+                      {hours.toString().padStart(2, "0")}:
+                      {minutes.toString().padStart(2, "0")}:
+                      {seconds.toString().padStart(2, "0")}
+                    </i>
+                    <i hidden={!calculating}>Calculating...</i>
+                  </div>
+                );
+              }}
+            />
           </div>
         )}
       </Popup>

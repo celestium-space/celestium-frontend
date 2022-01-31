@@ -7,12 +7,26 @@ class Asteroids extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      imageUrl: "/images/loading.png",
+      store_value_in_dust: "Fetching...",
+      eta: "Calculating...",
     };
   }
 
-  gotAsteroidsItemData(image_url) {
-    this.setState({ imageUrl: image_url });
+  gotAsteroidsItemData(store_item) {
+    this.setState({
+      store_value_in_dust: store_item.store_value_in_dust,
+    });
+  }
+
+  mineTransaction(name) {
+    try {
+      console.log(`Trying to buy store item "${name}"`);
+      if (this.storeItemExchange) {
+        this.storeItemExchange(name);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   render() {
@@ -46,10 +60,11 @@ class Asteroids extends Component {
             onClick={(name) => {
               this.onClick(name);
             }}
-            imageUrl={this.state.imageUrl}
-            resetImageUrl={() => {
-              this.setState({ imageUrl: "/images/loading.png" });
+            onConfirm={(name) => {
+              this.mineTransaction(name);
             }}
+            store_value_in_dust={this.state.store_value_in_dust}
+            eta={this.state.eta}
           ></BuyPopup>
         </div>
         <iframe

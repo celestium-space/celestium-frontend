@@ -4,8 +4,12 @@ import {
   intToColor,
   getKeyPair,
   uint8ArrToHexStr,
+  hexStrToUint8Arr,
+  serializeTransaction,
 } from "./utils";
 import env from "@beam-australia/react-env";
+import * as Secp256k1 from "secp256k1";
+import { sha3_256 } from "./sha3.min.js";
 
 const default_address =
   window.location.protocol.replace(/^http/, "ws") +
@@ -51,17 +55,30 @@ class LogicHandler {
       this.asteroidPage.onClick = (name) => {
         this.getAsteroid(name);
       };
+      this.asteroidPage.storeItemExchange = (name) => {
+        this.storeItemExchange(name);
+      };
     }
+  }
 
+  getEntireImage() {
     this.getSocket().then((socket) =>
       socket.send(Uint8Array.from([CMDOpcodes.GET_ENTIRE_IMAGE]))
     );
+  }
 
-    this.getSocket().then((socket) =>
-      socket.send(
-        Uint8Array.from([CMDOpcodes.GET_USER_DATA, ...getKeyPair()[0]])
-      )
-    );
+  getUserData() {
+    let pk = getKeyPair()[0];
+    this.getSocket().then((socket) => {
+      console.log(
+        `Connected (${
+          socket.readyState
+        }), getting userdata for [0x${uint8ArrToHexStr(pk)}]`
+      );
+      setTimeout(function () {
+        socket.send(Uint8Array.from([CMDOpcodes.GET_USER_DATA, ...pk]));
+      }, 2000);
+    });
   }
 
   async getAsteroid(item_name) {
@@ -78,23 +95,24 @@ class LogicHandler {
     socket.send(arr);
   }
 
-  async asteroidExchange(item_hash) {
-    item_hash = [
-      0x78, 0x38, 0x5a, 0x69, 0xab, 0x4e, 0x52, 0x5a, 0xd4, 0x65, 0x6e, 0xe3,
-      0x5d, 0xe0, 0x02, 0x93, 0x3e, 0xfc, 0xd2, 0x54, 0x3c, 0x1c, 0x5d, 0xf3,
-      0x3c, 0x9c, 0x42, 0x31, 0x78, 0xc7, 0x41, 0xe9,
-    ];
-    let socket = await this.getSocket();
-    let arr = new Uint8Array(66);
+  async storeItemExchange(item_name) {
+    let enc = new TextEncoder();
+    let item_name_enc = enc.encode(item_name);
+
+    let arr = new Uint8Array(34 + item_name_enc.byteLength);
     arr[0] = CMDOpcodes.BUY_ASTEROID;
-    for (let i = 0; i < 32; i++) {
-      arr[i + 1] = item_hash[i];
-    }
 
     let [pk, _] = getKeyPair();
     for (let i = 0; i < 33; i++) {
-      arr[i + 33] = pk[i];
+      arr[i + 1] = pk[i];
     }
+    console.log(`[0x${uint8ArrToHexStr(pk)}] buying "${item_name}"`);
+
+    for (let i = 0; i < item_name_enc.byteLength; i++) {
+      arr[i + 34] = item_name_enc[i];
+    }
+
+    let socket = await this.getSocket();
     socket.send(arr);
   }
 
@@ -137,6 +155,7 @@ class LogicHandler {
       console.log(`Still connecting to "${socket_address}"...`);
       await this.sleep(1000);
     }
+    console.log(`Success, connected to "${socket_address}"`);
     return this.socket;
   }
 
@@ -231,16 +250,17 @@ class LogicHandler {
             }
           );
           let arr = new Uint8Array(
-            1 +
+            2 +
               pixel_nft_transaction.byteLength +
               katjing_transaction.byteLength
           );
           arr[0] = CMDOpcodes.MINED_TRANSACTION;
+          arr[1] = 2;
           for (let i = 0; i < pixel_nft_transaction.byteLength; i++) {
-            arr[i + 1] = pixel_nft_transaction[i];
+            arr[i + 2] = pixel_nft_transaction[i];
           }
           for (let i = 0; i < katjing_transaction.byteLength; i++) {
-            arr[i + 1 + pixel_nft_transaction.byteLength] =
+            arr[i + 2 + pixel_nft_transaction.byteLength] =
               katjing_transaction[i];
           }
           console.log(`Sending mined transactions.`);
@@ -255,9 +275,12 @@ class LogicHandler {
         }
         break;
       case CMDOpcodes.ASTEROID:
-        let image_url = new TextDecoder().decode(new Uint8Array(array));
-        console.log(image_url);
-        this.asteroidPage.gotAsteroidData(image_url);
+        console.log("Got asteroid data, updating...");
+        let store_item = JSON.parse(
+          new TextDecoder().decode(new Uint8Array(array))
+        );
+        this.asteroidPage.gotAsteroidsItemData(store_item);
+        break;
       case CMDOpcodes.USER_DATA:
         console.log("Got user data, updating...");
         let balance = BigInt(
@@ -267,6 +290,89 @@ class LogicHandler {
           this.walletPage.setState({ balance: balance });
         }
         console.log(`New balance: ${balance}`);
+        break;
+      case CMDOpcodes.UNMINED_TRANSACTION:
+        console.log("Got transaction!");
+        let [_, sk] = getKeyPair();
+        let i = 1;
+        let transaction = {};
+        transaction.version = array[i++];
+        console.log(`VER: ${transaction.version} | ${i}`);
+        transaction.input_count = array[i++];
+        console.log(`INC: ${transaction.input_count} | ${i}`);
+        transaction.inputs = [];
+        for (_ in [...Array(transaction.input_count).keys()]) {
+          let block_hash = array.slice(i, i + 32);
+          i += 32;
+          let transaction_hash = array.slice(i, i + 32);
+          i += 32;
+          let index = [];
+          do {
+            index.push([array[i]]);
+          } while (array[i++] >= 0x80);
+          console.log(`IND: ${index} | ${i}`);
+          let signature = array.slice(i, i + 64);
+          i += 64;
+          transaction.inputs.push({
+            block_hash: new Uint8Array(block_hash),
+            transaction_hash: new Uint8Array(transaction_hash),
+            index: new Uint8Array(index),
+            signature: new Uint8Array(signature),
+          });
+        }
+        transaction.output_count = array[i++];
+        console.log(`OUC: ${transaction.output_count} | ${i}`);
+        transaction.outputs = [];
+        for (_ in [...Array(transaction.output_count).keys()]) {
+          let output_value_version = array[i++];
+          let output_value = array.slice(i, i + 32);
+          i += 32;
+          let output_pk = array.slice(i, i + 33); // On purpose, compressed PKs are 33 bytes long
+          i += 33;
+          transaction.outputs.push({
+            value: {
+              version: output_value_version,
+              value: new Uint8Array(output_value),
+            },
+            pk: new Uint8Array(output_pk),
+          });
+        }
+        transaction.magic = new Uint8Array(array.slice(i));
+        console.log(`MAG: ${transaction.magic} | ${i}`);
+
+        let sign_digest = Uint8Array.from(
+          serializeTransaction(transaction, false)
+        );
+        let sign_hash = sha3_256(sign_digest);
+        const signature = Secp256k1.ecdsaSign(
+          hexStrToUint8Arr(sign_hash),
+          sk
+        ).signature;
+        for (let input of transaction.inputs) {
+          if (input.signature.reduce((a, b) => a + b) == 0) {
+            input.signature = signature;
+          }
+        }
+        let serialized_transaction = serializeTransaction(transaction, true);
+
+        console.log(serialized_transaction);
+        let start = performance.now();
+        let mined_transaction = await mineTransaction(
+          new Uint8Array(serialized_transaction),
+          (eta) => {
+            //this.grid.set_eta(eta);
+          }
+        );
+        console.log(mined_transaction);
+        let arr = new Uint8Array(2 + mined_transaction.byteLength);
+        arr[0] = CMDOpcodes.MINED_TRANSACTION;
+        arr[1] = 1;
+        for (let i = 0; i < mined_transaction.byteLength; i++) {
+          arr[i + 2] = mined_transaction[i];
+        }
+        console.log(`Sending signed and mined transaction.`);
+        let socket = await this.getSocket();
+        socket.send(arr.buffer);
         break;
       default:
         console.warn(

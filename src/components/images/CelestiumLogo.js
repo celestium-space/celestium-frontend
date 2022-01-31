@@ -5,6 +5,14 @@ export default function CelestiumLogo(props) {
   if (props.color) {
     color = props.color;
   }
+  let style = {
+    verticalAlign: "text-top",
+    display: "inline-block",
+    margin: props.margin,
+  };
+  if (props.hidden) {
+    return "";
+  }
   return (
     <svg
       version="1.1"
@@ -12,12 +20,9 @@ export default function CelestiumLogo(props) {
       xmlns="http://www.w3.org/2000/svg"
       x="0px"
       y="0px"
-      viewBox="0 0 500 500"
+      viewBox="80 20 340 500"
       height={props.lineHeight}
-      style={{
-        verticalAlign: "text-top",
-        display: "inline-block",
-      }}
+      style={style}
     >
       <polygon
         style={{
