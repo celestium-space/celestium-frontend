@@ -51,16 +51,9 @@ function App() {
     });
   }, [grid, pixelControls, asteroidsPage, walletPage]);
 
-  let style = {
-    display: "none",
-  };
-  if (!state.showInfo) {
-    style = {};
-  }
-
   return (
     <div>
-      <div style={style}>
+      <div>
         <Switch>
           <Route path="/asteroids">
             <div className="content">
@@ -72,7 +65,7 @@ function App() {
             <Wallet ref={walletPage} logic={state.logic}></Wallet>
             <Navbar active="wallet"></Navbar>
           </Route>
-          <Route path="/">
+          <Route path="/grid">
             <Grid
               ref={grid}
               pixelControls={pixelControls}
@@ -80,36 +73,12 @@ function App() {
             ></Grid>
             <Navbar active="grid"></Navbar>
           </Route>
+          <Route path="/">
+            <FrontPageInfo
+            ></FrontPageInfo>
+          </Route>
         </Switch>
-        <Button
-          circular
-          className="question-btn"
-          icon="question circle outline"
-          style={{
-            padding: "0",
-            fontSize: "40px",
-            backgroundColor: "#333333",
-            color: "white",
-            bottom: "11px",
-            right: "10px",
-            position: "absolute",
-          }}
-          onClick={() => {
-            setState({ showInfo: true });
-          }}
-        />
       </div>
-      <FrontPageInfo
-        showCelestiumInfo={state.showInfo}
-        setShowCelestiumInfo={(change) => {
-          setState({ showInfo: change });
-        }}
-        showCelestiumInfoOnStart={state.showCelestiumInfoOnStart}
-        setShowCelestiumInfoOnStart={(change) => {
-          setState({ showCelestiumInfoOnStart: change });
-          localStorage.setItem("showCelestiumInfoOnStart", change);
-        }}
-      ></FrontPageInfo>
     </div>
   );
 }

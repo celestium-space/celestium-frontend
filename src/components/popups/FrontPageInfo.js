@@ -5,12 +5,8 @@ import "./FrontPageInfo.css";
 import { Button, Checkbox } from "semantic-ui-react";
 
 export default function FrontPageInfo(props) {
-  let style = { display: "none" };
-  if (props.showCelestiumInfo) {
-    style = {};
-  }
   return (
-    <div className="global" style={style}>
+    <div className="global">
       <div className="center">
         <p>
           <br />
@@ -67,23 +63,9 @@ export default function FrontPageInfo(props) {
           the collective of mankind.
         </p>
         <div className="right">
-          <div className="ui checkbox" style={{ marginRight: "20px" }}>
-            <input
-              id="rememberCelestiumInfoConfirm"
-              type="checkbox"
-              className="example"
-              checked={props.doNotShowCelestiumInfoOnStart}
-              onChange={() => {
-                props.setdoNotShowCelestiumInfoOnStart(
-                  !props.doNotShowCelestiumInfoOnStart
-                );
-              }}
-            />
-            <label style={{ color: "white" }}>Do not show me this again</label>
-          </div>
           <Button
             onClick={() => {
-              props.setShowCelestiumInfo(false);
+              window.location.replace("https://celestium.space/grid");
             }}
           >
             Enter
