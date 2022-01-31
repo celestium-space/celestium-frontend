@@ -22,26 +22,43 @@ class Wallet extends Component {
       importSK: false,
       walletInfo: false,
       balance: null,
+      wallet_empty: false,
+      user_data: { balance: null, owned_store_items: [] },
     };
   }
 
   componentDidUpdate() {
-    console.log("TEST1");
-    if (this.state.balance == null && this.props.logic) {
-      console.log("TEST2");
+    if (this.state.user_data.balance == null && this.props.logic) {
       this.props.logic.getUserData();
     }
   }
 
   render() {
-    let actual_balance =
-      this.state.balance != null
-        ? `${(this.state.balance / DUST_PER_CEL).toString()}.${(
-            this.state.balance % DUST_PER_CEL
-          )
-            .toString()
-            .padStart(DUST_PER_CEL_POWER, "0")}`
-        : "Getting balance...";
+    let total_asteroids_value_cel = BigInt(0);
+    let total_asteroids_value_dollars = 0;
+    for (let item of this.state.user_data.owned_store_items) {
+      total_asteroids_value_cel += BigInt(item.store_value_in_dust);
+      total_asteroids_value_dollars += item.profit;
+    }
+
+    total_asteroids_value_cel = `${(
+      total_asteroids_value_cel / DUST_PER_CEL
+    ).toString()}.${(total_asteroids_value_cel % DUST_PER_CEL)
+      .toString()
+      .padStart(DUST_PER_CEL_POWER, "0")}`;
+
+    let actual_balance = "Getting balance...";
+    if (this.state.user_data.balance != null) {
+      let big_int_balance = BigInt(this.state.user_data.balance);
+      actual_balance = `${(big_int_balance / DUST_PER_CEL).toString()}.${(
+        big_int_balance % DUST_PER_CEL
+      )
+        .toString()
+        .padStart(DUST_PER_CEL_POWER, "0")}`;
+    }
+    if (actual_balance == BigInt(0)) {
+      this.setState({ wallet_empty: true });
+    }
     return (
       <div
         style={{
@@ -63,10 +80,14 @@ class Wallet extends Component {
             style={{ height: "100%", textAlign: "center" }}
             position="top center"
             content={actual_balance}
-            trigger={<div className="wallet-balance">{actual_balance}</div>}
+            trigger={
+              <div className="wallet-balance celestium-balance">
+                {actual_balance}
+              </div>
+            }
           />
           <CelestiumLogo
-            hidden={this.state.balance == null}
+            hidden={this.state.user_data.balance == null}
             label={actual_balance}
             margin="auto 20px auto 5px"
             lineHeight="14pt"
@@ -171,38 +192,20 @@ class Wallet extends Component {
                 </Table.Header>
 
                 <Table.Body>
-                  <Table.Row>
-                    <Table.Cell>FENGYUN 1C DEB</Table.Cell>
-                    <Table.Cell>1999-025EWV</Table.Cell>
-                    <Table.Cell>989.23 km</Table.Cell>
-                    <Table.Cell>7.39 km/s</Table.Cell>
-                    <Table.Cell>105.97 minDEB</Table.Cell>
-                    <Table.Cell>http://stuffin.space</Table.Cell>
+                  <Table.Row></Table.Row>
+                  <Table.Row></Table.Row>
+                  <Table.Row
+                    style={{
+                      fontSize: "14pt",
+                      height: "100px",
+                      lineHeight: "100px",
+                      marginLeft: "20px",
+                      textAlign: "center",
+                    }}
+                  >
+                    Space debris coming soon...
                   </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>FENGYUN 1C DEB</Table.Cell>
-                    <Table.Cell>1999-025EWV</Table.Cell>
-                    <Table.Cell>989.23 km</Table.Cell>
-                    <Table.Cell>7.39 km/s</Table.Cell>
-                    <Table.Cell>105.97 minDEB</Table.Cell>
-                    <Table.Cell>http://stuffin.space</Table.Cell>
-                  </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>FENGYUN 1C DEB</Table.Cell>
-                    <Table.Cell>1999-025EWV</Table.Cell>
-                    <Table.Cell>989.23 km</Table.Cell>
-                    <Table.Cell>7.39 km/s</Table.Cell>
-                    <Table.Cell>105.97 minDEB</Table.Cell>
-                    <Table.Cell>http://stuffin.space</Table.Cell>
-                  </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>FENGYUN 1C DEB</Table.Cell>
-                    <Table.Cell>1999-025EWV</Table.Cell>
-                    <Table.Cell>989.23 km</Table.Cell>
-                    <Table.Cell>7.39 km/s</Table.Cell>
-                    <Table.Cell>105.97 minDEB</Table.Cell>
-                    <Table.Cell>http://stuffin.space</Table.Cell>
-                  </Table.Row>
+                  <Table.Row></Table.Row>
                 </Table.Body>
               </Table>
             </div>
@@ -231,17 +234,20 @@ class Wallet extends Component {
                   marginBottom: "auto",
                 }}
               >
-                Aquired Asteroids
+                Aquired Asteroids:
               </Grid.Column>
               <Grid.Column style={{ marginTop: "auto", marginBottom: "auto" }}>
-                Total Value (CEL)
+                Total Value (
+                <CelestiumLogo margin="auto 2px auto 2px" lineHeight="14pt" />)
                 <br />
-                34.98237492102
+                <div className="celestium-balance">
+                  {total_asteroids_value_cel}
+                </div>
               </Grid.Column>
               <Grid.Column>
                 Est. Profit ($)
                 <br />
-                54.83 trillion
+                {total_asteroids_value_dollars}
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -260,26 +266,28 @@ class Wallet extends Component {
                 marginBottom: "5px",
               }}
             >
-              {_.range(1, this.columns + 1).map((x) =>
-                _.range(1, this.columns + 1).map((y) => (
-                  <Grid.Column
-                    style={{
-                      margin: "-1px",
-                      border: "1px solid white",
-                      width: "220px",
-                    }}
-                    key={(x * this.columns + y).toString()}
-                  >
-                    <WalletItem
-                      id={x * this.columns + y}
-                      onClick={(x) => this.onClick(x)}
-                    ></WalletItem>
-                  </Grid.Column>
-                ))
+              {this.state.user_data.owned_store_items.map(
+                (listValue, index) => {
+                  return (
+                    <Grid.Column
+                      style={{
+                        width: "266px",
+                        margin: "5px",
+                      }}
+                      key={index}
+                    >
+                      <WalletItem
+                        id={index}
+                        onClick={(x) => this.onClick(x)}
+                        item={listValue}
+                      ></WalletItem>
+                    </Grid.Column>
+                  );
+                }
               )}
             </Grid>
           </div>
-          <WalletEmptyPopup open={true}></WalletEmptyPopup>
+          <WalletEmptyPopup open={this.state.wallet_empty}></WalletEmptyPopup>
           <ExportSKPopup
             open={this.state.exportSK}
             onClose={() => {

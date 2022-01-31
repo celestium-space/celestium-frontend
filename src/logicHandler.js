@@ -283,13 +283,12 @@ class LogicHandler {
         break;
       case CMDOpcodes.USER_DATA:
         console.log("Got user data, updating...");
-        let balance = BigInt(
-          `0x${uint8ArrToHexStr(Uint8Array.from(array.slice(1)))}`
+        let user_data = JSON.parse(
+          new TextDecoder().decode(new Uint8Array(array)).trim()
         );
         if (this.walletPage) {
-          this.walletPage.setState({ balance: balance });
+          this.walletPage.setState({ user_data: user_data });
         }
-        console.log(`New balance: ${balance}`);
         break;
       case CMDOpcodes.UNMINED_TRANSACTION:
         console.log("Got transaction!");
@@ -297,9 +296,7 @@ class LogicHandler {
         let i = 1;
         let transaction = {};
         transaction.version = array[i++];
-        console.log(`VER: ${transaction.version} | ${i}`);
         transaction.input_count = array[i++];
-        console.log(`INC: ${transaction.input_count} | ${i}`);
         transaction.inputs = [];
         for (_ in [...Array(transaction.input_count).keys()]) {
           let block_hash = array.slice(i, i + 32);
@@ -310,7 +307,6 @@ class LogicHandler {
           do {
             index.push([array[i]]);
           } while (array[i++] >= 0x80);
-          console.log(`IND: ${index} | ${i}`);
           let signature = array.slice(i, i + 64);
           i += 64;
           transaction.inputs.push({
@@ -321,7 +317,6 @@ class LogicHandler {
           });
         }
         transaction.output_count = array[i++];
-        console.log(`OUC: ${transaction.output_count} | ${i}`);
         transaction.outputs = [];
         for (_ in [...Array(transaction.output_count).keys()]) {
           let output_value_version = array[i++];
@@ -338,7 +333,6 @@ class LogicHandler {
           });
         }
         transaction.magic = new Uint8Array(array.slice(i));
-        console.log(`MAG: ${transaction.magic} | ${i}`);
 
         let sign_digest = Uint8Array.from(
           serializeTransaction(transaction, false)

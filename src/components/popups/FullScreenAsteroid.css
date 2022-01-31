@@ -1,0 +1,11 @@
+.popup-content {
+  width: calc(min(85vw, 85vh));
+  height: calc(min(85vw, 85vh));
+}
+
+.video {
+  display: block;
+  margin: auto;
+  margin-top: calc(min(1.25vw, 1.25vw));
+  width: calc(min(80vw, 80vh));
+}

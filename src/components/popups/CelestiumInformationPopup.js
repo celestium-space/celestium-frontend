@@ -29,9 +29,15 @@ export default function CelestiumInformationPopup(props) {
           </button>
           <div className="header">Welcome to the Celestium Canvas</div>
           <div className="content" style={{ maxWidth: "500px" }}>
-            The image created here will be sent to the ISS in:
+            {/* The image created here will be sent to the ISS in: */}
+            The image created here will be sent to the ISS.
+            <br />
+            <br />
+            The specific date has not yet been set, but as soon as we know a{" "}
+            <i>countdown</i> will start here. However,{" "}
+            <i>pixels placed now still counts!</i>
           </div>
-          <SemanticPopup
+          {/* <SemanticPopup
             style={{ height: "100%", textAlign: "center" }}
             position="top center"
             content="This time is subject to change if deemed nessesary by NASA"
@@ -64,7 +70,7 @@ export default function CelestiumInformationPopup(props) {
                 </div>
               </div>
             }
-          />
+          /> */}
           <div className="content" style={{ width: "280px" }}>
             Click anywhere on the canvas to contribute, by placing your pixel
             and mine a Celestium Token (

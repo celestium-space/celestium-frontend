@@ -102,12 +102,10 @@ function App() {
       <FrontPageInfo
         showCelestiumInfo={state.showInfo}
         setShowCelestiumInfo={(change) => {
-          console.log("show change!");
           setState({ showInfo: change });
         }}
         showCelestiumInfoOnStart={state.showCelestiumInfoOnStart}
         setShowCelestiumInfoOnStart={(change) => {
-          console.log("show on start change!");
           setState({ showCelestiumInfoOnStart: change });
           localStorage.setItem("showCelestiumInfoOnStart", change);
         }}

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Grid, Image, Card } from "semantic-ui-react";
+import FullScreenAsteroid from "../popups/FullScreenAsteroid";
 import "./Wallet.css";
 
 function randInt(min, max) {
@@ -11,13 +12,10 @@ class WalletItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: `/images/${randInt(0, 2)}.gif`,
-      description: "lorem somthing here",
+      fullscreen: false,
+      item: props.item,
       id: props.id,
-      price: 10,
     };
-
-    this.onClick = props.onClick;
   }
 
   componentDidMount() {
@@ -35,15 +33,30 @@ class WalletItem extends Component {
   render() {
     return (
       <Card
-        style={{ backgroundColor: "#1a1a1a", boxShadow: "none" }}
+        style={{
+          backgroundColor: "#1a1a1a",
+          boxShadow: "none",
+        }}
         onClick={(x) => {
-          if (this.onClick) this.onClick(this.state.id);
+          this.setState({ fullscreen: true });
         }}
       >
-        <Image src={this.state.url} wrapped ui />
+        <video
+          autoPlay={true}
+          muted="muted"
+          playsInline
+          loop
+          className="column"
+          src={`videos-256/${this.state.item.full_name}.mp4`}
+          style={{
+            width: "256px",
+            paddingLeft: "0",
+            paddingRight: "14px",
+          }}
+        />
         <Card.Content>
           <Card.Header style={{ color: "white" }}>
-            1943 Anteros (1973 EC)
+            {this.state.item.full_name}
           </Card.Header>
           <Card.Description style={{ color: "white" }}>
             <Grid columns={2}>
@@ -58,14 +71,21 @@ class WalletItem extends Component {
                   Price (CEL)
                 </Grid.Column>
                 <Grid.Column>
-                  1.25 trillion
+                  {this.state.item.profit}
                   <br />
-                  1.092348
+                  {this.state.item.store_value_in_dust}
                 </Grid.Column>
               </Grid.Row>
             </Grid>
           </Card.Description>
         </Card.Content>
+        <FullScreenAsteroid
+          showFullScreenAsteroid={this.state.fullscreen}
+          onClose={() => {
+            this.setState({ fullscreen: false });
+          }}
+          item={this.state.item}
+        ></FullScreenAsteroid>
       </Card>
     );
   }
