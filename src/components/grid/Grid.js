@@ -88,7 +88,7 @@ class Grid extends Component {
     return (
       <div>
         <div className="gridContainer">
-          <TransformWrapper>
+          <TransformWrapper maxScale={30}>
             {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
               <React.Fragment>
                 <div className="ui vertical controls">
@@ -124,31 +124,31 @@ class Grid extends Component {
                     width="1000"
                     height="1000"
                     onMouseDown={() => {
-                      if (this.state.clickedOnce) {
-                        this.moved = false;
-                      } else {
-                        this.setState({ selectColorPopup: true });
-                      }
+                      this.moved = false;
                     }}
                     onMouseMove={() => {
                       this.moved = true;
                     }}
                     onMouseUp={(event) => {
                       if (!this.moved) {
-                        const rect = canvas.getBoundingClientRect();
-                        //---- Here be dragons ----
-                        const x = Math.floor(
-                          ((event.clientX - rect.left) * 1000) / rect.width
-                        );
-                        const y = Math.floor(
-                          ((event.clientY - rect.top) * 1000) / rect.height
-                        );
-                        //-------------------------
-                        this.setState({
-                          startMiningPopup: true,
-                          clickedX: x,
-                          clickedY: y,
-                        });
+                        if (this.state.clickedOnce) {
+                          const rect = canvas.getBoundingClientRect();
+                          //---- Here be dragons ----
+                          const x = Math.floor(
+                            ((event.clientX - rect.left) * 1000) / rect.width
+                          );
+                          const y = Math.floor(
+                            ((event.clientY - rect.top) * 1000) / rect.height
+                          );
+                          //-------------------------
+                          this.setState({
+                            startMiningPopup: true,
+                            clickedX: x,
+                            clickedY: y,
+                          });
+                        } else {
+                          this.setState({ selectColorPopup: true });
+                        }
                       }
                     }}
                   ></canvas>

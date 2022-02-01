@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import { Grid, Image, Card } from "semantic-ui-react";
 import FullScreenAsteroid from "../popups/FullScreenAsteroid";
 import "./Wallet.css";
+import CelestiumLogo from "../images/CelestiumLogo";
+
+const DUST_PER_CEL_POWER = 31;
+const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
 
 function randInt(min, max) {
   // min and max included
@@ -31,6 +35,12 @@ class WalletItem extends Component {
   }
 
   render() {
+    let asteroid_value_cel = `${(
+      BigInt(this.state.item.store_value_in_dust) / DUST_PER_CEL
+    ).toString()}.${(BigInt(this.state.item.store_value_in_dust) % DUST_PER_CEL)
+      .toString()
+      .padStart(DUST_PER_CEL_POWER, "0")}`;
+
     return (
       <Card
         style={{
@@ -60,20 +70,22 @@ class WalletItem extends Component {
           </Card.Header>
           <Card.Description style={{ color: "white" }}>
             <Grid columns={2}>
-              <Grid.Row
-                style={{
-                  fontSize: "10px",
-                }}
-              >
+              <Grid.Row>
+                <Grid.Column>Est. Profit ($)</Grid.Column>
+                <Grid.Column>{this.state.item.profit}</Grid.Column>
+              </Grid.Row>
+              <Grid.Row>
                 <Grid.Column>
-                  Est. Profit ($)
-                  <br />
-                  Price (CEL)
+                  Price (
+                  <CelestiumLogo
+                    label={asteroid_value_cel}
+                    margin="auto 2px auto 2px"
+                    lineHeight="14pt"
+                  />
+                  )
                 </Grid.Column>
-                <Grid.Column>
-                  {this.state.item.profit}
-                  <br />
-                  {this.state.item.store_value_in_dust}
+                <Grid.Column className="celestium-balance">
+                  {asteroid_value_cel}
                 </Grid.Column>
               </Grid.Row>
             </Grid>

@@ -304,7 +304,7 @@ function BuyPopup(props) {
                       {minutes.toString().padStart(2, "0")}:
                       {seconds.toString().padStart(2, "0")}
                     </i>
-                    <i hidden={!calculating}>Calculating...</i>
+                    <i hidden={!calculating}>Preparing NFT...</i>
                   </div>
                 );
               }}

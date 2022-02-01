@@ -8,6 +8,7 @@ import ExportSKPopup from "../popups/ExportSKPopup";
 import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
+import { IoWallet } from "react-icons/io5";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -59,6 +60,17 @@ class Wallet extends Component {
     let wallet_empty =
       this.state.user_data.balance != null &&
       BigInt(this.state.user_data.balance) == BigInt(0);
+    let asteroids_message =
+      this.state.user_data.balance == null ? (
+        "Loading your asteroids..."
+      ) : (
+        <div>
+          No asteroids found, yet! Remember you can buy asteroids in the{" "}
+          <a href="/wallet">
+            Wallet <IoWallet size={15} />
+          </a>
+        </div>
+      );
     return (
       <div
         style={{
@@ -295,7 +307,7 @@ class Wallet extends Component {
                     marginTop: "20vh",
                   }}
                 >
-                  Loading your asteroids...
+                  {asteroids_message}
                 </div>
               )}
             </Grid>
