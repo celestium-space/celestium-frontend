@@ -5,12 +5,15 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import CelestiumInformationPopup from "../popups/CelestiumInformationPopup";
 import PixelMiningPopup from "../popups/PixelMiningPopup";
 import PixelControls from "../pixelcontrols/PixelControls";
+import SelectColorPopup from "../popups/SelectColorPopup";
 
 class Grid extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      selectColorPopup: false,
+      clickedOnce: false,
       pixelControls: props.pixelControls,
       startMiningPopup: false,
       doneMiningPopup: false,
@@ -121,7 +124,11 @@ class Grid extends Component {
                     width="1000"
                     height="1000"
                     onMouseDown={() => {
-                      this.moved = false;
+                      if (this.state.clickedOnce) {
+                        this.moved = false;
+                      } else {
+                        this.setState({ selectColorPopup: true });
+                      }
                     }}
                     onMouseMove={() => {
                       this.moved = true;
@@ -146,7 +153,12 @@ class Grid extends Component {
                     }}
                   ></canvas>
                 </TransformComponent>
-                <PixelControls ref={this.state.pixelControls}></PixelControls>
+                <PixelControls
+                  clickedOnce={() => {
+                    this.setState({ clickedOnce: true });
+                  }}
+                  ref={this.state.pixelControls}
+                ></PixelControls>
               </React.Fragment>
             )}
           </TransformWrapper>
@@ -168,6 +180,12 @@ class Grid extends Component {
             currentTransaction={this.state.currentTransaction}
           ></PixelMiningPopup>
           <CelestiumInformationPopup open={true}></CelestiumInformationPopup>
+          <SelectColorPopup
+            open={this.state.selectColorPopup}
+            onClose={() => {
+              this.setState({ selectColorPopup: false });
+            }}
+          />
         </div>
       </div>
     );

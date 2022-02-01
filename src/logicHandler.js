@@ -354,7 +354,7 @@ class LogicHandler {
         let mined_transaction = await mineTransaction(
           new Uint8Array(serialized_transaction),
           (eta) => {
-            //this.grid.set_eta(eta);
+            this.asteroidPage.set_eta(eta);
           }
         );
         console.log(mined_transaction);
@@ -367,6 +367,8 @@ class LogicHandler {
         console.log(`Sending signed and mined transaction.`);
         let socket = await this.getSocket();
         socket.send(arr.buffer);
+
+        this.asteroidPage.doneMining();
         break;
       default:
         console.warn(

@@ -3,7 +3,7 @@ import _ from "lodash";
 import BuyPopup from "../popups/BuyPopup";
 import "./Asteroids.css";
 import { Grid, Button, Table } from "semantic-ui-react";
-import AstroidInfoPopup from "../popups/AstroidInfoPopup";
+import AsteroidInfoPopup from "../popups/AsteroidInfoPopup";
 
 class Asteroids extends Component {
   constructor(props) {
@@ -11,13 +11,25 @@ class Asteroids extends Component {
     this.state = {
       store_value_in_dust: "Fetching...",
       eta: "Calculating...",
-      astroidInfo: false,
+      asteroidInfo: false,
     };
+  }
+
+  set_eta(eta) {
+    this.setState({ eta: eta });
   }
 
   gotAsteroidsItemData(store_item) {
     this.setState({
       store_value_in_dust: store_item.store_value_in_dust,
+    });
+  }
+
+  doneMining() {
+    console.log("DONE!");
+    this.setState({
+      startMiningPopup: false,
+      doneMiningPopup: true,
     });
   }
 
@@ -60,6 +72,10 @@ class Asteroids extends Component {
             Asteroid Database
           </span>
           <BuyPopup
+            doneMiningPopup={this.state.doneMiningPopup}
+            onDoneMiningPopupClose={() => {
+              this.setState({ doneMiningPopup: false });
+            }}
             onClick={(name) => {
               this.onClick(name);
             }}
@@ -80,7 +96,7 @@ class Asteroids extends Component {
               color: "white",
             }}
             onClick={() => {
-              this.setState({ astroidInfo: true });
+              this.setState({ asteroidInfo: true });
             }}
           />
         </div>
@@ -89,12 +105,12 @@ class Asteroids extends Component {
           style={{ height: "calc(100vh - 10px)", width: "100%" }}
           src="asterank"
         ></iframe>
-          <AstroidInfoPopup
-            open={this.state.astroidInfo}
-            onClose={() => {
-              this.setState({ astroidInfo: false });
-            }}
-          ></AstroidInfoPopup>
+        <AsteroidInfoPopup
+          open={this.state.asteroidInfo}
+          onClose={() => {
+            this.setState({ asteroidInfo: false });
+          }}
+        ></AsteroidInfoPopup>
       </div>
     );
   }

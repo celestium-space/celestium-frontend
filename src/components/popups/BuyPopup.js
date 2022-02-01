@@ -3,6 +3,8 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import "../../utils.js";
+import { GiRingedPlanet } from "react-icons/gi";
+import { IoWallet } from "react-icons/io5";
 import CelestiumLogo from "../images/CelestiumLogo";
 import Countdown from "react-countdown";
 
@@ -307,6 +309,39 @@ function BuyPopup(props) {
                 );
               }}
             />
+          </div>
+        )}
+      </Popup>
+      <Popup
+        open={props.doneMiningPopup}
+        onOpen={() => {
+          setIsBuying(false);
+          setConfirmMiningPopup(false);
+        }}
+        onClose={() => {
+          props.onDoneMiningPopupClose();
+        }}
+        closeOnDocumentClick
+        modal
+        nested
+      >
+        {(close) => (
+          <div className="modal">
+            <button className="close" onClick={close}>
+              ×
+            </button>
+            <div className="header">Congratulations!</div>
+            <br />
+            <div className="content" style={{ maxWidth: "400px" }}>
+              You have aquired the asteroid: <i>{asterankObjectName}</i>
+            </div>
+            <div className="content" style={{ maxWidth: "300px" }}>
+              You can view all your asteroids and see your current balance in
+              your <a href="/wallet">Wallet</a>{" "}
+              <a href="/wallet" style={{ color: "white" }}>
+                <IoWallet size={15} />
+              </a>
+            </div>
           </div>
         )}
       </Popup>

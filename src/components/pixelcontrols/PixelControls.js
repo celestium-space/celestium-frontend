@@ -15,6 +15,7 @@ class PixelControls extends Component {
     this.onChange = props.onChange;
 
     let click = (i) => {
+      props.clickedOnce();
       this.setState({ active: i });
       if (this.onChange) this.onChange(i);
     };

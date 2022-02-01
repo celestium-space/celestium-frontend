@@ -104,7 +104,8 @@ function PixelMiningPopup(props) {
               estimated the time most transactions should statistically fall
               within. However, <i>it is very possible to go over time</i>. As
               mining is completely random, aborting and &quot;retrying&quot;
-              will unfortunately not help.
+              will unfortunately not help and will pontetially set you back, if
+              you have already mined one of the two transactions.
             </div>
             <div className="content" style={{ maxWidth: "500px" }}>
               You may see the countdown move irregularly. This is because the

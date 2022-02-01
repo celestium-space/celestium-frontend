@@ -251,7 +251,6 @@ class Wallet extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-          ­
           <div
             style={{
               overflowX: "scroll",
@@ -266,24 +265,38 @@ class Wallet extends Component {
                 marginBottom: "5px",
               }}
             >
-              {this.state.user_data.owned_store_items.map(
-                (listValue, index) => {
-                  return (
-                    <Grid.Column
-                      style={{
-                        width: "266px",
-                        margin: "5px",
-                      }}
-                      key={index}
-                    >
-                      <WalletItem
-                        id={index}
-                        onClick={(x) => this.onClick(x)}
-                        item={listValue}
-                      ></WalletItem>
-                    </Grid.Column>
-                  );
-                }
+              {this.state.user_data.owned_store_items.length > 0 ? (
+                this.state.user_data.owned_store_items.map(
+                  (listValue, index) => {
+                    return (
+                      <Grid.Column
+                        style={{
+                          width: "266px",
+                          margin: "5px",
+                        }}
+                        key={index}
+                      >
+                        <WalletItem
+                          id={index}
+                          onClick={(x) => this.onClick(x)}
+                          item={listValue}
+                        ></WalletItem>
+                      </Grid.Column>
+                    );
+                  }
+                )
+              ) : (
+                <div
+                  style={{
+                    fontSize: "20pt",
+                    textAlign: "center",
+                    height: "100%",
+                    margin: "auto",
+                    marginTop: "20vh",
+                  }}
+                >
+                  Loading your asteroids...
+                </div>
               )}
             </Grid>
           </div>
