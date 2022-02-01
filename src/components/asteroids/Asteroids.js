@@ -11,7 +11,7 @@ class Asteroids extends Component {
     this.state = {
       store_value_in_dust: "Fetching...",
       eta: "Calculating...",
-      asteroidInfo: false,
+      asteroidInfo: true,
     };
   }
 

@@ -2,7 +2,7 @@ import React from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
-import { Button } from "semantic-ui-react";
+import { MdOutlineGridOn } from "react-icons/md";
 
 export default function AsteroidInfoPopup(props) {
   return (
@@ -19,21 +19,21 @@ export default function AsteroidInfoPopup(props) {
             &times;
           </button>
           <div className="header">Asteroid Database</div>
-          <div
-            className="content"
-            style={{ textAlign: "left", maxWidth: "440px" }}
-          >
+          <div className="content" style={{ maxWidth: "460px" }}>
             <p>
               <br />
-              The database consists of 600,000 real near-earth asteroids.
+              This database consists of 600,000 real near-earth asteroids.
+              <br />
+              <br />
+              All the real asteroids are linked to the artworks AI-generated
+              space images, which you can get in the form of non-fungible tokens
+              (NFTs). You get the NFTs by clicking on one of the database&apos;s
+              600,000 asteroids name - and then you press the button “exchange
+              for Celestium” (upper-middle of the screen).
               <br />
               <br />
               Asteroid data such as details on orbits, mass and composition is
               used to estimate the costs and rewards of mining asteroids.
-              <br />
-              <br />
-              The associated AI generated image has been created from space
-              radiation collected aboard the International Space Station.
               <br />
               <br />
               Composition data is based on spectral classification and size.
@@ -44,8 +44,23 @@ export default function AsteroidInfoPopup(props) {
               data.
               <br />
               <br />
+              The associated AI generated images has been created from space
+              radiation collected aboard the International Space Station. The
+              same ISS where, while one AI is buisy collecting data for the
+              images, another collects all the transactions. These are the
+              transactions created by us forming the image on the{" "}
+              <a href="/wallet">Grid</a>{" "}
+              <a href="/wallet" style={{ color: "white" }}>
+                <MdOutlineGridOn size={15} />
+              </a>
+              . The AI consolidates these transactions into a block and mines
+              it. All while in space!
+              <br />
+              <br />
               The data is based upon Asterank&apos;s database sourced from the
               Minor Planet Center and NASA JPL.
+              <br />
+              <br />
             </p>
           </div>
         </div>
