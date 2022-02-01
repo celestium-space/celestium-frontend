@@ -2,7 +2,7 @@ import * as Secp256k1 from "secp256k1";
 import { sha3_256 } from "./sha3.min.js";
 import { randomBytes } from "crypto";
 
-const TRANSACTION_WORK = 0x10000000;
+const TRANSACTION_WORK = 0x1000000;
 
 const colorMap = [
   [0, 0, 0],

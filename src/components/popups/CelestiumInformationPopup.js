@@ -30,7 +30,8 @@ export default function CelestiumInformationPopup(props) {
           <div className="header">Welcome to the Celestium Canvas</div>
           <div className="content" style={{ maxWidth: "500px" }}>
             {/* The image created here will be sent to the ISS in: */}
-            The image created here will be sent to the ISS.
+            The image created here will be sent to the International Space
+            Station.
             <br />
             <br />
             The specific date has not yet been set, but as soon as we know a{" "}

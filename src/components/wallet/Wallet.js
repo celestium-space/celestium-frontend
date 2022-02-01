@@ -22,7 +22,6 @@ class Wallet extends Component {
       importSK: false,
       walletInfo: false,
       balance: null,
-      wallet_empty: false,
       user_data: { balance: null, owned_store_items: [] },
     };
   }
@@ -56,9 +55,10 @@ class Wallet extends Component {
         .toString()
         .padStart(DUST_PER_CEL_POWER, "0")}`;
     }
-    if (actual_balance == BigInt(0)) {
-      this.setState({ wallet_empty: true });
-    }
+
+    let wallet_empty =
+      this.state.user_data.balance != null &&
+      BigInt(this.state.user_data.balance) == BigInt(0);
     return (
       <div
         style={{
@@ -287,7 +287,7 @@ class Wallet extends Component {
               )}
             </Grid>
           </div>
-          <WalletEmptyPopup open={this.state.wallet_empty}></WalletEmptyPopup>
+          <WalletEmptyPopup open={wallet_empty}></WalletEmptyPopup>
           <ExportSKPopup
             open={this.state.exportSK}
             onClose={() => {
