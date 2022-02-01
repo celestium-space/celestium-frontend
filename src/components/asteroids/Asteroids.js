@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import _ from "lodash";
 import BuyPopup from "../popups/BuyPopup";
 import "./Asteroids.css";
+import { Grid, Button, Table } from "semantic-ui-react";
+import AstroidInfoPopup from "../popups/AstroidInfoPopup";
 
 class Asteroids extends Component {
   constructor(props) {
@@ -9,6 +11,7 @@ class Asteroids extends Component {
     this.state = {
       store_value_in_dust: "Fetching...",
       eta: "Calculating...",
+      astroidInfo: false,
     };
   }
 
@@ -66,12 +69,32 @@ class Asteroids extends Component {
             store_value_in_dust={this.state.store_value_in_dust}
             eta={this.state.eta}
           ></BuyPopup>
+
+          <Button
+            circular
+            icon="question circle outline"
+            style={{
+              padding: "0",
+              fontSize: "30px",
+              backgroundColor: "#333333",
+              color: "white",
+            }}
+            onClick={() => {
+              this.setState({ astroidInfo: true });
+            }}
+          />
         </div>
         <iframe
           id="asterankIframe"
           style={{ height: "calc(100vh - 10px)", width: "100%" }}
           src="asterank"
         ></iframe>
+          <AstroidInfoPopup
+            open={this.state.astroidInfo}
+            onClose={() => {
+              this.setState({ astroidInfo: false });
+            }}
+          ></AstroidInfoPopup>
       </div>
     );
   }
