@@ -18,7 +18,6 @@ export default function FrontPageInfo(props) {
         muted="muted"
         playsInline
         loop
-        className="column"
         src={`videos-full/${props.item.full_name}.mp4`}
         className="video"
       />
