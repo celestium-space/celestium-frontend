@@ -66,6 +66,7 @@ class Grid extends Component {
   }
 
   mine() {
+    this.set_eta("Getting mining data...");
     try {
       let canvas = document.getElementById("canvas");
       let ctx = canvas.getContext("2d");

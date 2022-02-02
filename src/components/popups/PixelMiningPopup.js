@@ -143,7 +143,12 @@ function PixelMiningPopup(props) {
                           {minutes.toString().padStart(2, "0")}:
                           {seconds.toString().padStart(2, "0")}
                         </i>
-                        <i hidden={!calculating}>Calculating...</i>
+                        <i hidden={!calculating}>
+                          {typeof props.eta === "string" ||
+                          props.eta instanceof String
+                            ? props.eta
+                            : "Calculating..."}
+                        </i>
                       </div>
                     }
                   >

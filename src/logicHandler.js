@@ -220,6 +220,7 @@ class LogicHandler {
       case CMDOpcodes.PIXEL_DATA:
         if (this.mining_data) {
           console.log("Got pixel data, continuing NFT creation");
+          this.grid.set_eta("Calculating...");
 
           let [x, y, index] = this.mining_data;
           let pixel_hash = array.slice(1, 29);
