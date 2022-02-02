@@ -55,8 +55,7 @@ function BuyPopup(props) {
         BigInt(props.store_value_in_dust) % 10000000000000000000000000000000n
       )
         .toString()
-        .padStart(31, "0")
-        .substring(0, 20)}...`;
+        .padStart(31, "0")}`;
 
   return (
     <div>
@@ -210,7 +209,13 @@ function BuyPopup(props) {
                       className="column content"
                       style={{ paddingLeft: "5px" }}
                     >
-                      <div>
+                      <div
+                        style={{
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                        }}
+                      >
                         5.57 trillion <br />
                         <b>1.25 trillion</b> <br />
                         <b>{store_value_in_cel}</b>
