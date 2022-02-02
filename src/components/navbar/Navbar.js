@@ -12,27 +12,27 @@ function Navbar(props) {
       <div className="navbar">
         <div className="menuContainer">
           <Menu id="semanticNavbar" icon compact inverted size="large">
-            <Menu.Item 
-            active={props.active == "grid"} 
-            onClick={() => {
-                window.location.replace("https://celestium.space/grid");
-            }}
+            <Menu.Item
+              active={props.active == "grid"}
+              onClick={() => {
+                window.location.replace("/grid");
+              }}
             >
               <IoColorPalette className="menuIcon" />
             </Menu.Item>
-            <Menu.Item 
-            onClick={() => {
-                window.location.replace("https://celestium.space/asteroids");
-            }}
+            <Menu.Item
+              onClick={() => {
+                window.location.replace("/asteroids");
+              }}
               active={props.active == "asteroids"}
             >
               <GiRingedPlanet className="menuIcon" />
             </Menu.Item>
-            <Menu.Item 
-            active={props.active == "wallet"}
-            onClick = {() => { 
-                window.location.replace("https://celestium.space/wallet");
-            }}
+            <Menu.Item
+              active={props.active == "wallet"}
+              onClick={() => {
+                window.location.replace("/wallet");
+              }}
             >
               <IoWallet className="menuIcon" />
             </Menu.Item>
@@ -54,7 +54,7 @@ function Navbar(props) {
           position: "absolute",
         }}
         onClick={() => {
-              window.location.replace("https://celestium.space/");
+          window.location.replace("/");
         }}
       />
     </div>
