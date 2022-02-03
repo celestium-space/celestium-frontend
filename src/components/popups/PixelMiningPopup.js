@@ -95,22 +95,13 @@ function PixelMiningPopup(props) {
               Do not close this window or the mining process will be aborted.
             </div>
             <div className="content" style={{ maxWidth: "500px" }}>
-              Mining is an inheritly random process. It is theoritically
-              possible to mine for hours or only a couple of seconds. However
-              the extremes are very unlikely.
+              Mining is an inherently random process. It is theoretically possible to mine for hours or only a couple of seconds. However, the extremes are very unlikely.
             </div>
             <div className="content" style={{ maxWidth: "500px" }}>
-              Based on how fast your device is currently mining we have
-              estimated the time most transactions should statistically fall
-              within. However, <i>it is very possible to go over time</i>. As
-              mining is completely random, aborting and &quot;retrying&quot;
-              will unfortunately not help and will pontetially set you back, if
-              you have already mined one of the two transactions.
+              Based on how fast your device is currently mining we have estimated the time most transactions should statistically fall within. However, <i>it is very possible to go over time.</i> As mining is completely random, aborting and retrying will unfortunately not help and will potentially set you back, if you have already mined one of the two transactions.
             </div>
             <div className="content" style={{ maxWidth: "500px" }}>
-              You may see the countdown move irregularly. This is because the
-              amount of resources that are available on your device can
-              fluctuate.
+              You may see the countdown move irregularly. This is because the number of resources that are available on your device can fluctuate.
             </div>
             <Countdown
               overtime={true}
@@ -145,7 +136,7 @@ function PixelMiningPopup(props) {
                         </i>
                         <i hidden={!calculating}>
                           {typeof props.eta === "string" ||
-                          props.eta instanceof String
+                            props.eta instanceof String
                             ? props.eta
                             : "Calculating..."}
                         </i>

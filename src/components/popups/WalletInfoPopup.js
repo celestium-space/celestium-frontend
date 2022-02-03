@@ -34,6 +34,7 @@ export default function WalletInfoPopup(props) {
             <br/>
             <br/>
             Click on the link in the table to track your space debris in real-time.
+            <br/>
           </div>
         </div>
       )}

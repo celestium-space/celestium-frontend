@@ -5,8 +5,12 @@ import { IoColorPalette, IoWallet } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { Button } from "semantic-ui-react";
+import { useState, useEffect, useRef } from "react";
 
 function Navbar(props) {
+
+  const [state, setState] = useState({infoOpen: false});
+
   return (
     <div>
       <div className="navbar">
@@ -43,7 +47,7 @@ function Navbar(props) {
       <Button
         circular
         className="question-btn"
-        icon="question circle outline"
+        icon="info circle"
         style={{
           padding: "0",
           fontSize: "40px",
@@ -54,9 +58,11 @@ function Navbar(props) {
           position: "absolute",
         }}
         onClick={() => {
-          window.location.replace("/");
+                window.location.replace("/info");
         }}
-      />
+      >
+        </Button>
+
     </div>
   );
 }
