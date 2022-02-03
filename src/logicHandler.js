@@ -199,8 +199,6 @@ class LogicHandler {
             .map((c) => intToColor(c))
             .flat();
           this.grid.updatePixels(0, 0, 1000, 1000, color);
-        } else {
-          console.error("No grid initialized");
         }
         break;
       case CMDOpcodes.UPDATE_PIXEL:
@@ -213,8 +211,6 @@ class LogicHandler {
             .flat();
           console.log(`Got new pixel (${x}, ${y}) -> ${color}`);
           this.grid.updatePixels(x, y, 1, 1, color);
-        } else {
-          console.error("No grid initialized");
         }
         break;
       case CMDOpcodes.PIXEL_DATA:
