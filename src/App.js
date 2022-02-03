@@ -10,6 +10,7 @@ import "./App.css";
 import Wallet from "./components/wallet/Wallet";
 import FrontPageInfo from "./components/popups/FrontPageInfo";
 import { Button } from "semantic-ui-react";
+import NavbarInfoPopup from "./components/popups/NavbarInfoPopup";
 
 function App() {
   window.app_handle = this;
@@ -72,6 +73,10 @@ function App() {
               logic={state.logic}
             ></Grid>
             <Navbar active="grid"></Navbar>
+          </Route>
+          <Route path="/info">
+            <NavbarInfoPopup
+            ></NavbarInfoPopup>
           </Route>
           <Route path="/">
             <FrontPageInfo
