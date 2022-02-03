@@ -8,7 +8,7 @@ import ExportSKPopup from "../popups/ExportSKPopup";
 import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
-import { IoWallet } from "react-icons/io5";
+import { IoColorPalette } from "react-icons/io5";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -66,8 +66,8 @@ class Wallet extends Component {
       ) : (
         <div>
           No asteroids found, yet! Remember you can buy asteroids in the{" "}
-          <a href="/wallet">
-            Wallet <IoWallet size={15} />
+          <a href="/asteroids">
+            Asteroids Market <IoColorPalette size={15} />
           </a>
         </div>
       );
