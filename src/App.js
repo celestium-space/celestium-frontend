@@ -21,6 +21,7 @@ function App() {
     showInfo: null,
     showCelestiumInfoOnStart: null,
   });
+  let [backendDown, setBackendDown] = useState(false);
   let grid = useRef();
   let pixelControls = useRef();
   let location = useLocation();
@@ -44,7 +45,8 @@ function App() {
       grid.current,
       pixelControls.current,
       asteroidsPage.current,
-      walletPage.current
+      walletPage.current,
+      setBackendDown
     );
     setState({
       showInfo: showCelestiumInfoOnStart,
@@ -83,7 +85,7 @@ function App() {
           </Route>
         </Switch>
       </div>
-      <Down open={(state?.logic?.socket?.readyState !== WebSocket.OPEN) && (state?.logic?.socket?.readyState !== WebSocket.CONNECTING)} />
+      <Down open={backendDown} />
     </div>
   );
 }

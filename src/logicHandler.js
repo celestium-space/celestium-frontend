@@ -34,11 +34,12 @@ const CMDOpcodes = {
 };
 
 class LogicHandler {
-  constructor(grid, pixelControls, asteroidPage, walletPage) {
+  constructor(grid, pixelControls, asteroidPage, walletPage, setBackendDown) {
     this.grid = grid;
     this.pixelControls = pixelControls;
     this.asteroidPage = asteroidPage;
     this.walletPage = walletPage;
+    this.setBackendDown = setBackendDown;
 
     this.balance = 0n;
     if (this.grid) {
@@ -157,8 +158,10 @@ class LogicHandler {
     }
     if (this.socket.readyState == WebSocket.OPEN) {
       console.log(`Success, connected to "${socket_address}"`);
+      this.setBackendDown(false);
     } else {
       console.log(`Error connecting to "${socket_address}"`);
+      this.setBackendDown(true);
     }
     return this.socket;
   }
