@@ -11,6 +11,7 @@ import Wallet from "./components/wallet/Wallet";
 import FrontPageInfo from "./components/popups/FrontPageInfo";
 import { Button } from "semantic-ui-react";
 import NavbarInfoPopup from "./components/popups/NavbarInfoPopup";
+import Down from "./components/popups/Down";
 
 function App() {
   window.app_handle = this;
@@ -75,15 +76,14 @@ function App() {
             <Navbar active="grid"></Navbar>
           </Route>
           <Route path="/info">
-            <NavbarInfoPopup
-            ></NavbarInfoPopup>
+            <NavbarInfoPopup></NavbarInfoPopup>
           </Route>
           <Route path="/">
-            <FrontPageInfo
-            ></FrontPageInfo>
+            <FrontPageInfo></FrontPageInfo>
           </Route>
         </Switch>
       </div>
+      <Down open={true} />
     </div>
   );
 }
