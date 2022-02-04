@@ -155,7 +155,11 @@ class LogicHandler {
       console.log(`Still connecting to "${socket_address}"...`);
       await this.sleep(1000);
     }
-    console.log(`Success, connected to "${socket_address}"`);
+    if (this.socket.readyState == WebSocket.OPEN) {
+      console.log(`Success, connected to "${socket_address}"`);
+    } else {
+      console.log(`Error connecting to "${socket_address}"`);
+    }
     return this.socket;
   }
 
