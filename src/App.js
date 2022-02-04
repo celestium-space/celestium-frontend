@@ -83,7 +83,7 @@ function App() {
           </Route>
         </Switch>
       </div>
-      <Down open={true} />
+      <Down open={(state?.logic?.socket?.readyState !== WebSocket.OPEN) && (state?.logic?.socket?.readyState !== WebSocket.CONNECTING)} />
     </div>
   );
 }
