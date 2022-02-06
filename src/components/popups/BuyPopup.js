@@ -338,11 +338,18 @@ function BuyPopup(props) {
             <div className="header">Congratulations!</div>
             <br />
             <div className="content" style={{ maxWidth: "400px" }}>
-              You have aquired the asteroid: <i>{asterankObjectName}</i>
+              You have aquired the asteroid:
+              <br />
+              <i>{asterankObjectName}</i>
+              <br />
+              Unfortunately the space around earth is getting polluted, so you
+              have also been asigned a piece of the space garbage:
+              <br />
+              <i>{props.debris_name}</i>.
             </div>
             <div className="content" style={{ maxWidth: "300px" }}>
-              You can view all your asteroids and see your current balance in
-              your <a href="/wallet">Wallet</a>{" "}
+              You can view and read more about your asteroids and space debris
+              and see your current balance in your <a href="/wallet">Wallet</a>{" "}
               <a href="/wallet" style={{ color: "white" }}>
                 <IoWallet size={15} />
               </a>

@@ -2,7 +2,7 @@ import React from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
-import { MdOutlineGridOn } from "react-icons/md";
+import { IoColorPalette } from "react-icons/io5";
 
 export default function AsteroidInfoPopup(props) {
   return (
@@ -51,7 +51,7 @@ export default function AsteroidInfoPopup(props) {
               transactions created by us forming the image on the{" "}
               <a href="/wallet">Grid</a>{" "}
               <a href="/wallet" style={{ color: "white" }}>
-                <MdOutlineGridOn size={15} />
+                <IoColorPalette size={15} />
               </a>
               . The AI consolidates these transactions into a block and mines
               it. All while in space!

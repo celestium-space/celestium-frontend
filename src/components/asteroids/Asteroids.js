@@ -12,7 +12,12 @@ class Asteroids extends Component {
       store_value_in_dust: "Fetching...",
       eta: "Calculating...",
       asteroidInfo: true,
+      debris_name: "Unknown debris",
     };
+  }
+
+  set_debris_name(name) {
+    this.setState({ debris_name: name });
   }
 
   set_eta(eta) {
@@ -82,6 +87,7 @@ class Asteroids extends Component {
             onConfirm={(name) => {
               this.mineTransaction(name);
             }}
+            debris_name={this.state.debris_name}
             store_value_in_dust={this.state.store_value_in_dust}
             eta={this.state.eta}
           ></BuyPopup>

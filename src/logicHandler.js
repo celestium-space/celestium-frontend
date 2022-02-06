@@ -290,6 +290,7 @@ class LogicHandler {
         let user_data = JSON.parse(
           new TextDecoder().decode(new Uint8Array(array)).trim()
         );
+        console.log(user_data);
         if (this.walletPage) {
           this.walletPage.setState({ user_data: user_data });
         }
@@ -298,6 +299,17 @@ class LogicHandler {
         console.log("Got transaction!");
         let [_, sk] = getKeyPair();
         let i = 1;
+
+        let debris_name = "";
+        do {
+          debris_name += String.fromCharCode(array[i]);
+        } while (array[++i] != 0);
+        i++;
+        console.log(debris_name);
+        console.log(`${i} | ${array.slice(0, 20)}`);
+
+        this.asteroidPage.set_debris_name(debris_name);
+
         let transaction = {};
         transaction.version = array[i++];
         transaction.input_count = array[i++];
@@ -353,15 +365,12 @@ class LogicHandler {
         }
         let serialized_transaction = serializeTransaction(transaction, true);
 
-        console.log(serialized_transaction);
-        let start = performance.now();
         let mined_transaction = await mineTransaction(
           new Uint8Array(serialized_transaction),
           (eta) => {
             this.asteroidPage.set_eta(eta);
           }
         );
-        console.log(mined_transaction);
         let arr = new Uint8Array(2 + mined_transaction.byteLength);
         arr[0] = CMDOpcodes.MINED_TRANSACTION;
         arr[1] = 1;

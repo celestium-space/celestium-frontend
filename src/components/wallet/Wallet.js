@@ -8,7 +8,7 @@ import ExportSKPopup from "../popups/ExportSKPopup";
 import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
-import { IoColorPalette } from "react-icons/io5";
+import { GiRingedPlanet } from "react-icons/gi";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -23,7 +23,7 @@ class Wallet extends Component {
       importSK: false,
       walletInfo: false,
       balance: null,
-      user_data: { balance: null, owned_store_items: [] },
+      user_data: { balance: null, owned_store_items: [], owned_debris: [] },
     };
   }
 
@@ -67,7 +67,7 @@ class Wallet extends Component {
         <div>
           No asteroids found, yet! Remember you can buy asteroids in the{" "}
           <a href="/asteroids">
-            Asteroids Market <IoColorPalette size={15} />
+            Asteroids Market <GiRingedPlanet size={15} />
           </a>
         </div>
       );
@@ -196,28 +196,33 @@ class Wallet extends Component {
                   <Table.Row>
                     <Table.HeaderCell>Name</Table.HeaderCell>
                     <Table.HeaderCell>Int&apos;l Designator</Table.HeaderCell>
+                    <Table.HeaderCell>Type</Table.HeaderCell>
                     <Table.HeaderCell>Altitude</Table.HeaderCell>
                     <Table.HeaderCell>Velocity</Table.HeaderCell>
                     <Table.HeaderCell>Period</Table.HeaderCell>
                     <Table.HeaderCell>Track Location</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
-
                 <Table.Body>
-                  <Table.Row></Table.Row>
-                  <Table.Row></Table.Row>
-                  <Table.Row
-                    style={{
-                      fontSize: "14pt",
-                      height: "100px",
-                      lineHeight: "100px",
-                      marginLeft: "20px",
-                      textAlign: "center",
-                    }}
-                  >
-                    Space debris coming soon...
-                  </Table.Row>
-                  <Table.Row></Table.Row>
+                  {this.state.user_data.owned_debris.map((debris, index) => {
+                    return (
+                      <Table.Row key={debris._id}>
+                        <Table.Cell>{debris.OBJECT_NAME}</Table.Cell>
+                        <Table.Cell>{debris.INTLDES}</Table.Cell>
+                        <Table.Cell>{debris.OBJECT_TYPE}</Table.Cell>
+                        <Table.Cell></Table.Cell>
+                        <Table.Cell></Table.Cell>
+                        <Table.Cell></Table.Cell>
+                        <Table.Cell>
+                          <a
+                            href={`http://stuffin.space/?intldes=${debris.INTLDES}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >{`http://stuffin.space/?intldes=${debris.INTLDES}`}</a>
+                        </Table.Cell>
+                      </Table.Row>
+                    );
+                  })}
                 </Table.Body>
               </Table>
             </div>
