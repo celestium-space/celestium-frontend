@@ -9,6 +9,8 @@ import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
 import { GiRingedPlanet } from "react-icons/gi";
+import { FilePicker } from "react-file-picker";
+import { importSecretKey } from "../../utils";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -20,7 +22,6 @@ class Wallet extends Component {
 
     this.state = {
       exportSK: false,
-      importSK: false,
       walletInfo: false,
       balance: null,
       user_data: { balance: null, owned_store_items: [], owned_debris: [] },
@@ -105,13 +106,16 @@ class Wallet extends Component {
             lineHeight="14pt"
           />
           <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
-            <Button
-              onClick={() => {
-                this.setState({ importSK: true });
+            <FilePicker
+              extensions={["txt"]}
+              onChange={(FileObject) => {
+                FileObject.text().then((c) => {
+                  importSecretKey(c);
+                });
               }}
             >
-              Import Secret Key
-            </Button>
+              <Button>Import Secret Key</Button>
+            </FilePicker>
           </div>
           <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
             <Button

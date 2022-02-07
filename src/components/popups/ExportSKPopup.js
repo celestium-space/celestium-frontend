@@ -6,11 +6,13 @@ import { Button } from "semantic-ui-react";
 import { getKeyPair, uint8ArrToHexStr } from "../../utils";
 
 export default function ExportSKPopup(props) {
-  let [_, sk] = getKeyPair();
-  sk = uint8ArrToHexStr(sk);
+  let sks = "";
+  for (let [_, sk] of getKeyPair()) {
+    sks += uint8ArrToHexStr(sk);
+  }
   let url = window.webkitURL || window.URL;
   let skHref = url.createObjectURL(
-    new Blob([sk], { type: "text/plain", name: "sk.txt" })
+    new Blob([sks], { type: "text/plain", name: "sk.txt" })
   );
 
   return (

@@ -156,20 +156,60 @@ function startMiningThreadIfNeeded(
   }
 }
 
+const zip = (...arr) =>
+  Array.from({ length: Math.max(...arr.map((a) => a.length)) }, (_, i) =>
+    arr.map((a) => a[i])
+  );
+
+function importSecretKey(c) {
+  for (let sk of c.match(/.{1,64}/g)) {
+    if (sk.length != 64 || !Secp256k1.privateKeyVerify(hexStrToUint8Arr(sk))) {
+      console.error("Could not verify SK");
+    } else {
+      let pk = uint8ArrToHexStr(
+        Secp256k1.publicKeyCreate(hexStrToUint8Arr(sk))
+      );
+      let pks = localStorage.getItem("pk_bin");
+      let sks = localStorage.getItem("sk_bin");
+      if (!pks.includes(pk) && !sks.includes(sk)) {
+        localStorage.setItem("pk_bin", pks + pk);
+        localStorage.setItem("sk_bin", sks + sk);
+      } else {
+        console.error("Wallet already contains keypair");
+      }
+    }
+  }
+  location.reload();
+}
+
 function getKeyPair() {
-  let pk = localStorage.getItem("pk_bin");
-  let sk = localStorage.getItem("sk_bin");
-  if (pk && sk) {
-    return [hexStrToUint8Arr(pk), hexStrToUint8Arr(sk)];
+  let pks = localStorage.getItem("pk_bin");
+  let sks = localStorage.getItem("sk_bin");
+  if (pks && sks) {
+    let to_ret = [];
+    for (let pair of zip(pks.match(/.{1,66}/g), sks.match(/.{1,64}/g))) {
+      let [pk, sk] = pair;
+      if (pk.length != 66) {
+        console.error("PK wrong length");
+      }
+      if (
+        sk.length != 64 ||
+        !Secp256k1.privateKeyVerify(hexStrToUint8Arr(sk))
+      ) {
+        console.error("Could not verify SK");
+      }
+      to_ret.push([hexStrToUint8Arr(pk), hexStrToUint8Arr(sk)]);
+    }
+    return to_ret;
   } else {
     console.log("No keys in localstorage, generating new pair");
     while (true) {
-      sk = randomBytes(32);
+      let sk = randomBytes(32);
       if (Secp256k1.privateKeyVerify(sk)) {
-        pk = Secp256k1.publicKeyCreate(sk);
+        let pk = Secp256k1.publicKeyCreate(sk);
         localStorage.setItem("pk_bin", uint8ArrToHexStr(pk));
         localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
-        return [pk, sk];
+        return [[pk, sk]];
       }
     }
   }
@@ -251,7 +291,7 @@ function generateAndMinePixelNFT(
   set_eta
 ) {
   let prom = new Promise((resolve, reject) => {
-    let [pk, _] = getKeyPair();
+    let [pk, _] = getKeyPair()[0];
     let pixel_nft = create_pixel_nft(
       Uint8Array.from(block_hash),
       Uint8Array.from(prev_pixel_hash),
@@ -374,6 +414,7 @@ export {
   intToRgb,
   uint8ArrToHexStr,
   hexStrToUint8Arr,
+  importSecretKey,
   getKeyPair,
   serializeTransaction,
 };
