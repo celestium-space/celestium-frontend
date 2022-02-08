@@ -254,6 +254,7 @@ function getKeyPair() {
       let sk = randomBytes(32);
       if (Secp256k1.privateKeyVerify(sk)) {
         localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
+        let pk = Secp256k1.publicKeyCreate(sk);
         return [pk, sk];
       }
     }
