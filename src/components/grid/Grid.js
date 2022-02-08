@@ -89,7 +89,7 @@ class Grid extends Component {
     return (
       <div>
         <div className="gridContainer">
-          <TransformWrapper maxScale={30}>
+          <TransformWrapper maxScale={200}>
             {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
               <React.Fragment>
                 <div className="ui vertical controls">
