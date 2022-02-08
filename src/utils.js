@@ -186,8 +186,13 @@ function importSecretKey(new_sk, replace) {
 }
 
 function getKeyPair() {
-  let sk = hexStrToUint8Arr(localStorage.getItem("sk_bin"));
-  if (sk && sk.length == 32 && Secp256k1.privateKeyVerify(sk)) {
+  let sk = localStorage.getItem("sk_bin");
+  if (
+    sk &&
+    sk.length == 64 &&
+    Secp256k1.privateKeyVerify(hexStrToUint8Arr(sk))
+  ) {
+    sk = hexStrToUint8Arr(sk);
     let pk = Secp256k1.publicKeyCreate(sk);
     return [pk, sk];
   } else {
