@@ -58,7 +58,7 @@ export default function ExportSKPopup(props) {
             <br />
             <i>REMEMBER:</i> do not share your Secret Key with others. */}
           </div>
-          <div className="actions">
+          {/* <div className="actions">
             <FilePicker
               extensions={["txt"]}
               onChange={(FileObject) => {
@@ -83,7 +83,7 @@ export default function ExportSKPopup(props) {
                 Use Existing Secret Key
               </Button>
             </FilePicker>
-          </div>
+          </div> */}
         </div>
       )}
     </Popup>
