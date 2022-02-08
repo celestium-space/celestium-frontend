@@ -69,18 +69,17 @@ class LogicHandler {
   }
 
   getUserData() {
-    for (let [pk, _] of getKeyPair()) {
-      this.getSocket().then((socket) => {
-        console.log(
-          `Connected (${
-            socket.readyState
-          }), getting userdata for [0x${uint8ArrToHexStr(pk)}]`
-        );
-        setTimeout(function () {
-          socket.send(Uint8Array.from([CMDOpcodes.GET_USER_DATA, ...pk]));
-        }, 2000);
-      });
-    }
+    let [pk, _] = getKeyPair();
+    this.getSocket().then((socket) => {
+      console.log(
+        `Connected (${
+          socket.readyState
+        }), getting userdata for [0x${uint8ArrToHexStr(pk)}]`
+      );
+      setTimeout(function () {
+        socket.send(Uint8Array.from([CMDOpcodes.GET_USER_DATA, ...pk]));
+      }, 2000);
+    });
   }
 
   async getAsteroid(item_name) {
@@ -104,7 +103,7 @@ class LogicHandler {
     let arr = new Uint8Array(34 + item_name_enc.byteLength);
     arr[0] = CMDOpcodes.BUY_ASTEROID;
 
-    let [pk, _] = getKeyPair()[0];
+    let [pk, _] = getKeyPair();
     for (let i = 0; i < 33; i++) {
       arr[i + 1] = pk[i];
     }
@@ -169,7 +168,7 @@ class LogicHandler {
 
   async clickPixel(x, y, current_rgb) {
     let index = this.pixelControls.state.active;
-    let [pk, _] = getKeyPair()[0];
+    let [pk, _] = getKeyPair();
     this.getSocket().then((socket) => {
       this.mining_data = [x, y, index];
       let to_send = Uint8Array.from([
@@ -311,7 +310,7 @@ class LogicHandler {
         break;
       case CMDOpcodes.UNMINED_TRANSACTION:
         console.log("Got transaction!");
-        let [_, sk] = getKeyPair()[0];
+        let [_, sk] = getKeyPair();
         let i = 1;
 
         let debris_name = "";

@@ -161,55 +161,44 @@ const zip = (...arr) =>
     arr.map((a) => a[i])
   );
 
-function importSecretKey(c) {
-  for (let sk of c.match(/.{1,64}/g)) {
-    if (sk.length != 64 || !Secp256k1.privateKeyVerify(hexStrToUint8Arr(sk))) {
-      console.error("Could not verify SK");
-    } else {
-      let pk = uint8ArrToHexStr(
-        Secp256k1.publicKeyCreate(hexStrToUint8Arr(sk))
-      );
-      let pks = localStorage.getItem("pk_bin");
-      let sks = localStorage.getItem("sk_bin");
-      if (!pks.includes(pk) && !sks.includes(sk)) {
+function importSecretKey(new_sk, replace) {
+  if (
+    new_sk.length != 64 ||
+    !Secp256k1.privateKeyVerify(hexStrToUint8Arr(new_sk))
+  ) {
+    console.error("Could not verify SK");
+  } else {
+    let new_pk = uint8ArrToHexStr(
+      Secp256k1.publicKeyCreate(hexStrToUint8Arr(new_sk))
+    );
+    let [old_pk, old_sk] = getKeyPair();
+    if (!new_pk == old_pk && !new_sk == old_sk) {
+      if (replace) {
         localStorage.setItem("pk_bin", pks + pk);
-        localStorage.setItem("sk_bin", sks + sk);
-      } else {
-        console.error("Wallet already contains keypair");
+        localStorage.setItem("sk_bin", sks + new_sk);
       }
+    } else {
+      console.error("Wallet already contains keypair");
     }
   }
+
   location.reload();
 }
 
 function getKeyPair() {
-  let pks = localStorage.getItem("pk_bin");
-  let sks = localStorage.getItem("sk_bin");
-  if (pks && sks) {
-    let to_ret = [];
-    for (let pair of zip(pks.match(/.{1,66}/g), sks.match(/.{1,64}/g))) {
-      let [pk, sk] = pair;
-      if (pk.length != 66) {
-        console.error("PK wrong length");
-      }
-      if (
-        sk.length != 64 ||
-        !Secp256k1.privateKeyVerify(hexStrToUint8Arr(sk))
-      ) {
-        console.error("Could not verify SK");
-      }
-      to_ret.push([hexStrToUint8Arr(pk), hexStrToUint8Arr(sk)]);
-    }
-    return to_ret;
+  let sk = hexStrToUint8Arr(localStorage.getItem("sk_bin"));
+  if (sk && sk.length == 32 && Secp256k1.privateKeyVerify(sk)) {
+    let pk = Secp256k1.publicKeyCreate(sk);
+    return [pk, sk];
   } else {
-    console.log("No keys in localstorage, generating new pair");
+    console.error(
+      "Could not verify SK or no SK key in localstorage, generating new SK"
+    );
     while (true) {
       let sk = randomBytes(32);
       if (Secp256k1.privateKeyVerify(sk)) {
-        let pk = Secp256k1.publicKeyCreate(sk);
-        localStorage.setItem("pk_bin", uint8ArrToHexStr(pk));
         localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
-        return [[pk, sk]];
+        return [pk, sk];
       }
     }
   }
@@ -275,8 +264,8 @@ function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
   transaction[66] = c & 0xff;
   transaction[67] = 1; // Transaction output count
   transaction[68] = 1; // Transaction output value version
-  let actual_nft = transaction.slice(35, 68);
-  let hash = sha3_256(uint8ArrToHexStr(actual_nft));
+  let actual_nft = transaction.slice(34, 67);
+  let hash = sha3_256(actual_nft);
   transaction.set(hexStrToUint8Arr(hash), 69);
   transaction.set(pk, 101);
   return transaction;
@@ -291,7 +280,7 @@ function generateAndMinePixelNFT(
   set_eta
 ) {
   let prom = new Promise((resolve, reject) => {
-    let [pk, _] = getKeyPair()[0];
+    let [pk, _] = getKeyPair();
     let pixel_nft = create_pixel_nft(
       Uint8Array.from(block_hash),
       Uint8Array.from(prev_pixel_hash),

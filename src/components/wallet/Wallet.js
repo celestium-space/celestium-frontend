@@ -5,12 +5,11 @@ import WalletEmptyPopup from "../popups/WalletEmptyPopup";
 import _ from "lodash";
 import "./Wallet.css";
 import ExportSKPopup from "../popups/ExportSKPopup";
+import ImportSKPopup from "../popups/ImportSKPopup";
 import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
 import { GiRingedPlanet } from "react-icons/gi";
-import { FilePicker } from "react-file-picker";
-import { importSecretKey } from "../../utils";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -106,16 +105,13 @@ class Wallet extends Component {
             lineHeight="14pt"
           />
           <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
-            <FilePicker
-              extensions={["txt"]}
-              onChange={(FileObject) => {
-                FileObject.text().then((c) => {
-                  importSecretKey(c);
-                });
+            <Button
+              onClick={() => {
+                this.setState({ importSK: true });
               }}
             >
-              <Button>Import Secret Key</Button>
-            </FilePicker>
+              Import Secret Key
+            </Button>
           </div>
           <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
             <Button
@@ -322,6 +318,12 @@ class Wallet extends Component {
             </Grid>
           </div>
           <WalletEmptyPopup open={wallet_empty}></WalletEmptyPopup>
+          <ImportSKPopup
+            open={this.state.importSK}
+            onClose={() => {
+              this.setState({ importSK: false });
+            }}
+          ></ImportSKPopup>
           <ExportSKPopup
             open={this.state.exportSK}
             onClose={() => {
