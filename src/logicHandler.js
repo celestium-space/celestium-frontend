@@ -394,9 +394,7 @@ class LogicHandler {
           arr[i + 2] = mined_transaction[i];
         }
         console.log(
-          `Sending signed and mined transaction: ${uint8ArrToHexStr(
-            arr.buffer
-          )}`
+          `Sending signed and mined transaction: ${uint8ArrToHexStr(arr)}`
         );
         let socket = await this.getSocket();
         socket.send(arr.buffer);

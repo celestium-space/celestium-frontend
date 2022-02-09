@@ -31,7 +31,6 @@ class Asteroids extends Component {
   }
 
   doneMining() {
-    console.log("DONE!");
     this.setState({
       startMiningPopup: false,
       doneMiningPopup: true,
