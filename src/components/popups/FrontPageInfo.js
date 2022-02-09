@@ -11,6 +11,10 @@ export default function FrontPageInfo(props) {
         <br />
         <br />
         <br />
+        <b>If the website looks strange on your mobile device try accessing it on a desktop/laptop.</b>
+        <br />
+        <br />
+        <br />
         <p>
           <b>
             Celestium – Artificial intelligence and blockchain art created aboard the International Space Station (ISS)
@@ -95,11 +99,12 @@ export default function FrontPageInfo(props) {
           <br />
           Artist Cecilie Waagner Falkenstrøm
           <br />
-          <a href="cwf@artificialmind.ai">cwf@artificialmind.ai</a>
+          <a href="mailto:cwf@artificialmind.ai">cwf@artificialmind.ai</a>
           <br />
-          <a href="www.artificialmind.ai">
+          <a href="https://www.artificialmind.ai">
           www.artificialmind.ai
           </a>
+          <br />
           <br />
 
         </p>
