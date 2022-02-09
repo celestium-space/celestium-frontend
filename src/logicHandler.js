@@ -253,23 +253,26 @@ class LogicHandler {
               this.grid.set_eta(eta);
             }
           );
-          let arr = new Uint8Array(
-            2 +
-              pixel_nft_transaction.byteLength +
-              katjing_transaction.byteLength
+
+          let pixel_transaction_message = new Uint8Array(
+            1 + pixel_nft_transaction.byteLength
           );
-          arr[0] = CMDOpcodes.MINED_TRANSACTION;
-          arr[1] = 2;
+          pixel_transaction_message[0] = CMDOpcodes.MINED_TRANSACTION;
           for (let i = 0; i < pixel_nft_transaction.byteLength; i++) {
-            arr[i + 2] = pixel_nft_transaction[i];
+            pixel_transaction_message[i + 1] = pixel_nft_transaction[i];
           }
+          console.log(`Sending mined pixel transaction`);
+          (await this.getSocket()).send(pixel_transaction_message.buffer);
+
+          let katjing_transaction_message = new Uint8Array(
+            1 + katjing_transaction.byteLength
+          );
+          katjing_transaction_message[0] = CMDOpcodes.MINED_TRANSACTION;
           for (let i = 0; i < katjing_transaction.byteLength; i++) {
-            arr[i + 2 + pixel_nft_transaction.byteLength] =
-              katjing_transaction[i];
+            katjing_transaction_message[i + 1] = katjing_transaction[i];
           }
-          console.log(`Sending mined transactions.`);
-          let socket = await this.getSocket();
-          socket.send(arr.buffer);
+          console.log(`Sending mined katjing transaction`);
+          (await this.getSocket()).send(katjing_transaction_message.buffer);
 
           this.mining_data = undefined;
 
@@ -390,7 +393,11 @@ class LogicHandler {
         for (let i = 0; i < mined_transaction.byteLength; i++) {
           arr[i + 2] = mined_transaction[i];
         }
-        console.log(`Sending signed and mined transaction.`);
+        console.log(
+          `Sending signed and mined transaction: ${uint8ArrToHexStr(
+            arr.buffer
+          )}`
+        );
         let socket = await this.getSocket();
         socket.send(arr.buffer);
 
