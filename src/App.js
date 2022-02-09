@@ -12,6 +12,8 @@ import FrontPageInfo from "./components/popups/FrontPageInfo";
 import { Button } from "semantic-ui-react";
 import NavbarInfoPopup from "./components/popups/NavbarInfoPopup";
 import Down from "./components/popups/Down";
+import Gans from "./components/gans/Gans";
+import GanView from "./components/gans/ganView/GanView";
 
 function App() {
   window.app_handle = this;
@@ -80,8 +82,12 @@ function App() {
           <Route path="/info">
             <NavbarInfoPopup></NavbarInfoPopup>
           </Route>
-          <Route path="/">
+          <Route path="/frontend">
             <FrontPageInfo></FrontPageInfo>
+          </Route>
+          <Route path="/">
+            <Gans></Gans>
+            <GanView></GanView>
           </Route>
         </Switch>
       </div>

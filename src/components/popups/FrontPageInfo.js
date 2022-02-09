@@ -106,7 +106,7 @@ export default function FrontPageInfo(props) {
         <div className="right">
           <Button
             onClick={() => {
-              window.location.replace("https://celestium.space/grid");
+              window.location.replace("/grid");
             }}
           >
             Enter
