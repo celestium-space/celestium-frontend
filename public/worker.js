@@ -1,7 +1,7 @@
 importScripts("sha3.min.js");
 
 function ContainsEnoughWork(hash) {
-  return hash.startsWith("0000");
+  return hash.startsWith("000000");
 }
 
 function uint8ArrToHexStr(arr) {

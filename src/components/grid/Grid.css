@@ -7,8 +7,10 @@
 }
 
 .cryptoCanvas {
+  image-rendering: -webkit-optimize-contrast; /* Safari */
   image-rendering: pixelated;
   height: calc(100vh - 57.85px);
+  max-height: calc(100vw - 36.5px * 2);
 }
 
 .question-btn {
@@ -27,7 +29,14 @@
   height: 100%;
 }
 
-@media (max-width: 768px) {
+.transform-component-module_wrapper__1_Fgj {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+@media (orientation: portrait) {
   .gridContainer {
     display: inline;
     width: 100vw;
@@ -38,6 +47,8 @@
   .cryptoCanvas {
     width: 100vw;
     height: 100vw;
+    max-width: calc(100vh - 36.5px - 46.7px - 57.84px);
+    max-height: calc(100vh - 36.5px - 46.7px - 57.84px);
   }
 
   .controls {

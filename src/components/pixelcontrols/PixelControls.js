@@ -15,6 +15,7 @@ class PixelControls extends Component {
     this.onChange = props.onChange;
 
     let click = (i) => {
+      props.clickedOnce();
       this.setState({ active: i });
       if (this.onChange) this.onChange(i);
     };
@@ -25,28 +26,16 @@ class PixelControls extends Component {
     let click = this.click;
     return (
       <div className="my-grid">
-        {range(8).map((i) => (
-          <div
-            key={i.toString()}
-            style={{
-              top: "0",
-              margin: "0",
-              padding: "0",
-              height: "50px",
-              width: "50px",
-            }}
-          >
+        {range(16).map((i) => (
+          <div key={i.toString()}>
             <div
               onClick={(_) => click(i)}
+              className="my-grid-color"
               style={{
                 border: this.state.active == i ? "2px solid gray" : "",
-                width: "36px",
-                height: "36px",
                 backgroundColor: intToRgb(i),
-                margin: "5px",
-                top: 0,
               }}
-            ></div>
+            />
           </div>
         ))}
         ;

@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import { Grid, Image, Card } from "semantic-ui-react";
+import FullScreenAsteroid from "../popups/FullScreenAsteroid";
 import "./Wallet.css";
+import CelestiumLogo from "../images/CelestiumLogo";
+
+const DUST_PER_CEL_POWER = 31;
+const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
 
 function randInt(min, max) {
   // min and max included
@@ -11,13 +16,10 @@ class WalletItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: `/images/${randInt(0, 2)}.gif`,
-      description: "lorem somthing here",
+      fullscreen: false,
+      item: props.item,
       id: props.id,
-      price: 10,
     };
-
-    this.onClick = props.onClick;
   }
 
   componentDidMount() {
@@ -33,39 +35,69 @@ class WalletItem extends Component {
   }
 
   render() {
+    let asteroid_value_cel = `${(
+      BigInt(this.state.item.store_value_in_dust) / DUST_PER_CEL
+    ).toString()}.${(BigInt(this.state.item.store_value_in_dust) % DUST_PER_CEL)
+      .toString()
+      .padStart(DUST_PER_CEL_POWER, "0")}`;
+
     return (
       <Card
-        style={{ backgroundColor: "#1a1a1a", boxShadow: "none" }}
+        style={{
+          backgroundColor: "#1a1a1a",
+          boxShadow: "none",
+        }}
         onClick={(x) => {
-          if (this.onClick) this.onClick(this.state.id);
+          this.setState({ fullscreen: true });
         }}
       >
-        <Image src={this.state.url} wrapped ui />
+        <video
+          autoPlay={true}
+          muted="muted"
+          playsInline
+          loop
+          className="column"
+          src={`videos-256/${this.state.item.full_name}.mp4`}
+          style={{
+            width: "256px",
+            paddingLeft: "0",
+            paddingRight: "14px",
+          }}
+        />
         <Card.Content>
           <Card.Header style={{ color: "white" }}>
-            1943 Anteros (1973 EC)
+            {this.state.item.full_name}
           </Card.Header>
           <Card.Description style={{ color: "white" }}>
             <Grid columns={2}>
-              <Grid.Row
-                style={{
-                  fontSize: "10px",
-                }}
-              >
+              <Grid.Row>
+                <Grid.Column>Est. Profit ($)</Grid.Column>
+                <Grid.Column>{this.state.item.profit}</Grid.Column>
+              </Grid.Row>
+              <Grid.Row>
                 <Grid.Column>
-                  Est. Profit ($)
-                  <br />
-                  Price (CEL)
+                  Price (
+                  <CelestiumLogo
+                    label={asteroid_value_cel}
+                    margin="auto 2px auto 2px"
+                    lineHeight="14pt"
+                  />
+                  )
                 </Grid.Column>
-                <Grid.Column>
-                  1.25 trillion
-                  <br />
-                  1.092348
+                <Grid.Column className="celestium-balance">
+                  {asteroid_value_cel}
                 </Grid.Column>
               </Grid.Row>
             </Grid>
           </Card.Description>
         </Card.Content>
+        <FullScreenAsteroid
+          showFullScreenAsteroid={this.state.fullscreen}
+          onClose={() => {
+            this.setState({ fullscreen: false });
+          }}
+          item={this.state.item}
+        ></FullScreenAsteroid>
       </Card>
     );
   }

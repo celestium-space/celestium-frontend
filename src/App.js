@@ -10,6 +10,8 @@ import "./App.css";
 import Wallet from "./components/wallet/Wallet";
 import FrontPageInfo from "./components/popups/FrontPageInfo";
 import { Button } from "semantic-ui-react";
+import NavbarInfoPopup from "./components/popups/NavbarInfoPopup";
+import Down from "./components/popups/Down";
 
 function App() {
   window.app_handle = this;
@@ -19,6 +21,7 @@ function App() {
     showInfo: null,
     showCelestiumInfoOnStart: null,
   });
+  let [backendDown, setBackendDown] = useState(false);
   let grid = useRef();
   let pixelControls = useRef();
   let location = useLocation();
@@ -42,7 +45,8 @@ function App() {
       grid.current,
       pixelControls.current,
       asteroidsPage.current,
-      walletPage.current
+      walletPage.current,
+      setBackendDown
     );
     setState({
       showInfo: showCelestiumInfoOnStart,
@@ -51,16 +55,9 @@ function App() {
     });
   }, [grid, pixelControls, asteroidsPage, walletPage]);
 
-  let style = {
-    display: "none",
-  };
-  if (!state.showInfo) {
-    style = {};
-  }
-
   return (
     <div>
-      <div style={style}>
+      <div>
         <Switch>
           <Route path="/asteroids">
             <div className="content">
@@ -72,7 +69,7 @@ function App() {
             <Wallet ref={walletPage} logic={state.logic}></Wallet>
             <Navbar active="wallet"></Navbar>
           </Route>
-          <Route path="/">
+          <Route path="/grid">
             <Grid
               ref={grid}
               pixelControls={pixelControls}
@@ -80,38 +77,15 @@ function App() {
             ></Grid>
             <Navbar active="grid"></Navbar>
           </Route>
+          <Route path="/info">
+            <NavbarInfoPopup></NavbarInfoPopup>
+          </Route>
+          <Route path="/">
+            <FrontPageInfo></FrontPageInfo>
+          </Route>
         </Switch>
-        <Button
-          circular
-          className="question-btn"
-          icon="question circle outline"
-          style={{
-            padding: "0",
-            fontSize: "40px",
-            backgroundColor: "#333333",
-            color: "white",
-            bottom: "11px",
-            right: "10px",
-            position: "absolute",
-          }}
-          onClick={() => {
-            setState({ showInfo: true });
-          }}
-        />
       </div>
-      <FrontPageInfo
-        showCelestiumInfo={state.showInfo}
-        setShowCelestiumInfo={(change) => {
-          console.log("show change!");
-          setState({ showInfo: change });
-        }}
-        showCelestiumInfoOnStart={state.showCelestiumInfoOnStart}
-        setShowCelestiumInfoOnStart={(change) => {
-          console.log("show on start change!");
-          setState({ showCelestiumInfoOnStart: change });
-          localStorage.setItem("showCelestiumInfoOnStart", change);
-        }}
-      ></FrontPageInfo>
+      <Down open={backendDown} />
     </div>
   );
 }

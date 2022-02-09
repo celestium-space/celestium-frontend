@@ -15,21 +15,26 @@ export default function WalletInfoPopup(props) {
     >
       {() => (
         <div className="modal">
-          <button className="close" onClick={close}>
+          <button className="close" onClick={props.onClose}>
             &times;
           </button>
-          <div className="header">Wallet Info</div>
+          <div className="header">Wallet</div>
           <div
             className="content"
             style={{ textAlign: "left", maxWidth: "440px" }}
           >
-            This is your wallet.
-            <br />
-            Here you can find your current balance in Celestium and the objects
-            you have bought the rights to.
-            <br />
-            Celestium is a crypto-currency on a blockchain. This means that all
-            informtion is placed on a public
+            <br/>
+            This is your personal wallet.
+            <br/>
+            <br/>
+            Here you can find all the assets you acquire, including Celestium tokens, asteroids, and space debris.
+            <br/>
+            <br/>
+            Click on an asteroid to learn more about it.
+            <br/>
+            <br/>
+            Click on the link in the table to track your space debris in real-time.
+            <br/>
           </div>
         </div>
       )}

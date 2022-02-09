@@ -20,6 +20,8 @@
   margin-bottom: auto;
   line-height: 14pt;
   width: 200px;
+}
+.celestium-balance {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

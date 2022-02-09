@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import _ from "lodash";
 import BuyPopup from "../popups/BuyPopup";
 import "./Asteroids.css";
+import { Grid, Button, Table } from "semantic-ui-react";
+import AsteroidInfoPopup from "../popups/AsteroidInfoPopup";
 
 class Asteroids extends Component {
   constructor(props) {
@@ -9,12 +11,30 @@ class Asteroids extends Component {
     this.state = {
       store_value_in_dust: "Fetching...",
       eta: "Calculating...",
+      asteroidInfo: true,
+      debris_name: "Unknown debris",
     };
+  }
+
+  set_debris_name(name) {
+    this.setState({ debris_name: name });
+  }
+
+  set_eta(eta) {
+    this.setState({ eta: eta });
   }
 
   gotAsteroidsItemData(store_item) {
     this.setState({
       store_value_in_dust: store_item.store_value_in_dust,
+    });
+  }
+
+  doneMining() {
+    console.log("DONE!");
+    this.setState({
+      startMiningPopup: false,
+      doneMiningPopup: true,
     });
   }
 
@@ -57,21 +77,46 @@ class Asteroids extends Component {
             Asteroid Database
           </span>
           <BuyPopup
+            doneMiningPopup={this.state.doneMiningPopup}
+            onDoneMiningPopupClose={() => {
+              this.setState({ doneMiningPopup: false });
+            }}
             onClick={(name) => {
               this.onClick(name);
             }}
             onConfirm={(name) => {
               this.mineTransaction(name);
             }}
+            debris_name={this.state.debris_name}
             store_value_in_dust={this.state.store_value_in_dust}
             eta={this.state.eta}
           ></BuyPopup>
+
+          <Button
+            circular
+            icon="question circle outline"
+            style={{
+              padding: "0",
+              fontSize: "30px",
+              backgroundColor: "#333333",
+              color: "white",
+            }}
+            onClick={() => {
+              this.setState({ asteroidInfo: true });
+            }}
+          />
         </div>
         <iframe
           id="asterankIframe"
           style={{ height: "calc(100vh - 10px)", width: "100%" }}
           src="asterank"
         ></iframe>
+        <AsteroidInfoPopup
+          open={this.state.asteroidInfo}
+          onClose={() => {
+            this.setState({ asteroidInfo: false });
+          }}
+        ></AsteroidInfoPopup>
       </div>
     );
   }

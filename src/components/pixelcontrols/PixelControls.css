@@ -1,13 +1,29 @@
 .my-grid {
   margin: 0;
   padding: 0;
-  width: 50px;
-  height: 100%;
+  width: calc(100vh / 16);
+  height: 100vh;
   max-height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
-@media (max-width: 768px) {
+.my-grid-color {
+  height: calc((100vh - 57.84px) / 16 - 10px);
+  margin: 5px;
+}
+
+@media (orientation: portrait) {
   .my-grid {
+    width: 100vw;
+    width: calc(100vw / 16);
     display: flex;
+    flex-direction: row;
+  }
+
+  .my-grid-color {
+    width: calc(100vw / 16 - 2px);
+    margin: 1px;
+    height: 100%;
   }
 }

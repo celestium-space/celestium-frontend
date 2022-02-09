@@ -3,6 +3,8 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import "../../utils.js";
+import { GiRingedPlanet } from "react-icons/gi";
+import { IoWallet } from "react-icons/io5";
 import CelestiumLogo from "../images/CelestiumLogo";
 import Countdown from "react-countdown";
 
@@ -53,8 +55,7 @@ function BuyPopup(props) {
         BigInt(props.store_value_in_dust) % 10000000000000000000000000000000n
       )
         .toString()
-        .padStart(31, "0")
-        .substring(0, 20)}...`;
+        .padStart(31, "0")}`;
 
   return (
     <div>
@@ -208,7 +209,13 @@ function BuyPopup(props) {
                       className="column content"
                       style={{ paddingLeft: "5px" }}
                     >
-                      <div>
+                      <div
+                        style={{
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                        }}
+                      >
                         5.57 trillion <br />
                         <b>1.25 trillion</b> <br />
                         <b>{store_value_in_cel}</b>
@@ -302,11 +309,51 @@ function BuyPopup(props) {
                       {minutes.toString().padStart(2, "0")}:
                       {seconds.toString().padStart(2, "0")}
                     </i>
-                    <i hidden={!calculating}>Calculating...</i>
+                    <i hidden={!calculating}>Preparing NFT...</i>
                   </div>
                 );
               }}
             />
+          </div>
+        )}
+      </Popup>
+      <Popup
+        open={props.doneMiningPopup}
+        onOpen={() => {
+          setIsBuying(false);
+          setConfirmMiningPopup(false);
+        }}
+        onClose={() => {
+          props.onDoneMiningPopupClose();
+        }}
+        closeOnDocumentClick
+        modal
+        nested
+      >
+        {(close) => (
+          <div className="modal">
+            <button className="close" onClick={close}>
+              ×
+            </button>
+            <div className="header">Congratulations!</div>
+            <br />
+            <div className="content" style={{ maxWidth: "400px" }}>
+              You have aquired the asteroid:
+              <br />
+              <i>{asterankObjectName}</i>
+              <br />
+              Unfortunately the space around earth is getting polluted, so you
+              have also been asigned a piece of the space garbage:
+              <br />
+              <i>{props.debris_name}</i>.
+            </div>
+            <div className="content" style={{ maxWidth: "300px" }}>
+              You can view and read more about your asteroids and space debris
+              and see your current balance in your <a href="/wallet">Wallet</a>{" "}
+              <a href="/wallet" style={{ color: "white" }}>
+                <IoWallet size={15} />
+              </a>
+            </div>
           </div>
         )}
       </Popup>

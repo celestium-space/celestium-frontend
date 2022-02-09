@@ -2,17 +2,68 @@ import * as Secp256k1 from "secp256k1";
 import { sha3_256 } from "./sha3.min.js";
 import { randomBytes } from "crypto";
 
-const TRANSACTION_WORK = 0x10000000;
+const TRANSACTION_WORK = 0x1000000;
 
 const colorMap = [
-  [0, 0, 0],
-  [255, 0, 0],
-  [0, 255, 0],
-  [0, 0, 255],
-  [255, 255, 0],
-  [255, 0, 255],
-  [0, 255, 255],
-  [255, 255, 255],
+  [0x00, 0x00, 0x00],
+  [0xe5, 0x00, 0x00],
+  [0x02, 0xbe, 0x01],
+  [0x00, 0x00, 0xea],
+  [0xf8, 0xf2, 0x08],
+  [0xfd, 0x5e, 0xf8],
+  [0x00, 0xd3, 0xdd],
+  [0xff, 0xff, 0xff],
+  [0x74, 0x15, 0xcd],
+  [0xf3, 0xc9, 0x9d],
+  [0x99, 0x99, 0x99],
+  [0xe5, 0x95, 0x00],
+  [0x00, 0x83, 0xc7],
+  [0x34, 0x71, 0x15],
+  [0x43, 0x27, 0x0a],
+  [0x86, 0x5a, 0x48],
+
+  // Leet h4cker colors
+  [0xc5, 0x00, 0x00],
+  [0xff, 0x40, 0x40],
+  [0x00, 0x9e, 0x00],
+  [0x42, 0xfe, 0x41],
+  [0x00, 0x00, 0xca],
+  [0x40, 0x40, 0xff],
+  [0xc5, 0xb9, 0x00],
+  [0xff, 0xff, 0x40],
+  [0xdd, 0x3e, 0xd8],
+  [0xff, 0x9e, 0xff],
+  [0x00, 0xb3, 0xbd],
+  [0x40, 0xff, 0xff],
+  [0x54, 0x00, 0xad],
+  [0xb4, 0x55, 0xff],
+  [0xd3, 0xa9, 0x7d],
+  [0xff, 0xff, 0xdd],
+  [0x79, 0x79, 0x79],
+  [0xd9, 0xd9, 0xd9],
+  [0xc5, 0x75, 0x00],
+  [0xff, 0xd5, 0x40],
+  [0x00, 0x63, 0xa7],
+  [0x40, 0xc3, 0xff],
+  [0x14, 0x51, 0x00],
+  [0x74, 0xb1, 0x55],
+  [0x23, 0x07, 0x00],
+  [0x83, 0x67, 0x4a],
+  [0x66, 0x3a, 0x28],
+  [0xc6, 0x9a, 0x88],
+  [0x11, 0x11, 0x11],
+  [0x22, 0x22, 0x22],
+  [0x33, 0x33, 0x33],
+  [0x44, 0x44, 0x44],
+  [0x55, 0x55, 0x55],
+  [0x66, 0x66, 0x66],
+  [0x77, 0x77, 0x77],
+  [0x88, 0x88, 0x88],
+  [0xaa, 0xaa, 0xaa],
+  [0xbb, 0xbb, 0xbb],
+  [0xcc, 0xcc, 0xcc],
+  [0xdd, 0xdd, 0xdd],
+  [0xee, 0xee, 0xee],
 ];
 
 function arraysEqual(a, b) {
@@ -156,19 +207,54 @@ function startMiningThreadIfNeeded(
   }
 }
 
-function getKeyPair() {
-  let pk = localStorage.getItem("pk_bin");
-  let sk = localStorage.getItem("sk_bin");
-  if (pk && sk) {
-    return [hexStrToUint8Arr(pk), hexStrToUint8Arr(sk)];
+const zip = (...arr) =>
+  Array.from({ length: Math.max(...arr.map((a) => a.length)) }, (_, i) =>
+    arr.map((a) => a[i])
+  );
+
+function importSecretKey(new_sk, replace) {
+  if (
+    new_sk.length != 64 ||
+    !Secp256k1.privateKeyVerify(hexStrToUint8Arr(new_sk))
+  ) {
+    console.error("Could not verify SK");
   } else {
-    console.log("No keys in localstorage, generating new pair");
+    let new_pk = uint8ArrToHexStr(
+      Secp256k1.publicKeyCreate(hexStrToUint8Arr(new_sk))
+    );
+    let [old_pk, old_sk] = getKeyPair();
+    if (!new_pk == old_pk && !new_sk == old_sk) {
+      if (replace) {
+        localStorage.setItem("pk_bin", pks + pk);
+        localStorage.setItem("sk_bin", sks + new_sk);
+      }
+    } else {
+      console.error("Wallet already contains keypair");
+    }
+  }
+
+  location.reload();
+}
+
+function getKeyPair() {
+  let sk = localStorage.getItem("sk_bin");
+  if (
+    sk &&
+    sk.length == 64 &&
+    Secp256k1.privateKeyVerify(hexStrToUint8Arr(sk))
+  ) {
+    sk = hexStrToUint8Arr(sk);
+    let pk = Secp256k1.publicKeyCreate(sk);
+    return [pk, sk];
+  } else {
+    console.error(
+      "Could not verify SK or no SK key in localstorage, generating new SK"
+    );
     while (true) {
-      sk = randomBytes(32);
+      let sk = randomBytes(32);
       if (Secp256k1.privateKeyVerify(sk)) {
-        pk = Secp256k1.publicKeyCreate(sk);
-        localStorage.setItem("pk_bin", uint8ArrToHexStr(pk));
         localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
+        let pk = Secp256k1.publicKeyCreate(sk);
         return [pk, sk];
       }
     }
@@ -235,8 +321,8 @@ function create_pixel_nft(block_hash, prev_pixel_hash, x, y, c, pk) {
   transaction[66] = c & 0xff;
   transaction[67] = 1; // Transaction output count
   transaction[68] = 1; // Transaction output value version
-  let actual_nft = transaction.slice(35, 68);
-  let hash = sha3_256(uint8ArrToHexStr(actual_nft));
+  let actual_nft = transaction.slice(34, 67);
+  let hash = sha3_256(actual_nft);
   transaction.set(hexStrToUint8Arr(hash), 69);
   transaction.set(pk, 101);
   return transaction;
@@ -374,6 +460,7 @@ export {
   intToRgb,
   uint8ArrToHexStr,
   hexStrToUint8Arr,
+  importSecretKey,
   getKeyPair,
   serializeTransaction,
 };

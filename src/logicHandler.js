@@ -34,11 +34,12 @@ const CMDOpcodes = {
 };
 
 class LogicHandler {
-  constructor(grid, pixelControls, asteroidPage, walletPage) {
+  constructor(grid, pixelControls, asteroidPage, walletPage, setBackendDown) {
     this.grid = grid;
     this.pixelControls = pixelControls;
     this.asteroidPage = asteroidPage;
     this.walletPage = walletPage;
+    this.setBackendDown = setBackendDown;
 
     this.balance = 0n;
     if (this.grid) {
@@ -68,7 +69,7 @@ class LogicHandler {
   }
 
   getUserData() {
-    let pk = getKeyPair()[0];
+    let [pk, _] = getKeyPair();
     this.getSocket().then((socket) => {
       console.log(
         `Connected (${
@@ -155,7 +156,13 @@ class LogicHandler {
       console.log(`Still connecting to "${socket_address}"...`);
       await this.sleep(1000);
     }
-    console.log(`Success, connected to "${socket_address}"`);
+    if (this.socket.readyState == WebSocket.OPEN) {
+      console.log(`Success, connected to "${socket_address}"`);
+      this.setBackendDown(false);
+    } else {
+      console.log(`Error connecting to "${socket_address}"`);
+      this.setBackendDown(true);
+    }
     return this.socket;
   }
 
@@ -199,8 +206,6 @@ class LogicHandler {
             .map((c) => intToColor(c))
             .flat();
           this.grid.updatePixels(0, 0, 1000, 1000, color);
-        } else {
-          console.error("No grid initialized");
         }
         break;
       case CMDOpcodes.UPDATE_PIXEL:
@@ -213,13 +218,12 @@ class LogicHandler {
             .flat();
           console.log(`Got new pixel (${x}, ${y}) -> ${color}`);
           this.grid.updatePixels(x, y, 1, 1, color);
-        } else {
-          console.error("No grid initialized");
         }
         break;
       case CMDOpcodes.PIXEL_DATA:
         if (this.mining_data) {
           console.log("Got pixel data, continuing NFT creation");
+          this.grid.set_eta("Calculating...");
 
           let [x, y, index] = this.mining_data;
           let pixel_hash = array.slice(1, 29);
@@ -283,23 +287,45 @@ class LogicHandler {
         break;
       case CMDOpcodes.USER_DATA:
         console.log("Got user data, updating...");
-        let balance = BigInt(
-          `0x${uint8ArrToHexStr(Uint8Array.from(array.slice(1)))}`
+        let user_data = JSON.parse(
+          new TextDecoder().decode(new Uint8Array(array)).trim()
         );
         if (this.walletPage) {
-          this.walletPage.setState({ balance: balance });
+          let current_user_data = this.walletPage.user_data;
+          if (current_user_data) {
+            user_data.balance = String(
+              BigInt(user_data.balance) + BigInt(current_user_data.balance)
+            );
+            user_data.owned_store_items = user_data.owned_store_items.concat(
+              current_user_data.owned_store_items
+            );
+            user_data.owned_debris += user_data.owned_debris.concat(
+              current_user_data.owned_debris
+            );
+          }
+
+          console.log(user_data);
+          this.walletPage.setState({ user_data: user_data });
         }
-        console.log(`New balance: ${balance}`);
         break;
       case CMDOpcodes.UNMINED_TRANSACTION:
         console.log("Got transaction!");
         let [_, sk] = getKeyPair();
         let i = 1;
+
+        let debris_name = "";
+        do {
+          debris_name += String.fromCharCode(array[i]);
+        } while (array[++i] != 0);
+        i++;
+        console.log(debris_name);
+        console.log(`${i} | ${array.slice(0, 20)}`);
+
+        this.asteroidPage.set_debris_name(debris_name);
+
         let transaction = {};
         transaction.version = array[i++];
-        console.log(`VER: ${transaction.version} | ${i}`);
         transaction.input_count = array[i++];
-        console.log(`INC: ${transaction.input_count} | ${i}`);
         transaction.inputs = [];
         for (_ in [...Array(transaction.input_count).keys()]) {
           let block_hash = array.slice(i, i + 32);
@@ -310,7 +336,6 @@ class LogicHandler {
           do {
             index.push([array[i]]);
           } while (array[i++] >= 0x80);
-          console.log(`IND: ${index} | ${i}`);
           let signature = array.slice(i, i + 64);
           i += 64;
           transaction.inputs.push({
@@ -321,7 +346,6 @@ class LogicHandler {
           });
         }
         transaction.output_count = array[i++];
-        console.log(`OUC: ${transaction.output_count} | ${i}`);
         transaction.outputs = [];
         for (_ in [...Array(transaction.output_count).keys()]) {
           let output_value_version = array[i++];
@@ -338,7 +362,6 @@ class LogicHandler {
           });
         }
         transaction.magic = new Uint8Array(array.slice(i));
-        console.log(`MAG: ${transaction.magic} | ${i}`);
 
         let sign_digest = Uint8Array.from(
           serializeTransaction(transaction, false)
@@ -355,15 +378,12 @@ class LogicHandler {
         }
         let serialized_transaction = serializeTransaction(transaction, true);
 
-        console.log(serialized_transaction);
-        let start = performance.now();
         let mined_transaction = await mineTransaction(
           new Uint8Array(serialized_transaction),
           (eta) => {
-            //this.grid.set_eta(eta);
+            this.asteroidPage.set_eta(eta);
           }
         );
-        console.log(mined_transaction);
         let arr = new Uint8Array(2 + mined_transaction.byteLength);
         arr[0] = CMDOpcodes.MINED_TRANSACTION;
         arr[1] = 1;
@@ -373,6 +393,8 @@ class LogicHandler {
         console.log(`Sending signed and mined transaction.`);
         let socket = await this.getSocket();
         socket.send(arr.buffer);
+
+        this.asteroidPage.doneMining();
         break;
       default:
         console.warn(
