@@ -1,0 +1,32 @@
+.visual-container {
+  height: 256px;
+  width: 256px;
+}
+
+.visual-container > video {
+  height: 256px;
+  width: 256px;
+  margin: 0;
+  padding: 0;
+}
+
+@media only screen and (max-width: 600px) {
+  .visual-container {
+    height: 80vw;
+    width: 80vw;
+  }
+
+  .visual-container > video {
+    height: 80vw;
+    width: 80vw;
+    margin: 0;
+    padding: 0;
+  }
+
+  .visual-container > img {
+    height: 80vw;
+    width: 80vw;
+    margin: 0;
+    padding: 0;
+  }
+}
