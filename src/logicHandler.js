@@ -387,7 +387,7 @@ class LogicHandler {
             this.asteroidPage.set_eta(eta);
           }
         );
-        let arr = new Uint8Array(2 + mined_transaction.byteLength);
+        let arr = new Uint8Array(1 + mined_transaction.byteLength);
         arr[0] = CMDOpcodes.MINED_TRANSACTION;
         for (let i = 0; i < mined_transaction.byteLength; i++) {
           arr[i + 1] = mined_transaction[i];
