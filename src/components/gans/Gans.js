@@ -15,23 +15,26 @@ export default class Gans extends React.Component {
 
     this.state = {
       userCards: [],
-      hasMore: false,
+      hasMore: true,
+      videos: []
     };
   }
 
-  videos = ["1080 Orchis (1927 QB).mp4",
-    "1705 Tapio (1941 SL1).mp4",
-    "1104 Syringa (1928 XA).mp4",
-    "3000 Leonardo (1981 EG19).mp4",
-    "3628 Boznemcova (1979 WD).mp4",
-    "1386 Storeria (1935 PA).mp4",
-    "783 Nora (1914 UL).mp4",
-    "1493 Sigrid (1938 QB).mp4",
-    "3684 Berry (1983 AK).mp4",
-  ];
+  async componentDidMount() {
 
-  componentDidMount() {
-    this.fetchMoreData(30);
+    let res = await fetch(
+      "https://celestium.space/asterank/api/rankings?sort_by=score&limit=1000"
+    );
+    let json = await res.json();
+    let vid = json.map(x => {return x['full_name'] + ".mp4"});
+
+    console.log(json);
+    console.log(vid);
+
+    this.setState({videos: vid}, () => {
+      this.fetchMoreData(30);
+    });
+
   }
 
   render() {
@@ -76,11 +79,11 @@ export default class Gans extends React.Component {
     }
     let ids = [];
     for (let i = 0; i < newAmount; i++) {
-      ids.push([i, i % this.videos.length]);
+      ids.push([i, i % this.state.videos.length]);
     }
     let newGans = ids.map(x => {
       return <GanView
-        imgsrc={"https://celestium.space/videos-256/" + this.videos[x[1]]}
+        imgsrc={"https://celestium.space/videos-256/" + this.state.videos[x[1]]}
         key={x[0]}
       ></GanView>
     });
