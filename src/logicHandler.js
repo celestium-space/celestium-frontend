@@ -389,9 +389,8 @@ class LogicHandler {
         );
         let arr = new Uint8Array(2 + mined_transaction.byteLength);
         arr[0] = CMDOpcodes.MINED_TRANSACTION;
-        arr[1] = 1;
         for (let i = 0; i < mined_transaction.byteLength; i++) {
-          arr[i + 2] = mined_transaction[i];
+          arr[i + 1] = mined_transaction[i];
         }
         console.log(
           `Sending signed and mined transaction: ${uint8ArrToHexStr(arr)}`
