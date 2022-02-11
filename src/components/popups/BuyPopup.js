@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "./MyPopups.css";
 import "../../utils.js";
-import { GiRingedPlanet } from "react-icons/gi";
 import { IoWallet } from "react-icons/io5";
 import CelestiumLogo from "../images/CelestiumLogo";
 import Countdown from "react-countdown";

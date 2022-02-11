@@ -8,11 +8,17 @@
   overflow-y: scroll;
 }
 
+.wallet-container {
+  padding-top: 10px;
+  height: 100vh;
+  color: white;
+}
+
 .wallet-header {
   display: flex;
   flex-direction: row;
   width: auto;
-  margin: 10px 10px 10px 34px;
+  margin: 0px 10px 10px 34px;
 }
 
 .wallet-balance {
@@ -27,14 +33,84 @@
   overflow: hidden;
 }
 
-/* .white-scrollbar {
-  scrollbar-color: white #333333;
+.asteroids-grid {
+  margin-left: 20px !important;
+  margin-right: 20px !important;
 }
 
-.white-scrollbar::-webkit-scrollbar-track {
-  background: #333333;
+.asteroid {
+  width: 256px !important;
+  margin: auto;
 }
 
-.white-scrollbar::-webkit-scrollbar-thumb {
-  background-color: white;
-} */
+.debris-grid {
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+}
+
+.debris-gif {
+  width: 200px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.debris-table {
+  width: calc(100vw - 200px) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.warning {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-left: 0;
+  font-size: 10px;
+  line-height: 110%;
+  width: 160px;
+}
+
+.wallet-title {
+  width: 200px;
+  font-size: 26px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+@media (max-width: 600px) {
+  .asteroids-grid {
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+  }
+
+  .asteroid {
+    width: calc(100vw - 10px) !important;
+  }
+
+  .warning {
+    display: none;
+  }
+
+  .wallet-header {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .wallet-title {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .debris-gif {
+    display: none !important;
+  }
+
+  .debris-table-header {
+    height: 0 !important;
+    opacity: 0 !important;
+  }
+
+  .debris-table {
+    width: 100vw !important;
+  }
+}

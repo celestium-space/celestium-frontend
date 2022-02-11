@@ -10,6 +10,7 @@ import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
 import { GiRingedPlanet } from "react-icons/gi";
+import { uint8ArrToHexStr } from "../../utils";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -20,6 +21,7 @@ class Wallet extends Component {
     this.columns = 3;
 
     this.state = {
+      eta: "Calculating...",
       exportSK: false,
       walletInfo: false,
       balance: null,
@@ -31,6 +33,11 @@ class Wallet extends Component {
     if (this.state.user_data.balance == null && this.props.logic) {
       this.props.logic.getUserData();
     }
+  }
+
+  set_eta(eta) {
+    console.log(this);
+    this.setState({ eta: eta });
   }
 
   render() {
@@ -67,27 +74,14 @@ class Wallet extends Component {
         <div>
           No asteroids found, yet! Remember you can buy asteroids in the{" "}
           <a href="/asteroids">
-            Asteroids Market <GiRingedPlanet size={15} />
+            Asteroids Market <GiRingedPlanet />
           </a>
         </div>
       );
     return (
-      <div
-        style={{
-          color: "white",
-        }}
-      >
+      <div className="wallet-container">
         <div className="wallet-header">
-          <div
-            style={{
-              width: "200px",
-              fontSize: "26px",
-              marginTop: "auto",
-              marginBottom: "auto",
-            }}
-          >
-            Wallet
-          </div>
+          <div className="wallet-title">Wallet</div>
           <SemanticPopup
             style={{ height: "100%", textAlign: "center" }}
             position="top center"
@@ -102,7 +96,7 @@ class Wallet extends Component {
             hidden={this.state.user_data.balance == null}
             label={actual_balance}
             margin="auto 20px auto 5px"
-            lineHeight="14pt"
+            lineHeight="40px"
           />
           <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
             <Button
@@ -122,16 +116,7 @@ class Wallet extends Component {
               Export Secret Key
             </Button>
           </div>
-          <div
-            style={{
-              marginTop: "auto",
-              marginBottom: "auto",
-              paddingLeft: "0",
-              fontSize: "10px",
-              lineHeight: "110%",
-              width: "160px",
-            }}
-          >
+          <div className="warning">
             WARNING: Do not share
             <br />
             your secret key with others
@@ -169,30 +154,17 @@ class Wallet extends Component {
         >
           Aquired Space Debris:
         </div>
-        <Grid
-          columns={2}
-          divided
-          style={{
-            marginLeft: "34px",
-            marginRight: "34px",
-            marginBottom: "-18px",
-          }}
-        >
-          <Grid.Column
-            style={{ width: "200px", paddingLeft: "0", paddingRight: "0" }}
-          >
-            <img style={{ width: "100%" }} src="/debris.gif"></img>
+        <Grid columns={2} divided className="debris-grid">
+          <Grid.Column className="debris-gif">
+            <img
+              style={{ width: "100%", height: "100%" }}
+              src="/debris.gif"
+            ></img>
           </Grid.Column>
-          <Grid.Column
-            style={{
-              width: "calc(100vw - 200px - 88px)",
-              paddingLeft: "0",
-              paddingRight: "0",
-            }}
-          >
+          <Grid.Column className="debris-table">
             <div className="table-container">
-              <Table celled inverted selectable>
-                <Table.Header>
+              <Table celled inverted striped>
+                <Table.Header className="debris-table-header">
                   <Table.Row>
                     <Table.HeaderCell>Name</Table.HeaderCell>
                     <Table.HeaderCell>Int&apos;l Designator</Table.HeaderCell>
@@ -238,9 +210,8 @@ class Wallet extends Component {
             columns={3}
             divided
             style={{
-              marginTop: "10px",
-              marginLeft: "20px",
-              width: "750px",
+              margin: "20px",
+              maxWidth: "750px",
             }}
           >
             <Grid.Row>
@@ -274,25 +245,12 @@ class Wallet extends Component {
               height: "calc(100vh - 440px)",
             }}
           >
-            <Grid
-              style={{
-                marginLeft: "20px",
-                marginRight: "20px",
-                marginTop: "5px",
-                marginBottom: "5px",
-              }}
-            >
+            <Grid className="asteroids-grid">
               {this.state.user_data.owned_store_items.length > 0 ? (
                 this.state.user_data.owned_store_items.map(
                   (listValue, index) => {
                     return (
-                      <Grid.Column
-                        style={{
-                          width: "266px",
-                          margin: "5px",
-                        }}
-                        key={index}
-                      >
+                      <Grid.Column className="asteroid" key={index}>
                         <WalletItem
                           id={index}
                           onClick={(x) => this.onClick(x)}
@@ -319,10 +277,18 @@ class Wallet extends Component {
           </div>
           <WalletEmptyPopup open={wallet_empty}></WalletEmptyPopup>
           <ImportSKPopup
+            doneMiningPopup={this.state.doneMiningPopup}
+            onDoneMiningPopupClose={() => {
+              this.setState({ doneMiningPopup: false });
+            }}
             open={this.state.importSK}
             onClose={() => {
               this.setState({ importSK: false });
             }}
+            importSecretKey={(sk, replace) => {
+              this.props.logic.importSecretKey(sk, replace);
+            }}
+            eta={this.state.eta}
           ></ImportSKPopup>
           <ExportSKPopup
             open={this.state.exportSK}
