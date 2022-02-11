@@ -207,35 +207,6 @@ function startMiningThreadIfNeeded(
   }
 }
 
-const zip = (...arr) =>
-  Array.from({ length: Math.max(...arr.map((a) => a.length)) }, (_, i) =>
-    arr.map((a) => a[i])
-  );
-
-function importSecretKey(new_sk, replace) {
-  if (
-    new_sk.length != 64 ||
-    !Secp256k1.privateKeyVerify(hexStrToUint8Arr(new_sk))
-  ) {
-    console.error("Could not verify SK");
-  } else {
-    let new_pk = uint8ArrToHexStr(
-      Secp256k1.publicKeyCreate(hexStrToUint8Arr(new_sk))
-    );
-    let [old_pk, old_sk] = getKeyPair();
-    if (!new_pk == old_pk && !new_sk == old_sk) {
-      if (replace) {
-        localStorage.setItem("pk_bin", pks + pk);
-        localStorage.setItem("sk_bin", sks + new_sk);
-      }
-    } else {
-      console.error("Wallet already contains keypair");
-    }
-  }
-
-  location.reload();
-}
-
 function getKeyPair() {
   let sk = localStorage.getItem("sk_bin");
   if (
@@ -432,8 +403,21 @@ function getBackendItem() {
   return transaction;
 }
 
+function serializeAsTransactionVarUint(value) {
+  let var_uint_arr = [];
+  do {
+    var_uint_arr = [(value & 0x7f) + 0x80, ...var_uint_arr];
+    value >>= 7;
+  } while (value);
+  var_uint_arr[var_uint_arr.length - 1] &= 0x7f;
+  return var_uint_arr;
+}
+
 function serializeTransaction(transaction, include_signature) {
-  let serialized_transacion = [transaction.version, transaction.input_count];
+  let serialized_transacion = [transaction.version];
+  serialized_transacion.push(
+    ...serializeAsTransactionVarUint(transaction.input_count)
+  );
   for (let input of transaction.inputs) {
     serialized_transacion.push(...input.block_hash);
     serialized_transacion.push(...input.transaction_hash);
@@ -442,7 +426,9 @@ function serializeTransaction(transaction, include_signature) {
       serialized_transacion.push(...input.signature);
     }
   }
-  serialized_transacion.push(transaction.output_count);
+  serialized_transacion.push(
+    ...serializeAsTransactionVarUint(transaction.output_count)
+  );
   for (let input of transaction.outputs) {
     serialized_transacion.push(input.value.version);
     serialized_transacion.push(...input.value.value);
@@ -460,7 +446,6 @@ export {
   intToRgb,
   uint8ArrToHexStr,
   hexStrToUint8Arr,
-  importSecretKey,
   getKeyPair,
   serializeTransaction,
 };

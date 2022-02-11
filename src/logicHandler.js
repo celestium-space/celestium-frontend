@@ -31,6 +31,7 @@ const CMDOpcodes = {
   BUY_ASTEROID: 0x0a,
   GET_USER_DATA: 0x0b,
   USER_DATA: 0x0c,
+  MIGRATE_USER: 0x0d,
 };
 
 class LogicHandler {
@@ -184,11 +185,56 @@ class LogicHandler {
     });
   }
 
+  async importSecretKey(new_sk, replace) {
+    new_sk = hexStrToUint8Arr(new_sk);
+    if (new_sk.length != 32 || !Secp256k1.privateKeyVerify(new_sk)) {
+      console.error("Could not verify SK");
+    } else {
+      let new_pk = Secp256k1.publicKeyCreate(new_sk);
+      let [old_pk, old_sk] = getKeyPair();
+      if (
+        uint8ArrToHexStr(new_pk) != uint8ArrToHexStr(old_pk) &&
+        uint8ArrToHexStr(new_sk) != uint8ArrToHexStr(old_sk)
+      ) {
+        let arr = new Uint8Array(67);
+        arr[0] = CMDOpcodes.MIGRATE_USER;
+        if (replace) {
+          arr.set(old_pk, 1);
+          arr.set(new_pk, 34);
+          this.migration_data = { signing_key: old_sk, replace_key: new_sk };
+        } else {
+          arr.set(new_pk, 1);
+          arr.set(old_pk, 34);
+          this.migration_data = { signing_key: new_sk, replace_key: old_sk };
+        }
+        let socket = await this.getSocket();
+        console.log(uint8ArrToHexStr(arr));
+        socket.send(arr);
+      } else {
+        console.error("Wallet already contains keypair");
+      }
+    }
+  }
+
   openHandler(evnet) {}
+
+  migration_data = null;
 
   async messageHandler(evt) {
     let array = [];
     if (typeof evt.data === "string" || evt.data instanceof String) {
+      if (
+        evt.data == "Transactions must have at least 1 input" &&
+        this.migration_data
+      ) {
+        localStorage.setItem(
+          "sk_bin",
+          uint8ArrToHexStr(this.migration_data.replace_key)
+        );
+        this.walletPage.setState({
+          doneMiningPopup: true,
+        });
+      }
       console.error(`WS Server said: ${evt.data}`);
       return;
     }
@@ -313,24 +359,24 @@ class LogicHandler {
         break;
       case CMDOpcodes.UNMINED_TRANSACTION:
         console.log("Got transaction!");
-        let [_, sk] = getKeyPair();
         let i = 1;
-
         let debris_name = "";
-        do {
-          debris_name += String.fromCharCode(array[i]);
-        } while (array[++i] != 0);
-        i++;
-        console.log(debris_name);
-        console.log(`${i} | ${array.slice(0, 20)}`);
-
-        this.asteroidPage.set_debris_name(debris_name);
+        if (!this.migration_data) {
+          do {
+            debris_name += String.fromCharCode(array[i]);
+          } while (array[++i] != 0);
+          i++;
+        }
 
         let transaction = {};
         transaction.version = array[i++];
-        transaction.input_count = array[i++];
+        let input_count = 0;
+        do {
+          input_count = (input_count << 7) + (array[i] & 0x7f);
+        } while (array[i++] >= 0x80);
+        transaction.input_count = input_count;
         transaction.inputs = [];
-        for (_ in [...Array(transaction.input_count).keys()]) {
+        for (let _ in [...Array(transaction.input_count).keys()]) {
           let block_hash = array.slice(i, i + 32);
           i += 32;
           let transaction_hash = array.slice(i, i + 32);
@@ -348,9 +394,13 @@ class LogicHandler {
             signature: new Uint8Array(signature),
           });
         }
-        transaction.output_count = array[i++];
+        let output_count = 0;
+        do {
+          output_count = (output_count << 7) + (array[i] & 0x7f);
+        } while (array[i++] >= 0x80);
+        transaction.output_count = output_count;
         transaction.outputs = [];
-        for (_ in [...Array(transaction.output_count).keys()]) {
+        for (let _ in [...Array(transaction.output_count).keys()]) {
           let output_value_version = array[i++];
           let output_value = array.slice(i, i + 32);
           i += 32;
@@ -365,15 +415,45 @@ class LogicHandler {
           });
         }
         transaction.magic = new Uint8Array(array.slice(i));
+        console.log(transaction);
 
         let sign_digest = Uint8Array.from(
           serializeTransaction(transaction, false)
         );
         let sign_hash = sha3_256(sign_digest);
+        let [_, sk] = getKeyPair();
+        let set_eta = null;
+        let doneMining = null;
+
+        if (this.migration_data) {
+          sk = this.migration_data.signing_key;
+          set_eta = (eta) => {
+            this.walletPage.setState({ eta: eta });
+          };
+          doneMining = (sk) => {
+            localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
+            this.walletPage.setState({
+              doneMiningPopup: true,
+            });
+          };
+        } else {
+          this.asteroidPage.set_debris_name(debris_name);
+          set_eta = (eta) => {
+            this.asteroidPage.setState({ eta: eta });
+          };
+          doneMining = () => {
+            this.asteroidPage.setState({
+              startMiningPopup: false,
+              doneMiningPopup: true,
+            });
+          };
+        }
+
         const signature = Secp256k1.ecdsaSign(
           hexStrToUint8Arr(sign_hash),
           sk
         ).signature;
+
         for (let input of transaction.inputs) {
           if (input.signature.reduce((a, b) => a + b) == 0) {
             input.signature = signature;
@@ -384,7 +464,7 @@ class LogicHandler {
         let mined_transaction = await mineTransaction(
           new Uint8Array(serialized_transaction),
           (eta) => {
-            this.asteroidPage.set_eta(eta);
+            set_eta(eta);
           }
         );
         let arr = new Uint8Array(1 + mined_transaction.byteLength);
@@ -398,7 +478,7 @@ class LogicHandler {
         let socket = await this.getSocket();
         socket.send(arr.buffer);
 
-        this.asteroidPage.doneMining();
+        doneMining(this.migration_data.replace_key);
         break;
       default:
         console.warn(

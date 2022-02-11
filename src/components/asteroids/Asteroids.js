@@ -20,20 +20,9 @@ class Asteroids extends Component {
     this.setState({ debris_name: name });
   }
 
-  set_eta(eta) {
-    this.setState({ eta: eta });
-  }
-
   gotAsteroidsItemData(store_item) {
     this.setState({
       store_value_in_dust: store_item.store_value_in_dust,
-    });
-  }
-
-  doneMining() {
-    this.setState({
-      startMiningPopup: false,
-      doneMiningPopup: true,
     });
   }
 
@@ -89,7 +78,7 @@ class Asteroids extends Component {
             debris_name={this.state.debris_name}
             store_value_in_dust={this.state.store_value_in_dust}
             eta={this.state.eta}
-          ></BuyPopup>
+          />
 
           <Button
             circular

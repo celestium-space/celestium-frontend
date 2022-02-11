@@ -6,7 +6,7 @@ import "./MyPopups.css";
 import Countdown from "react-countdown";
 import CelestiumLogo from "../images/CelestiumLogo";
 
-const launch = new Date("2022-03-04T12:00:00+00:00");
+const launch = new Date("2022-03-15T12:00:00+00:00");
 
 const options = {
   timeZoneName: "short",
@@ -29,7 +29,8 @@ export default function CelestiumInformationPopup(props) {
           </button>
           <div className="header">Welcome to the Celestium Canvas</div>
           <div className="content" style={{ maxWidth: "500px" }}>
-            The image created here will be sent to the ISS in:
+            The image created here will be sent to the International Space
+            Station in:
             {/*The image created here will be sent to the International Space
             Station.
             <br />

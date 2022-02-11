@@ -46,6 +46,7 @@ class WalletItem extends Component {
         style={{
           backgroundColor: "#1a1a1a",
           boxShadow: "none",
+          width: "100%",
         }}
         onClick={(x) => {
           this.setState({ fullscreen: true });
@@ -59,9 +60,7 @@ class WalletItem extends Component {
           className="column"
           src={`videos-256/${this.state.item.full_name}.mp4`}
           style={{
-            width: "256px",
-            paddingLeft: "0",
-            paddingRight: "14px",
+            width: "100%",
           }}
         />
         <Card.Content>

@@ -24,6 +24,6 @@
   .my-grid-color {
     width: calc(100vw / 16 - 2px);
     margin: 1px;
-    height: 100%;
+    height: calc(100vh - 100vw - 36px - 57.85px - 1px);
   }
 }
