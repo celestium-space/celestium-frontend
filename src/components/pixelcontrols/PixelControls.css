@@ -1,29 +1,29 @@
 .my-grid {
   margin: 0;
   padding: 0;
-  width: calc(100vh / 16);
-  height: 100vh;
-  max-height: 400px;
+  width: 50px;
+  height: calc(100vh - 57.85px);
   display: flex;
   flex-direction: column;
 }
 
 .my-grid-color {
-  height: calc((100vh - 57.84px) / 16 - 10px);
+  flex-grow: 1;
   margin: 5px;
 }
 
 @media (orientation: portrait) {
   .my-grid {
     width: 100vw;
-    width: calc(100vw / 16);
+    height: calc(100vh - 100vw - 36px - 57.85px - 1px);
+    min-height: 50px;
     display: flex;
     flex-direction: row;
   }
 
   .my-grid-color {
     width: calc(100vw / 16 - 2px);
+    height: 100%;
     margin: 1px;
-    height: calc(100vh - 100vw - 36px - 57.85px - 1px);
   }
 }

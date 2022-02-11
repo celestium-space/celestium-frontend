@@ -1,8 +1,7 @@
 .gridContainer {
   display: flex; /* IMPORTANT! For some reason... */
-  right: 0;
-  margin-left: calc(100vw / 2 - (100vh - 57.85px) / 2 - 50px);
-  margin-right: calc(100vw / 2 - (100vh - 57.85px) / 2 - 50px);
+  margin-left: max(calc(100vw / 2 - (100vh - 57.85px) / 2 - 50px), 0px);
+  margin-right: max(calc(100vw / 2 - (100vh - 57.85px) / 2 - 50px), 0px);
   height: calc(100vh - 57.85px);
 }
 
@@ -10,7 +9,7 @@
   image-rendering: -webkit-optimize-contrast; /* Safari */
   image-rendering: pixelated;
   height: calc(100vh - 57.85px);
-  max-height: calc(100vw - 36.5px * 2);
+  max-height: calc(100vw - 50px * 2);
 }
 
 .question-btn {
@@ -30,25 +29,34 @@
 }
 
 .transform-component-module_wrapper__1_Fgj {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  margin-top: auto !important;
-  margin-bottom: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 @media (orientation: portrait) {
   .gridContainer {
     display: inline;
     width: 100vw;
-    margin-left: 0px;
-    margin-right: 0px;
+  }
+
+  .transform-component-module_wrapper__1_Fgj {
+    margin-left: max(
+      calc((100vw - (100vh - 36.5px - 50px - 57.84px)) / 2),
+      0px
+    ) !important;
+    margin-right: max(
+      calc((100vw - (100vh - 36.5px - 50px - 57.84px)) / 2),
+      0px
+    ) !important;
   }
 
   .cryptoCanvas {
     width: 100vw;
     height: 100vw;
-    max-width: calc(100vh - 36.5px - 46.7px - 57.84px);
-    max-height: calc(100vh - 36.5px - 46.7px - 57.84px);
+    max-width: calc(100vh - 36.5px - 50px - 57.84px);
+    max-height: calc(100vh - 36.5px - 50px - 57.84px);
   }
 
   .controls {

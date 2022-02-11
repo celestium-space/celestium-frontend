@@ -27,18 +27,16 @@ class PixelControls extends Component {
     return (
       <div className="my-grid">
         {range(16).map((i) => (
-          <div key={i.toString()}>
-            <div
-              onClick={(_) => click(i)}
-              className="my-grid-color"
-              style={{
-                border: this.state.active == i ? "2px solid gray" : "",
-                backgroundColor: intToRgb(i),
-              }}
-            />
-          </div>
+          <div
+            key={i.toString()}
+            onClick={(_) => click(i)}
+            className="my-grid-color"
+            style={{
+              border: this.state.active == i ? "2px solid gray" : "",
+              backgroundColor: intToRgb(i),
+            }}
+          />
         ))}
-        ;
       </div>
     );
   }
