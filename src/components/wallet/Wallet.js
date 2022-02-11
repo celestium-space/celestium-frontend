@@ -98,24 +98,22 @@ class Wallet extends Component {
             margin="auto 20px auto 5px"
             lineHeight="40px"
           />
-          <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
-            <Button
-              onClick={() => {
-                this.setState({ importSK: true });
-              }}
-            >
-              Import Secret Key
-            </Button>
-          </div>
-          <div style={{ width: "170px", paddingLeft: "0", paddingRight: "0" }}>
-            <Button
-              onClick={() => {
-                this.setState({ exportSK: true });
-              }}
-            >
-              Export Secret Key
-            </Button>
-          </div>
+          <Button
+            className="sk-buttons"
+            onClick={() => {
+              this.setState({ importSK: true });
+            }}
+          >
+            Import Secret Key
+          </Button>
+          <Button
+            className="sk-buttons"
+            onClick={() => {
+              this.setState({ exportSK: true });
+            }}
+          >
+            Export Secret Key
+          </Button>
           <div className="warning">
             WARNING: Do not share
             <br />
@@ -206,14 +204,7 @@ class Wallet extends Component {
             backgroundColor: "#1a1a1a",
           }}
         >
-          <Grid
-            columns={3}
-            divided
-            style={{
-              margin: "20px",
-              maxWidth: "750px",
-            }}
-          >
+          <Grid columns={3} divided className="asteroids-header">
             <Grid.Row>
               <Grid.Column
                 style={{
@@ -235,16 +226,13 @@ class Wallet extends Component {
               <Grid.Column>
                 Est. Profit ($)
                 <br />
-                {total_asteroids_value_dollars}
+                <div className="celestium-balance">
+                  {total_asteroids_value_dollars}
+                </div>
               </Grid.Column>
             </Grid.Row>
           </Grid>
-          <div
-            style={{
-              overflowX: "scroll",
-              height: "calc(100vh - 440px)",
-            }}
-          >
+          <div className="asteroids-grid-container">
             <Grid className="asteroids-grid">
               {this.state.user_data.owned_store_items.length > 0 ? (
                 this.state.user_data.owned_store_items.map(
