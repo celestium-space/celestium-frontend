@@ -23,6 +23,8 @@ html[data-theme="dark"] .popup-arrow > svg {
 
 .modal {
   font-size: 11pt;
+  overflow-y: scroll;
+  max-height: calc(100vh - 120px);
 }
 .modal > .header {
   width: 100%;

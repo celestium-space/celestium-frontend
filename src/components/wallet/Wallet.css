@@ -10,7 +10,7 @@
 
 .wallet-container {
   padding-top: 10px;
-  height: 100vh;
+  height: 100%;
   color: white;
 }
 
@@ -31,6 +31,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.asteroids-grid-container {
+  overflow-y: scroll;
+  height: calc(100vh - 440px);
 }
 
 .asteroids-grid {
@@ -76,6 +81,11 @@
   margin-bottom: auto;
 }
 
+.asteroids-header {
+  margin: 20px !important;
+  max-width: 750px;
+}
+
 @media (max-width: 600px) {
   .asteroids-grid {
     margin-left: 5px !important;
@@ -101,6 +111,22 @@
 }
 
 @media (max-width: 760px) {
+  .asteroids-header {
+    margin: 2px !important;
+  }
+
+  .sk-buttons {
+    padding: 0 0 0 0 !important;
+  }
+
+  .asteroids-header {
+    margin: 0 !important;
+  }
+
+  .table-container {
+    max-height: 160px;
+  }
+
   .debris-gif {
     display: none !important;
   }
