@@ -180,9 +180,9 @@ export default function ExportSKPopup(props) {
             <div className="header">Migration Complete</div>
             <br />
             <div className="content" style={{ maxWidth: "400px" }}>
-              Your wallet has been updated and all value on the Blockchain has
-              now been transferred to the desired Secret Key. Please reload this
-              page to see the changes.
+              Your wallet has been updated and all its value on the Blockchain
+              has now been transferred to the desired Secret Key. Please reload
+              this page to see the changes.
               <br />
               <br />
               If the changes do not appear on the first reload, please wait a
