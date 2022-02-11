@@ -205,7 +205,7 @@ class Wallet extends Component {
           }}
         >
           <Grid columns={3} divided className="asteroids-header">
-            <Grid.Row>
+            <Grid.Row style={{ padding: "0px" }}>
               <Grid.Column
                 style={{
                   fontSize: "20px",
