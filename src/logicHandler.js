@@ -430,8 +430,11 @@ class LogicHandler {
           set_eta = (eta) => {
             this.walletPage.setState({ eta: eta });
           };
-          doneMining = (sk) => {
-            localStorage.setItem("sk_bin", uint8ArrToHexStr(sk));
+          doneMining = () => {
+            localStorage.setItem(
+              "sk_bin",
+              uint8ArrToHexStr(this.migration_data.replace_key)
+            );
             this.walletPage.setState({
               doneMiningPopup: true,
             });
@@ -478,7 +481,7 @@ class LogicHandler {
         let socket = await this.getSocket();
         socket.send(arr.buffer);
 
-        doneMining(this.migration_data.replace_key);
+        doneMining();
         break;
       default:
         console.warn(
