@@ -19,19 +19,21 @@ const default_address =
 const socket_address = env("SOCKET_ADDRESS") || default_address;
 
 const CMDOpcodes = {
-  GET_ENTIRE_IMAGE: 0x01,
-  ENTIRE_IMAGE: 0x02,
-  UPDATE_PIXEL: 0x03,
-  UNMINED_TRANSACTION: 0x04,
-  MINED_TRANSACTION: 0x05,
-  GET_PIXEL_DATA: 0x06,
-  PIXEL_DATA: 0x07,
-  GET_ASTEROID: 0x08,
-  ASTEROID: 0x9,
-  BUY_ASTEROID: 0x0a,
-  GET_USER_DATA: 0x0b,
-  USER_DATA: 0x0c,
-  MIGRATE_USER: 0x0d,
+  GET_PIXEL_COLOR: 0x00,
+  PIXEL_COLOR: 0x01,
+  GET_ENTIRE_IMAGE: 0x02,
+  ENTIRE_IMAGE: 0x03,
+  UPDATED_PIXEL_EVENT: 0x04,
+  UNMINED_TRANSACTION: 0x05,
+  MINED_TRANSACTION: 0x06,
+  GET_PIXEL_MINING_DATA: 0x07,
+  PIXEL_MINING_DATA: 0x08,
+  GET_STORE_ITEM: 0x09,
+  STORE_ITEM: 0x0a,
+  BUY_STORE_ITEM: 0x0b,
+  GET_USER_DATA: 0x0c,
+  USER_DATA: 0x0d,
+  GET_USER_MIGRATION_TRANSACTION: 0x0e,
 };
 
 class LogicHandler {
@@ -88,7 +90,7 @@ class LogicHandler {
     let item_name_enc = enc.encode(item_name);
 
     let arr = new Uint8Array(1 + item_name_enc.byteLength);
-    arr[0] = CMDOpcodes.GET_ASTEROID;
+    arr[0] = CMDOpcodes.GET_STORE_ITEM;
     for (let i = 0; i < item_name_enc.byteLength; i++) {
       arr[i + 1] = item_name_enc[i];
     }
@@ -102,7 +104,7 @@ class LogicHandler {
     let item_name_enc = enc.encode(item_name);
 
     let arr = new Uint8Array(34 + item_name_enc.byteLength);
-    arr[0] = CMDOpcodes.BUY_ASTEROID;
+    arr[0] = CMDOpcodes.BUY_STORE_ITEM;
 
     let [pk, _] = getKeyPair();
     for (let i = 0; i < 33; i++) {
@@ -173,7 +175,7 @@ class LogicHandler {
     this.getSocket().then((socket) => {
       this.mining_data = [x, y, index];
       let to_send = Uint8Array.from([
-        CMDOpcodes.GET_PIXEL_DATA,
+        CMDOpcodes.GET_PIXEL_MINING_DATA,
         x >> 8,
         x & 0xff,
         y >> 8,
@@ -197,7 +199,7 @@ class LogicHandler {
         uint8ArrToHexStr(new_sk) != uint8ArrToHexStr(old_sk)
       ) {
         let arr = new Uint8Array(67);
-        arr[0] = CMDOpcodes.MIGRATE_USER;
+        arr[0] = CMDOpcodes.GET_USER_MIGRATION_TRANSACTION;
         if (replace) {
           arr.set(old_pk, 1);
           arr.set(new_pk, 34);
@@ -254,7 +256,7 @@ class LogicHandler {
           this.grid.updatePixels(0, 0, 1000, 1000, color);
         }
         break;
-      case CMDOpcodes.UPDATE_PIXEL:
+      case CMDOpcodes.UPDATED_PIXEL_EVENT:
         if (this.grid) {
           let x = (array[1] << 8) + array[2];
           let y = (array[3] << 8) + array[4];
@@ -266,7 +268,7 @@ class LogicHandler {
           this.grid.updatePixels(x, y, 1, 1, color);
         }
         break;
-      case CMDOpcodes.PIXEL_DATA:
+      case CMDOpcodes.PIXEL_MINING_DATA:
         if (this.mining_data) {
           console.log("Got pixel data, continuing NFT creation");
           this.grid.set_eta("Calculating...");
@@ -301,25 +303,22 @@ class LogicHandler {
           );
 
           let pixel_transaction_message = new Uint8Array(
-            1 + pixel_nft_transaction.byteLength
+            1 +
+              pixel_nft_transaction.byteLength +
+              katjing_transaction.byteLength
           );
           pixel_transaction_message[0] = CMDOpcodes.MINED_TRANSACTION;
           for (let i = 0; i < pixel_nft_transaction.byteLength; i++) {
             pixel_transaction_message[i + 1] = pixel_nft_transaction[i];
           }
-          console.log(`Sending mined pixel transaction`);
-          (await this.getSocket()).send(pixel_transaction_message.buffer);
-
-          let katjing_transaction_message = new Uint8Array(
-            1 + katjing_transaction.byteLength
-          );
-          katjing_transaction_message[0] = CMDOpcodes.MINED_TRANSACTION;
-          for (let i = 0; i < katjing_transaction.byteLength; i++) {
-            katjing_transaction_message[i + 1] = katjing_transaction[i];
+          for (let i = 0; i < pixel_transaction_message.byteLength; i++) {
+            pixel_transaction_message_message[
+              i + pixel_nft_transaction.byteLength + 1
+            ] = pixel_transaction_message[i];
           }
-          console.log(`Sending mined katjing transaction`);
-          (await this.getSocket()).send(katjing_transaction_message.buffer);
 
+          console.log(`Sending mined transactions`);
+          (await this.getSocket()).send(pixel_transaction_message.buffer);
           this.mining_data = undefined;
 
           this.grid.doneMining();
@@ -327,7 +326,7 @@ class LogicHandler {
           console.warn("Got unexpected pixel data, ignoring");
         }
         break;
-      case CMDOpcodes.ASTEROID:
+      case CMDOpcodes.STORE_ITEM:
         console.log("Got asteroid data, updating...");
         let store_item = JSON.parse(
           new TextDecoder().decode(new Uint8Array(array))
