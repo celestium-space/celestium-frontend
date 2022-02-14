@@ -312,7 +312,7 @@ class LogicHandler {
             transactions_message[i + 1] = pixel_nft_transaction[i];
           }
           for (let i = 0; i < katjing_transaction.byteLength; i++) {
-            transactions_message[i + katjing_transaction.byteLength + 1] =
+            transactions_message[i + pixel_nft_transaction.byteLength + 1] =
               katjing_transaction[i];
           }
 
