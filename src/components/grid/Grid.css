@@ -35,6 +35,10 @@
   margin-bottom: 0 !important;
 }
 
+.some-sep {
+  height: calc(100vh - 36px * 3 - 57.85px);
+}
+
 @media (orientation: portrait) {
   .gridContainer {
     display: inline;
@@ -61,5 +65,12 @@
 
   .controls {
     display: flex;
+  }
+
+  .some-sep {
+    height: 100%;
+    margin-right: calc(
+      100vw - 36px * 5 - 28.28px - 3.5px * 5
+    ); /* Somehow width won't work */
   }
 }
