@@ -302,23 +302,22 @@ class LogicHandler {
             }
           );
 
-          let pixel_transaction_message = new Uint8Array(
+          let transactions_message = new Uint8Array(
             1 +
               pixel_nft_transaction.byteLength +
               katjing_transaction.byteLength
           );
-          pixel_transaction_message[0] = CMDOpcodes.MINED_TRANSACTION;
+          transactions_message[0] = CMDOpcodes.MINED_TRANSACTION;
           for (let i = 0; i < pixel_nft_transaction.byteLength; i++) {
-            pixel_transaction_message[i + 1] = pixel_nft_transaction[i];
+            transactions_message[i + 1] = pixel_nft_transaction[i];
           }
-          for (let i = 0; i < pixel_transaction_message.byteLength; i++) {
-            pixel_transaction_message_message[
-              i + pixel_nft_transaction.byteLength + 1
-            ] = pixel_transaction_message[i];
+          for (let i = 0; i < transactions_message.byteLength; i++) {
+            transactions_message[i + pixel_nft_transaction.byteLength + 1] =
+              transactions_message[i];
           }
 
           console.log(`Sending mined transactions`);
-          (await this.getSocket()).send(pixel_transaction_message.buffer);
+          (await this.getSocket()).send(transactions_message.buffer);
           this.mining_data = undefined;
 
           this.grid.doneMining();
