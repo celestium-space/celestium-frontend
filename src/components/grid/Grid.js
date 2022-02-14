@@ -6,6 +6,9 @@ import CelestiumInformationPopup from "../popups/CelestiumInformationPopup";
 import PixelMiningPopup from "../popups/PixelMiningPopup";
 import PixelControls from "../pixelcontrols/PixelControls";
 import SelectColorPopup from "../popups/SelectColorPopup";
+import { FiGithub } from "react-icons/fi";
+import { RiRedditLine } from "react-icons/ri";
+import { AiOutlineApi } from "react-icons/ai";
 
 class Grid extends Component {
   constructor(props) {
@@ -117,6 +120,67 @@ class Grid extends Component {
                   >
                     <i className="icon equals"></i>
                   </button>
+                  <div className="some-sep" />
+                  <a
+                    href="https://reddit.com/r/CelestiumSpace"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <button
+                      className="inverted circular ui icon button mini right floated compact"
+                      style={{
+                        padding: "0px",
+                        height: "36px",
+                        width: "36px",
+                      }}
+                    >
+                      <RiRedditLine
+                        style={{
+                          height: "26px",
+                          width: "26px",
+                          margin: "auto",
+                        }}
+                      />
+                    </button>
+                  </a>
+                  <a
+                    href="https://github.com/celestium-space/celestium-api"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <button
+                      className="inverted circular ui icon button mini right floated compact"
+                      style={{
+                        padding: "0px",
+                        height: "36px",
+                        width: "36px",
+                      }}
+                    >
+                      API
+                    </button>
+                  </a>
+                  <a
+                    href="https://github.com/celestium-space"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <button
+                      className="inverted circular ui icon button mini right floated compact"
+                      style={{
+                        padding: "0px",
+                        height: "36px",
+                        width: "36px",
+                      }}
+                    >
+                      <FiGithub
+                        style={{
+                          height: "26px",
+                          width: "26px",
+                          marginTop: "10px",
+                        }}
+                      />
+                    </button>
+                  </a>
                 </div>
                 <TransformComponent>
                   <canvas
