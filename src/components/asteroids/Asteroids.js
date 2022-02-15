@@ -9,7 +9,11 @@ class Asteroids extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      store_value_in_dust: "Fetching...",
+      store_item: {
+        store_value_in_dust: "Fetching...",
+        profit: "Fetching...",
+        price: "Fetching...",
+      },
       eta: "Calculating...",
       asteroidInfo: true,
       debris_name: "Unknown debris",
@@ -21,8 +25,9 @@ class Asteroids extends Component {
   }
 
   gotAsteroidsItemData(store_item) {
+    console.log(store_item);
     this.setState({
-      store_value_in_dust: store_item.store_value_in_dust,
+      store_item: store_item,
     });
   }
 
@@ -76,7 +81,7 @@ class Asteroids extends Component {
               this.mineTransaction(name);
             }}
             debris_name={this.state.debris_name}
-            store_value_in_dust={this.state.store_value_in_dust}
+            store_item={this.state.store_item}
             eta={this.state.eta}
           />
 

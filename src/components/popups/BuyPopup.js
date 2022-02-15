@@ -7,27 +7,65 @@ import { IoWallet } from "react-icons/io5";
 import CelestiumLogo from "../images/CelestiumLogo";
 import Countdown from "react-countdown";
 
-function getAsteroidName() {
+function getAsteroidName(setAsterankDetails) {
   let iframe = document.getElementById("asterankIframe");
 
   let innerDoc = iframe.contentDocument
     ? iframe.contentDocument
     : iframe.contentWindow.document;
 
-  return [
-    innerDoc.getElementById("selection-details").children[0].innerHTML,
-    innerDoc.getElementById("orbit-2d-diagram").children[0],
-  ];
+  let name = innerDoc.getElementById("selection-details").children[0].innerHTML;
+  let query = name.split("(")[1].split(")")[0];
+
+  let jpl_request = new XMLHttpRequest();
+  jpl_request.onreadystatechange = function () {
+    if (jpl_request.readyState == 4 && jpl_request.status == 200) {
+      let jpl_details = JSON.parse(jpl_request.responseText);
+      let compositions_request = new XMLHttpRequest();
+      compositions_request.onreadystatechange = function () {
+        if (
+          compositions_request.readyState == 4 &&
+          compositions_request.status == 200
+        ) {
+          let details = Object.assign(
+            jpl_details,
+            JSON.parse(compositions_request.responseText)
+          );
+          console.log(details);
+          setAsterankDetails(details);
+        }
+      };
+      compositions_request.open(
+        "GET",
+        "https://www.asterank.com/api/compositions",
+        true
+      );
+      compositions_request.send(null);
+    }
+  };
+  jpl_request.open(
+    "GET",
+    "https://www.asterank.com/jpl/lookup?query=" + query,
+    true
+  );
+  jpl_request.send(null);
+
+  return [name, innerDoc.getElementById("orbit-2d-diagram").children[0]];
+}
+
+function pou(num) {
+  return num >= 0 ? num : "Unknown";
 }
 
 function getSelection(
   setAsterankObjectName,
   setAsterankObjectSVG,
+  setAsterankComposition,
   setIsBuying,
   setIsError,
   onClick
 ) {
-  let [asteroid_name, svg] = getAsteroidName();
+  let [asteroid_name, svg] = getAsteroidName(setAsterankComposition);
   if (asteroid_name) {
     onClick(asteroid_name);
     setAsterankObjectName(asteroid_name);
@@ -41,20 +79,34 @@ function getSelection(
 function BuyPopup(props) {
   let [asterankObjectName, setAsterankObjectName] = useState("loading");
   let [asterankObjectSVG, setAsterankObjectSVG] = useState("");
+  let [asterankDetails, setAsterankDetails] = useState(null);
   const svgRef = useRef(null);
   let [isBuying, setIsBuying] = useState(false);
   let [isError, setIsError] = useState(false);
   let [confirmMiningPopup, setConfirmMiningPopup] = useState(false);
 
-  let store_value_in_cel = isNaN(props.store_value_in_dust)
-    ? props.store_value_in_dust
+  let store_value_in_cel = isNaN(props.store_item.store_value_in_dust)
+    ? props.store_item.store_value_in_dust
     : `${
-        BigInt(props.store_value_in_dust) / 10000000000000000000000000000000n
+        BigInt(props.store_item.store_value_in_dust) /
+        10000000000000000000000000000000n
       }.${(
-        BigInt(props.store_value_in_dust) % 10000000000000000000000000000000n
+        BigInt(props.store_item.store_value_in_dust) %
+        10000000000000000000000000000000n
       )
         .toString()
         .padStart(31, "0")}`;
+
+  if (asterankDetails) {
+    console.log(asterankDetails);
+  }
+
+  let compositions =
+    props.store_item.asteroid_specification && asterankDetails
+      ? asterankDetails[props.store_item.asteroid_specification]
+      : [];
+
+  console.log(compositions);
 
   return (
     <div>
@@ -64,6 +116,7 @@ function BuyPopup(props) {
           getSelection(
             setAsterankObjectName,
             setAsterankObjectSVG,
+            setAsterankDetails,
             setIsBuying,
             setIsError,
             props.onClick
@@ -113,7 +166,7 @@ function BuyPopup(props) {
                   style={{
                     paddingRight: "0px",
                     paddingLeft: "24px",
-                    width: "500px",
+                    width: "470px",
                   }}
                 >
                   <div className="row" style={{ paddingBottom: "0" }}>
@@ -130,49 +183,85 @@ function BuyPopup(props) {
                         paddingRight: "14px",
                       }}
                     />
-                    <div
-                      className="column content"
-                      style={{
-                        paddingLeft: "5px",
-                        paddingRight: "0",
-                        width: "200px",
-                      }}
-                    >
-                      <ul className="buy-page-listing">
-                        <li>
-                          <span>
-                            <b>Aphellion</b> (AU): 1.73948598
-                          </span>
-                        </li>
-                        <li>
-                          <span>
-                            <b>Diameter</b> (km): 2.3
-                          </span>
-                        </li>
-                        <li>
-                          <span>
-                            <b>Semi-major Axis</b> (AU): 1.49382754
-                          </span>
-                        </li>
-                        <li>
-                          <span>
-                            <b>Rotation</b> (hrs): 2.9485
-                          </span>
-                        </li>
-                      </ul>
-                      Composition
-                      <ul className="buy-page-listing">
-                        <li>
-                          <span>iron</span>
-                        </li>
-                        <li>
-                          <span>nickel</span>
-                        </li>
-                        <li>
-                          <span>cobalt</span>
-                        </li>
-                      </ul>
-                      Upcoming Approaches
+                    {asterankDetails ? (
+                      <div
+                        className="column content"
+                        style={{
+                          paddingLeft: "5px",
+                          paddingRight: "0",
+                          width: "190px",
+                        }}
+                      >
+                        <ul className="buy-page-listing">
+                          <li>
+                            <b>Aphelion (AU)</b>:{"  "}
+                            {pou(asterankDetails["Aphelion (AU)"])}
+                          </li>
+
+                          <li>
+                            <b>Diameter (km)</b>:{"  "}
+                            {pou(asterankDetails["Diameter (km)"])}
+                          </li>
+
+                          <li>
+                            <b>Semi-major Axis (AU)</b>:{"  "}
+                            {pou(asterankDetails["Semi-major Axis (AU)"])}
+                          </li>
+
+                          <li>
+                            <b>GM (km^3/s^2)</b>:{"  "}
+                            {pou(asterankDetails["GM (km^3/s^2)"])}
+                          </li>
+
+                          <li>
+                            <b>Rotation (hrs)</b>:{"  "}
+                            {pou(asterankDetails["Rotation (hrs)"])}
+                          </li>
+
+                          <li>
+                            <b>Inclination (deg)</b>:{"  "}
+                            {pou(asterankDetails["Inclination (deg)"])}
+                          </li>
+
+                          <li>
+                            <b>Extent (km)</b>:{"  "}
+                            {pou(asterankDetails["Extent (km)"])}
+                          </li>
+
+                          <li>
+                            <b>Perihelion (AU)</b>:{"  "}
+                            {pou(asterankDetails["Perihelion (AU)"])}
+                          </li>
+
+                          <li>
+                            <b>Density (g/cm^3)</b>:{"  "}
+                            {pou(asterankDetails["Density (g/cm^3)"])}
+                          </li>
+
+                          <li>
+                            <b>Period (days)</b>:{"  "}
+                            {pou(asterankDetails["Period (days)"])}
+                          </li>
+
+                          <li>
+                            <b>EMOID (AU)</b>:{"  "}
+                            {pou(asterankDetails["EMOID (AU)"])}
+                          </li>
+
+                          <li>
+                            <b>Albedo</b>:{"  "}
+                            {pou(asterankDetails["Albedo"])}
+                          </li>
+                        </ul>
+                        Composition
+                        <ul className="buy-page-listing">
+                          {Object.keys(compositions).map((key) => (
+                            <li key={key}>
+                              <span>{key}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {/*Upcoming Approaches
                       <ul className="buy-page-listing">
                         <li>
                           <span>
@@ -184,8 +273,11 @@ function BuyPopup(props) {
                             <b>Apr 01, 2023</b>: 0.274 AU
                           </span>
                         </li>
-                      </ul>
-                    </div>
+                      </ul> */}
+                      </div>
+                    ) : (
+                      "Fetching..."
+                    )}
                   </div>
                   <div
                     className="row"
@@ -215,8 +307,9 @@ function BuyPopup(props) {
                           overflow: "hidden",
                         }}
                       >
-                        5.57 trillion <br />
-                        <b>1.25 trillion</b> <br />
+                        {props.store_item.price}
+                        <br />
+                        <b>{props.store_item.profit}</b> <br />
                         <b>{store_value_in_cel}</b>
                       </div>
                     </div>

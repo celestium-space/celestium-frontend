@@ -23,7 +23,7 @@ html[data-theme="dark"] .popup-arrow > svg {
 
 .modal {
   font-size: 11pt;
-  overflow-y: scroll;
+  overflow-y: auto;
   max-height: calc(100vh - 120px);
 }
 .modal > .header {
@@ -109,9 +109,11 @@ html[data-theme="dark"] .popup-arrow > svg {
   line-height: 110%;
 }
 
-.buy-page-listing > li span {
+.buy-page-listing > li {
   position: relative;
   left: -5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
