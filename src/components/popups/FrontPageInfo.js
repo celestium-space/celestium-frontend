@@ -40,7 +40,7 @@ export default function FrontPageInfo(props) {
           <br />
           <b>
             Here on this website you can collect the artwork’s unique space
-            tokens and space images from February 1st to February 15th, 2022, by
+            tokens and space images from February 1st to March 15th, 2022, by
             interacting with the artwork.
           </b>
           <br />
