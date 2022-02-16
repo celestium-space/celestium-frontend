@@ -132,6 +132,7 @@ function BuyPopup(props) {
         contentStyle={{ width: "770px" }}
         modal
         nested
+        style={{ overflow: "hidden" }}
         onClose={() => {
           setIsBuying(false);
           setConfirmMiningPopup(false);
@@ -166,10 +167,13 @@ function BuyPopup(props) {
                   style={{
                     paddingRight: "0px",
                     paddingLeft: "24px",
-                    width: "470px",
+                    width: "500px",
                   }}
                 >
-                  <div className="row" style={{ paddingBottom: "0" }}>
+                  <div
+                    className="row"
+                    style={{ paddingBottom: "0", paddingRight: "0" }}
+                  >
                     <video
                       autoPlay={true}
                       muted="muted"
@@ -189,7 +193,7 @@ function BuyPopup(props) {
                         style={{
                           paddingLeft: "5px",
                           paddingRight: "0",
-                          width: "190px",
+                          width: "210px",
                         }}
                       >
                         <ul className="buy-page-listing">
