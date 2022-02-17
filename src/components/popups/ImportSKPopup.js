@@ -34,33 +34,23 @@ export default function ExportSKPopup(props) {
               <br />
               <br />
               Importing Secret Keys means that all NFTs, debris and Celelestium
-              toknes will to be <i>tranferred one of the the two keys</i>. When
-              importing Secret Keys you have two choices; transferring
-              everything to the imported Secret Key and replacing the key in
-              your wallet or transferring everything from the imported Secret
-              Key, to the Secret Key already in your wallet.
+              tokens owned by the Secret Key in this wallet will to be{" "}
+              <i>tranferred to the Secret Key you are importing</i>. After all
+              value has been transferred to the Secret Key you are importing,
+              the wallet on this device will remove its current Secret Key and
+              start using the imported Secret Key.
               <br />
               <br />
-              <span style={{ fontWeight: "bold" }}>
-                Using imported Secret Key:
-              </span>{" "}
-              You shold choose this option if you want this device to be synced
-              up with the device you exported the Secret Key from. If Celestium
-              is spent and/or NFTs are bought from another device (with the same
-              Secret Key) those changes will also appear here and vice versa. If
-              any other device is using the existing key in this wallet, they
-              will become empty as all value is transferred to the imported
-              Secret Key.
+              This essentially means that all value owned by both keys will be
+              combined and this device will be synced up with the device you
+              exported the Secret Key from. If Celestium is spent and/or NFTs
+              are bought from the device those changes will also appear here and
+              vice versa.
               <br />
               <br />
-              <span style={{ fontWeight: "bold" }}>
-                Using existing key:
-              </span>{" "}
-              You should choose this option if you are not planning to use the
-              divce from which you have exported the Secret Key you are
-              currentily importing. All value will be transferred to the Secret
-              Key already in this wallet, meaning that all other wallets using
-              the imported Secret Key will be emptied.
+              We recommend placing the Secret Key you are currently importing in
+              a safe place and always using that file when importing Secret Keys
+              into other devices in the future.
               <br />
               <br />
               <i>REMEMBER:</i> do not share your Secret Key with others.
@@ -77,19 +67,6 @@ export default function ExportSKPopup(props) {
               >
                 <Button className="close" onClick={close}>
                   Use Imported Secret Key
-                </Button>
-              </FilePicker>
-              <FilePicker
-                extensions={["txt"]}
-                onChange={(FileObject) => {
-                  FileObject.text().then((c) => {
-                    props.importSecretKey(c, false);
-                    setIsMigrating(true);
-                  });
-                }}
-              >
-                <Button className="close" onClick={close}>
-                  Use Existing Secret Key
                 </Button>
               </FilePicker>
             </div>
