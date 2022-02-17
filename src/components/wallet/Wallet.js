@@ -10,7 +10,7 @@ import WalletInfoPopup from "../popups/WalletInfoPopup";
 import CelestiumLogo from "../images/CelestiumLogo";
 import { Popup as SemanticPopup } from "semantic-ui-react";
 import { GiRingedPlanet } from "react-icons/gi";
-import { uint8ArrToHexStr } from "../../utils";
+import { numberToShortScale } from "../../utils";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -227,7 +227,7 @@ class Wallet extends Component {
                 Est. Profit ($)
                 <br />
                 <div className="celestium-balance">
-                  {total_asteroids_value_dollars}
+                  {numberToShortScale(total_asteroids_value_dollars)}
                 </div>
               </Grid.Column>
             </Grid.Row>

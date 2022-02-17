@@ -66,6 +66,27 @@ const colorMap = [
   [0xee, 0xee, 0xee],
 ];
 
+function numberToShortScale(x) {
+  if (x < 1) return "Unknown";
+  else if (0 <= x && x < 1000) return `${x.toFixed(2)}`;
+  else if (1_000.0 <= x && x < 1_000_000.0)
+    return `${(x / 1000).toFixed(2)} thousand`;
+  else if (1_000_000.0 <= x && x < 1_000_000_000.0)
+    return `${(x / 1_000_000.0).toFixed(2)} billion`;
+  else if (1_000_000_000.0 <= x && x < 1_000_000_000_000.0)
+    return `${(x / 1_000_000_000.0).toFixed(2)} trillion`;
+  else if (1_000_000_000_000.0 <= x && x < 1_000_000_000_000_000.0)
+    return `${(x / 1_000_000_000_000.0).toFixed(2)} quadrillion`;
+  else if (1_000_000_000_000_000.0 <= x && x < 1_000_000_000_000_000_000.0)
+    return `${(x / 1_000_000_000_000_000.0).toFixed(2)} quintillion`;
+  else if (
+    1_000_000_000_000_000_000.0 <= x &&
+    x < 1_000_000_000_000_000_000_000.0
+  )
+    return `${(x / 1_000_000_000_000_000_000.0).toFixed(2)} sextillion`;
+  else return `${(x / 1_000_000_000_000_000_000_000.0).toFixed(2)} septillion`;
+}
+
 function arraysEqual(a, b) {
   if (a === b) return true;
   if (a == null || b == null) return false;
@@ -448,4 +469,5 @@ export {
   hexStrToUint8Arr,
   getKeyPair,
   serializeTransaction,
+  numberToShortScale,
 };

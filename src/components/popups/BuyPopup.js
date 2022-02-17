@@ -6,6 +6,7 @@ import "../../utils.js";
 import { IoWallet } from "react-icons/io5";
 import CelestiumLogo from "../images/CelestiumLogo";
 import Countdown from "react-countdown";
+import { numberToShortScale } from "../../utils";
 
 function getAsteroidName(setAsterankDetails) {
   let iframe = document.getElementById("asterankIframe");
@@ -311,9 +312,12 @@ function BuyPopup(props) {
                           overflow: "hidden",
                         }}
                       >
-                        {props.store_item.price}
+                        {numberToShortScale(props.store_item.price)}
                         <br />
-                        <b>{props.store_item.profit}</b> <br />
+                        <b>
+                          {numberToShortScale(props.store_item.profit)}
+                        </b>{" "}
+                        <br />
                         <b>{store_value_in_cel}</b>
                       </div>
                     </div>

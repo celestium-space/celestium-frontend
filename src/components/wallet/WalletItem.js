@@ -3,6 +3,7 @@ import { Grid, Image, Card } from "semantic-ui-react";
 import FullScreenAsteroid from "../popups/FullScreenAsteroid";
 import "./Wallet.css";
 import CelestiumLogo from "../images/CelestiumLogo";
+import { numberToShortScale } from "../../utils";
 
 const DUST_PER_CEL_POWER = 31;
 const DUST_PER_CEL = BigInt("1" + "0".repeat(DUST_PER_CEL_POWER));
@@ -71,7 +72,9 @@ class WalletItem extends Component {
             <Grid columns={2}>
               <Grid.Row>
                 <Grid.Column>Est. Profit ($)</Grid.Column>
-                <Grid.Column>{this.state.item.profit}</Grid.Column>
+                <Grid.Column>
+                  {numberToShortScale(this.state.item.profit)}
+                </Grid.Column>
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column>
