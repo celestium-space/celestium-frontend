@@ -38,9 +38,9 @@ export default function ExportSKPopup(props) {
             your wallet. Please, <i>do not share you Secret Key with others</i>.
             <br />
             <br />
-            <span style="font-weight: bold">Advanced Users:</span> If you want
-            to export your Public Key instead, please click{" "}
-            <a href={pkHref} onClick={close} download="sk.txt">
+            <span style={{ fontWeight: "bold" }}>Advanced Users:</span> If you
+            want to export your Public Key instead, please click{" "}
+            <a href={pkHref} onClick={close} download="pk.txt">
               here
             </a>
             .
