@@ -36,9 +36,8 @@ export default function ExportSKPopup(props) {
               Importing Secret Keys means that all NFTs, debris and Celelestium
               tokens owned by the Secret Key in this wallet will to be{" "}
               <i>tranferred to the Secret Key you are importing</i>. After all
-              value has been transferred to the Secret Key you are importing,
-              the wallet on this device will remove its current Secret Key and
-              start using the imported Secret Key.
+              value has been transferred, the wallet on this device will remove
+              its current Secret Key and start using the imported Secret Key.
               <br />
               <br />
               This essentially means that all value owned by both keys will be
@@ -49,7 +48,7 @@ export default function ExportSKPopup(props) {
               <br />
               <br />
               We recommend placing the Secret Key you are currently importing in
-              a safe place and always using that file when importing Secret Keys
+              a safe place and always use that file when importing Secret Keys
               into other devices in the future.
               <br />
               <br />
@@ -66,7 +65,7 @@ export default function ExportSKPopup(props) {
                 }}
               >
                 <Button className="close" onClick={close}>
-                  Use Imported Secret Key
+                  Migrate Value and Import Secret Key
                 </Button>
               </FilePicker>
             </div>
