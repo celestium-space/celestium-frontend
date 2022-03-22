@@ -6,7 +6,7 @@ import "./MyPopups.css";
 import Countdown from "react-countdown";
 import CelestiumLogo from "../images/CelestiumLogo";
 
-const launch = new Date("2022-03-22T12:00:00+00:00");
+const launch = new Date("2022-03-31T23:59:59+00:00");
 
 const options = {
   timeZoneName: "short",
@@ -29,8 +29,8 @@ export default function CelestiumInformationPopup(props) {
           </button>
           <div className="header">Welcome to the Celestium Canvas</div>
           <div className="content" style={{ maxWidth: "500px" }}>
-            The image created here will be sent to the International Space
-            Station in:
+            Final date has now been planned by NASA and the image created here
+            will be frozen in:
             {/*The image created here will be sent to the International Space
             Station.
             <br />
@@ -73,6 +73,10 @@ export default function CelestiumInformationPopup(props) {
               </div>
             }
           />
+          <div className="content" style={{ width: "280px" }}>
+            The block will be checked by NASA cyber security and sent to the ISS
+            on 5th of March 2022.
+          </div>
           <div className="content" style={{ width: "280px" }}>
             Click anywhere on the canvas to contribute, by placing your pixel
             and mine a Celestium Token (
