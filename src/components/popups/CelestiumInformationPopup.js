@@ -29,7 +29,7 @@ export default function CelestiumInformationPopup(props) {
           </button>
           <div className="header">Welcome to the Celestium Canvas</div>
           {!process.env.REACT_APP_FREEZE_BLOCKCHAIN ? (
-            <div>
+            <React.Fragment>
               <div className="content" style={{ maxWidth: "300px" }}>
                 Final date has now been planned by NASA and the image created
                 here will be frozen in:
@@ -85,9 +85,9 @@ export default function CelestiumInformationPopup(props) {
                 pixel and mine a Celestium Token (
                 <CelestiumLogo lineHeight="14pt" />)
               </div>
-            </div>
+            </React.Fragment>
           ) : (
-            <div>
+            <React.Fragment>
               <div className="content" style={{ maxWidth: "400px" }}>
                 The Celestium Artwork is now over. The blockchain has been
                 frozen and sent to NASA so they can verify the package before
@@ -101,7 +101,7 @@ export default function CelestiumInformationPopup(props) {
                 After the 5th of April 2022, you will again be able to buy
                 asteroids and NFTs for the Celestium you have in your wallet.
               </div>
-            </div>
+            </React.Fragment>
           )}
         </div>
       )}
