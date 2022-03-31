@@ -99,7 +99,11 @@ class Wallet extends Component {
             lineHeight="40px"
           />
           <Button
-            className="sk-buttons"
+            className={
+              "sk-buttons" + process.env.REACT_APP_FREEZE_BLOCKCHAIN
+                ? " disabled"
+                : ""
+            }
             onClick={() => {
               this.setState({ importSK: true });
             }}

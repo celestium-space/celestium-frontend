@@ -333,10 +333,15 @@ function BuyPopup(props) {
                       Mining this space object will take <i>1-3 min</i>
                     </div>
                     <div
-                      className="ui button"
-                      disabled={process.env.REACT_APP_FREEZE_BLOCKCHAIN}
+                      className={
+                        "ui button" + process.env.REACT_APP_FREEZE_BLOCKCHAIN
+                          ? " disabled"
+                          : ""
+                      }
                       onClick={() => {
-                        setConfirmMiningPopup(true);
+                        if (!process.env.REACT_APP_FREEZE_BLOCKCHAIN) {
+                          setConfirmMiningPopup(true);
+                        }
                       }}
                     >
                       Confirm
