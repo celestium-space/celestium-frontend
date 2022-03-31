@@ -12,7 +12,7 @@ export default function ExportSKPopup(props) {
   return (
     <div>
       <Popup
-        open={props.open}
+        open={!process.env.REACT_APP_FREEZE_BLOCKCHAIN && props.open}
         onClose={props.onClose}
         closeOnDocumentClick
         modal

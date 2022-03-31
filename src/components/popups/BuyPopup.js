@@ -127,7 +127,7 @@ function BuyPopup(props) {
         Exchange for <CelestiumLogo color="#5a5a5a" lineHeight="14pt" />
       </button>
       <Popup
-        open={isBuying}
+        open={!process.env.REACT_APP_FREEZE_BLOCKCHAIN && isBuying}
         position="right center"
         closeOnDocumentClick
         contentStyle={{ width: "770px" }}

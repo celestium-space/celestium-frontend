@@ -195,7 +195,10 @@ class Grid extends Component {
                       this.moved = true;
                     }}
                     onMouseUp={(event) => {
-                      if (!this.moved) {
+                      if (
+                        !process.env.REACT_APP_FREEZE_BLOCKCHAIN &&
+                        !this.moved
+                      ) {
                         if (this.state.clickedOnce) {
                           const rect = canvas.getBoundingClientRect();
                           //---- Here be dragons ----
