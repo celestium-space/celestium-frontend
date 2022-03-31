@@ -87,12 +87,20 @@ export default function CelestiumInformationPopup(props) {
               </div>
             </div>
           ) : (
-            <div className="content" style={{ maxWidth: "400px" }}>
-              The Celestium Artwork is now over. The canvas you see here is the
-              one that will be sent to the ISS on the 5th of April 2022 and
-              mined. You can still browse the canvas, your wallet, and the
-              asteroids, but no more transactions will be accepted until the
-              blockchain and canvas have been sent to the ISS.
+            <div>
+              <div className="content" style={{ maxWidth: "400px" }}>
+                The Celestium Artwork is now over. The blockchain has been
+                frozen and sent to NASA so they can verify the package before
+                the 5th of April 2022, where it will be mined onboard the ISS.
+              </div>
+              <div className="content" style={{ maxWidth: "400px" }}>
+                You can still browse the canvas, your wallet, and the asteroids,
+                but no transactions are currently accepted.
+              </div>
+              <div className="content" style={{ maxWidth: "400px" }}>
+                After the 5th of April 2022, you will again be able to buy
+                asteroids and NFTs for the Celestium you have in your wallet.
+              </div>
             </div>
           )}
         </div>

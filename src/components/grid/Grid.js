@@ -8,7 +8,6 @@ import PixelControls from "../pixelcontrols/PixelControls";
 import SelectColorPopup from "../popups/SelectColorPopup";
 import { FiGithub } from "react-icons/fi";
 import { RiRedditLine } from "react-icons/ri";
-import { AiOutlineApi } from "react-icons/ai";
 
 class Grid extends Component {
   constructor(props) {
