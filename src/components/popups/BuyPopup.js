@@ -322,31 +322,32 @@ function BuyPopup(props) {
                       </div>
                     </div>
                   </div>
-                  <div
-                    className="row"
-                    style={{ paddingBottom: "0", paddingLeft: "24.5px" }}
-                  >
+                  {!process.env.REACT_APP_FREEZE_BLOCKCHAIN ? (
                     <div
-                      className="column content"
-                      style={{ textAlign: "right" }}
+                      className="row"
+                      style={{ paddingBottom: "0", paddingLeft: "24.5px" }}
                     >
-                      Mining this space object will take <i>1-3 min</i>
+                      <div
+                        className="column content"
+                        style={{ textAlign: "right" }}
+                      >
+                        Mining this space object will take <i>1-3 min</i>
+                      </div>
+
+                      <div
+                        className="ui button"
+                        onClick={() => {
+                          if (!process.env.REACT_APP_FREEZE_BLOCKCHAIN) {
+                            setConfirmMiningPopup(true);
+                          }
+                        }}
+                      >
+                        Confirm
+                      </div>
                     </div>
-                    <div
-                      className={
-                        "ui button" + process.env.REACT_APP_FREEZE_BLOCKCHAIN
-                          ? " disabled"
-                          : ""
-                      }
-                      onClick={() => {
-                        if (!process.env.REACT_APP_FREEZE_BLOCKCHAIN) {
-                          setConfirmMiningPopup(true);
-                        }
-                      }}
-                    >
-                      Confirm
-                    </div>
-                  </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>
