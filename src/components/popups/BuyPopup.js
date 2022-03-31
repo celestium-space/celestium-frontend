@@ -127,7 +127,7 @@ function BuyPopup(props) {
         Exchange for <CelestiumLogo color="#5a5a5a" lineHeight="14pt" />
       </button>
       <Popup
-        open={!process.env.REACT_APP_FREEZE_BLOCKCHAIN && isBuying}
+        open={isBuying}
         position="right center"
         closeOnDocumentClick
         contentStyle={{ width: "770px" }}
@@ -334,6 +334,7 @@ function BuyPopup(props) {
                     </div>
                     <div
                       className="ui button"
+                      disabled={process.env.REACT_APP_FREEZE_BLOCKCHAIN}
                       onClick={() => {
                         setConfirmMiningPopup(true);
                       }}

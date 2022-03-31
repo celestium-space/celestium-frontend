@@ -87,7 +87,7 @@ export default function CelestiumInformationPopup(props) {
               </div>
             </div>
           ) : (
-            <div className="content" style={{ maxWidth: "300px" }}>
+            <div className="content" style={{ maxWidth: "400px" }}>
               Celestium is now ower. The artwork you see here is the one that is
               sent to the ISS on the 5th of April 2022. You can still browse the
               canvas, your wallet and the asteroids but no more transactions
