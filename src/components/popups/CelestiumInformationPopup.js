@@ -48,12 +48,19 @@ export default function CelestiumInformationPopup(props) {
             <React.Fragment>
               <div className="content" style={{ maxWidth: "400px" }}>
                 The Celestium Artwork is now over. The block containing all
-                transactions creating this canvas and sent to ISS and mined.
+                transactions creating this canvas has successfully been sent to
+                the ISS, mined and sent to earth. This block is a part of the
+                blockchain as block #1.
               </div>
               <div className="content" style={{ maxWidth: "400px" }}>
-                You can now only browse the canvas. However, you can buy
-                asteroids, transfer and export wallets and export your NFTs as
-                usual.
+                To preserve the pixels that was sent to space this instance does
+                not accept pixel base transactions. Meaning that you can now
+                only browse the canvas and not change pixels any more.
+              </div>
+              <div className="content" style={{ maxWidth: "400px" }}>
+                This instance still accepts all other transactions. This means
+                that you can still exchange CEL for asteroids, transfer and
+                export wallets and export your NFTs as usual.
               </div>
             </React.Fragment>
           ) : (
