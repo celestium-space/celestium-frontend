@@ -196,6 +196,7 @@ class Grid extends Component {
                     onMouseUp={(event) => {
                       if (
                         !process.env.REACT_APP_FREEZE_BLOCKCHAIN &&
+                        !process.env.REACT_APP_FREEZE_CANVAS &&
                         !this.moved
                       ) {
                         if (this.state.clickedOnce) {
